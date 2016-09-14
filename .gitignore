@@ -1,4 +1,5 @@
-# local
+# local/configs
+config.py
 secret.py
 
 # Byte-compiled / optimized / DLL files
