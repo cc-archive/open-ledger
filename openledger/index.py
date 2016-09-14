@@ -1,6 +1,6 @@
 from flask import Flask, render_template
 
-from openledger.handlers.handler_500px import photos
+from handlers.handler_500px import photos
 
 app = Flask(__name__)
 
