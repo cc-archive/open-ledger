@@ -3,3 +3,4 @@ requests
 pip>=8
 Fabric3
 requests-oauthlib
+uwsgi
