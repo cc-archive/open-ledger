@@ -1,11 +1,13 @@
 import requests
 from urllib.parse import parse_qs
-from secret import API_500PX_KEY, API_500PX_SECRET
+from .secret import API_500PX_KEY, API_500PX_SECRET
 from requests_oauthlib import OAuth1Session, OAuth1
 from oauthlib.oauth2 import BackendApplicationClient
 
 BASE_URL = 'https://api.500px.com'
 ENDPOINT_PHOTOS = BASE_URL + '/v1/photos/search'
+
+IMAGE_SIZE_THUMBNAIL = 3  # 200x200
 
 LICENSES = {
     "BY": 4,
@@ -25,7 +27,8 @@ def auth():
 def photos(search=None, licenses=LICENSES["ALL-CC"]):
     params = {
         'license_type': licenses,
-        'term': search
+        'term': search,
+        'image_size': IMAGE_SIZE_THUMBNAIL,
     }
     r = requests.get(ENDPOINT_PHOTOS, params=params, auth=auth())
     return r.json()
