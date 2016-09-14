@@ -1,8 +1,9 @@
 import requests
 from urllib.parse import parse_qs
-from .secret import API_500PX_KEY, API_500PX_SECRET
 from requests_oauthlib import OAuth1Session, OAuth1
 from oauthlib.oauth2 import BackendApplicationClient
+
+from openledger.app import app
 
 BASE_URL = 'https://api.500px.com'
 ENDPOINT_PHOTOS = BASE_URL + '/v1/photos/search'
@@ -22,7 +23,7 @@ LICENSES = {
 }
 
 def auth():
-    return OAuth1(API_500PX_KEY, client_secret=API_500PX_SECRET)
+    return OAuth1(app.config['API_500PX_KEY'], client_secret=app.config['API_500PX_SECRET'])
 
 def photos(search=None, licenses=LICENSES["ALL-CC"]):
     params = {
