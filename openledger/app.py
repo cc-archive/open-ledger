@@ -5,6 +5,6 @@ app.config.from_pyfile('config.py')
 
 @app.route("/")
 def index():
-    from openledger.handlers.handler_500px import photos
+    from handlers.handler_500px import photos
     results = photos(search='greyhound')
     return render_template('index.html', results=results)
