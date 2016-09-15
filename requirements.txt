@@ -4,3 +4,5 @@ pip>=8
 Fabric3
 requests-oauthlib
 uwsgi
+WTForms
+Flask-WTF

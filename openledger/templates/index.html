@@ -1,17 +1,34 @@
 <!doctype html>
 <html>
 <head>
-  <title>Open Ledger prototype</title>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/foundation/6.2.3/foundation-flex.min.css">
+    <title>Open Ledger prototype</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/foundation/6.2.3/foundation-flex.min.css">
 </head>
 <body>
+  <form method="GET" action="/">
+    <div class="row" style="margin-top: 2em">
+        <div class="column shrink">
+            {{ form.search.label }}
+        </div>
+        <div class="column shrink">
+            {{ form.search }}
+        </div>
+    </div>
+  </form>
 
-<div class="row">
-  {% for result in results.photos %}
-  <div class="shrink columns"><img src="{{ result.images.0.https_url }}" class="thumbnail" width="200"/></div>
-  {% endfor %}
-  </div>
-</div>
 
+    {% if results %}
+    <div class="row column">
+        <h2>Results for {{ search }} </h2>
+        <h3>500px</h3>
+        <div class="row">
+        {% for result in results.photos %}
+        <div class="shrink columns"><img src="{{ result.images.0.https_url }}" class="thumbnail" width="200" /></div>
+        {% endfor %}
+      </div>
+    </div>
+    </div>
+    {% endif %}
 </body>
+
 </html>
