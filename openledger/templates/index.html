@@ -19,12 +19,19 @@
 
     {% if results %}
     <div class="row column">
-        <h2>Results for {{ search }} </h2>
-        <h3>500px</h3>
-        <div class="row">
-        {% for result in results.photos %}
-        <div class="shrink columns"><img src="{{ result.images.0.https_url }}" class="thumbnail" width="200" /></div>
-        {% endfor %}
+      <h2>Results for {{ search }} </h2>
+      <h3>500px</h3>
+
+      <div class="row">
+      {% for result in results.photos %}
+      <div class="shrink columns">
+        <a href="https://500px.com/photo/112050927/african-wild-dog-by-ryan-jack">
+          <img src="{{ result.images.0.https_url }}" class="thumbnail" width="200" />
+        </a>
+        <div style="text-align:center"><caption>{{ result.user.username }} | {{ licenses[result.license_type]}}</caption></div>
+        <br/>
+      </div>
+      {% endfor %}
       </div>
     </div>
     </div>
