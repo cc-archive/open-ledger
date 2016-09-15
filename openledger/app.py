@@ -7,13 +7,15 @@ app.config.from_pyfile('config.py')
 
 @app.route("/")
 def index():
-    from handlers.handler_500px import photos, LICENSE_LOOKUP
+    from handlers.handler_500px import photos as search_500, LICENSE_LOOKUP
+    from handlers.handler_rijks import photos as search_rijks
+
     search = request.args.get('search')
     form = forms.SearchForm()
+    results = {}
     if search:
-        results = photos(search=search)
-    else:
-        results = None
+        results['fpx'] = search_500(search=search)
+        results['rijks'] = search_rijks(search=search)
     return render_template('index.html', results=results, form=form, search=search, licenses=LICENSE_LOOKUP)
 
 if __name__ == '__main__':
