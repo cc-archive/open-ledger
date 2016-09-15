@@ -29,7 +29,7 @@
       <div class="row">
       {% for result in results.fpx.photos %}
       <div class="shrink columns">
-        <a href="#">
+        <a href="https://500px.com/{{ result.url }}">
           <img src="{{ result.images.0.https_url }}" class="thumbnail" width="200" />
         </a>
         <div style="text-align:center"><caption>{{ result.user.username }} | {{ licenses[result.license_type]}}</caption></div>
@@ -43,7 +43,7 @@
         {% for result in results.rijks.artObjects %}
         <div class="shrink columns">
           <div style="max-height: 200px; overflow: hidden">
-            <a href="#">
+            <a href="{{ result.links.web }}">
               <img src="{{ result.webImage.url }}" class="thumbnail" width="200">
             </a>
           </div>
