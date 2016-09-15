@@ -20,8 +20,7 @@
     {% if results %}
     <div class="row column">
       <h2>Results for {{ search }} </h2>
-      <h3>500px</h3>
-
+      <h3>{{ results.total_items }} photos from 500px</h3>
       <div class="row">
       {% for result in results.photos %}
       <div class="shrink columns">
