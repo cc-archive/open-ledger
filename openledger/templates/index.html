@@ -34,7 +34,7 @@
           </a>
         </div>
         <figcaption>
-          {{ result.ownername }}
+          {{ result.ownername }} | {{ licenses.flickr[result.license]}}
         </figcaption>
       </figure>
     </div>
@@ -54,7 +54,7 @@
           </a>
         </div>
         <figcaption>
-          {{ result.user.username }} | {{ licenses[result.license_type]}}
+          {{ result.user.username }} | {{ licenses.fpx[result.license_type]}}
         </figcaption>
       </figure>
     </div>

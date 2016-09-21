@@ -32,7 +32,7 @@ def photos(search=None, licenses=LICENSES["ALL-CC"]):
     flickr = auth()
     photos = flickr.photos.search(safe_search=1,  # safe-search on
                          content_type=1,  # Photos only, no screenshots
-                         licenses=licenses,
+                         license=licenses,
                          text=search,
                          extras='url_m,owner_name,license',
                          sort='relevance',
