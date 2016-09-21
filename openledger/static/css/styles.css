@@ -1,0 +1,14 @@
+figure {
+  margin: 0;
+}
+
+.figure-wrapper {
+  max-height: 200px;
+  overflow: hidden;
+}
+
+
+figcaption {
+  text-align: center;
+  max-width: 200px;
+}

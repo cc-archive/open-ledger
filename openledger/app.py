@@ -9,6 +9,7 @@ app.config.from_pyfile('config.py')
 def index():
     from handlers.handler_500px import photos as search_500, LICENSE_LOOKUP
     from handlers.handler_rijks import photos as search_rijks
+    from handlers.handler_flickr import photos as search_flickr
 
     search = request.args.get('search')
     form = forms.SearchForm()
@@ -16,8 +17,10 @@ def index():
     if search:
         results['fpx'] = search_500(search=search)
         results['rijks'] = search_rijks(search=search)
-    return render_template('index.html', results=results, form=form, search=search, licenses=LICENSE_LOOKUP)
+        results['flickr'] = search_flickr(search=search)
+    return render_template('index.html', results=results, form=form,
+                           search=search, licenses=LICENSE_LOOKUP)
 
 if __name__ == '__main__':
     # Run me as 'python -m app' to avoid path/import problems
-    app.run()
+    app.run(debug=True)

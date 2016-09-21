@@ -21,16 +21,8 @@ LICENSES = {
     "CC0": 8,
     "ALL-CC": "1,2,3,4,5,6,7,8"
 }
-LICENSE_LOOKUP = {
-    4: "BY",
-    1: "BY-NC",
-    5: "BY-ND",
-    6: "BY-SA",
-    2: "BY-NC-ND",
-    3: "BY-NC-SA",
-    7: "PDM",
-    8: "CC0",
-}
+LICENSE_LOOKUP = {v: k for k, v in LICENSES.items()}
+
 def auth():
     return OAuth1(app.config['API_500PX_KEY'], client_secret=app.config['API_500PX_SECRET'])
 

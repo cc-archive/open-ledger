@@ -1,61 +1,84 @@
 <!doctype html>
-<html>
-<head>
-    <title>Open Ledger prototype</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/foundation/6.2.3/foundation-flex.min.css">
-</head>
-<body>
-  <form method="GET" action="/">
-    <div class="row" style="margin-top: 2em">
-        <div class="column shrink">
-            {{ form.search.label }}
-        </div>
-        <div class="column shrink">
-            {{ form.search }}
-        </div>
-          <p>Searches to try: <a href="/?search=dress">dress</a> | <a href="/?search=sunset">sunset</a> | <a href="?search=open">open</a> </p>
+<title>Open Ledger prototype</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/foundation/6.2.3/foundation-flex.min.css">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+
+<form method="GET" action="/">
+  <div class="row" style="margin-top: 2em">
+    <div class="column shrink">
+      {{ form.search.label }}
     </div>
-
-  </form>
-
-
-
-    {% if results %}
-    <div class="row column">
-      <h2>Results for {{ search }} </h2>
-
-      <h3>{{ results.fpx.total_items }} photos from 500px</h3>
-
-      <div class="row">
-      {% for result in results.fpx.photos %}
-      <div class="shrink columns">
-        <a href="https://500px.com/{{ result.url }}">
-          <img src="{{ result.images.0.https_url }}" class="thumbnail" width="200" />
-        </a>
-        <div style="text-align:center"><caption>{{ result.user.username }} | {{ licenses[result.license_type]}}</caption></div>
-        <br/>
-      </div>
-      {% endfor %}
-      </div>
-
-      <h3>{{ results.rijks.count }} photos from Rijksmuseum</h3>
-      <div class="row">
-        {% for result in results.rijks.artObjects %}
-        <div class="shrink columns">
-          <div style="max-height: 200px; overflow: hidden">
-            <a href="{{ result.links.web }}">
-              <img src="{{ result.webImage.url }}" class="thumbnail" width="200">
-            </a>
-          </div>
-          <div style="text-align:center; max-width: 200px"><caption>{{ result.title }}</caption> | CC0</div>
-          <br/>
-        </div>
-        {% endfor %}
-      </div>
-
+    <div class="column shrink">
+      {{ form.search }}
     </div>
+    <p>Searches to try: <a href="/?search=dress">dress</a> | <a href="/?search=sunset">sunset</a> | <a href="?search=open">open</a> </p>
   </div>
-  {% endif %}
-</body>
 
-</html>
+</form>
+
+{% if results %}
+<div class="row column results">
+  <h2>Results for {{ search }} </h2>
+
+  <!-- Flickr -->
+  <h3>{{ results.flickr.photos.total }} photos from Flickr</h3>
+
+  <div class="row">
+    {% for result in results.flickr.photos.photo %}
+    <div class="shrink columns">
+      <!-- https://www.flickr.com/photos/{user-id}/{photo-id} - individual photo -->
+      <figure>
+        <div class="figure-wrapper">
+          <a href="https://www.flickr.com/photos/{{ result.owner }}/{{ result.id }}">
+            <img src="{{ result.url_m }}" class="thumbnail" width="200" />
+          </a>
+        </div>
+        <figcaption>
+          {{ result.ownername }}
+        </figcaption>
+      </figure>
+    </div>
+    {% endfor %}
+  </div>
+
+  <!-- 500px -->
+  <h3>{{ results.fpx.total_items }} photos from 500px</h3>
+
+  <div class="row">
+    {% for result in results.fpx.photos %}
+    <div class="shrink columns">
+      <figure>
+        <div class="figure-wrapper">
+          <a href="https://500px.com/{{ result.url }}">
+            <img src="{{ result.images.0.https_url }}" class="thumbnail" width="200" />
+          </a>
+        </div>
+        <figcaption>
+          {{ result.user.username }} | {{ licenses[result.license_type]}}
+        </figcaption>
+      </figure>
+    </div>
+    {% endfor %}
+  </div>
+
+  <!-- rijksmuseum -->
+  <h3>{{ results.rijks.count }} photos from Rijksmuseum</h3>
+  <div class="row">
+    {% for result in results.rijks.artObjects %}
+    <div class="shrink columns">
+      <figure>
+        <div class="figure-wrapper">
+          <a href="{{ result.links.web }}">
+            <img src="{{ result.webImage.url }}" class="thumbnail" width="200">
+          </a>
+        </div>
+        <figcaption>
+          {{ result.title }} | CC0
+        </figcaption>
+      </figure>
+    </div>
+    {% endfor %}
+  </div>
+</div>
+
+{% endif %}
