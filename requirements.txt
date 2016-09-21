@@ -6,3 +6,4 @@ requests-oauthlib
 uwsgi
 WTForms
 Flask-WTF
+flickrapi
