@@ -7,7 +7,7 @@ requests_log.propagate = False
 
 import flickrapi
 
-from app import app
+from openledger import app
 
 LICENSES = {
     "BY": 4,

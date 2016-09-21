@@ -1,6 +1,6 @@
 import requests
 
-from app import app
+from openledger import app
 
 BASE_URL = 'https://www.rijksmuseum.nl'
 ENDPOINT_PHOTOS = BASE_URL + '/api/en/collection'

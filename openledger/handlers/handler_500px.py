@@ -3,7 +3,7 @@ from urllib.parse import parse_qs
 from requests_oauthlib import OAuth1Session, OAuth1
 from oauthlib.oauth2 import BackendApplicationClient
 
-from app import app
+from openledger import app
 
 BASE_URL = 'https://api.500px.com'
 ENDPOINT_PHOTOS = BASE_URL + '/v1/photos/search'
