@@ -1,0 +1,11 @@
+# API keys
+
+# 500px
+API_500PX_KEY = 'XXXX'
+API_500PX_SECRET = 'XXXX'
+
+# Rijksmuseum
+API_RIJKS = 'XXXX'
+
+# Flask-internal (should vary by deployment)
+SECRET_KEY = 'XXXX'
