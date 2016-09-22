@@ -10,6 +10,7 @@ ENDPOINT_PHOTOS = BASE_URL + '/v1/photos/search'
 
 IMAGE_SIZE_THUMBNAIL = 3  # 200x200
 
+# 500px will return these values as integers, so keep them as integers
 LICENSES = {
     "BY": 4,
     "BY-NC": 1,
