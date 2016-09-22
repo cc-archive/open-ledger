@@ -9,6 +9,8 @@ import flickrapi
 
 from openledger import app
 
+log = logging.getLogger(__name__)
+
 LICENSES = {
     "BY": 4,
     "BY-NC": 2,

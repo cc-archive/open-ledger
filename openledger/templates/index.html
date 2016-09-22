@@ -11,7 +11,7 @@
     <div class="column shrink">
       {{ form.search }}
     </div>
-    <p>Searches to try: <a href="/?search=dress">dress</a> | <a href="/?search=sunset">sunset</a> | <a href="?search=open">open</a> </p>
+    <p>Searches to try: <a href="/?search=paris">paris</a> | <a href="/?search=sunset">sunset</a> | <a href="?search=open">open</a> </p>
   </div>
 
 </form>
@@ -79,6 +79,28 @@
     </div>
     {% endfor %}
   </div>
+
+
+  <!-- Wikimedia -->
+  {% if results.wikimedia %}
+  <h3>{{ results.wikimedia.results.bindings|length }} photos from Wikimedia Commons</h3>
+  <div class="row">
+    {% for result in results.wikimedia.results.bindings %}
+    <div class="shrink columns">
+      <figure>
+        <div class="figure-wrapper">
+          <a href="{{ result.item.value }}">
+            <img src="{{ result.pic.value }}" class="thumbnail" width="200">
+          </a>
+        </div>
+        <figcaption>
+          {{ result.itemLabel.value }} | CC0
+        </figcaption>
+      </figure>
+    </div>
+    {% endfor %}
+  </div>
+  {% endif %}
 </div>
 
 {% endif %}

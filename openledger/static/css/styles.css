@@ -12,3 +12,7 @@ figcaption {
   text-align: center;
   max-width: 200px;
 }
+
+h3 {
+  margin-top: 4rem;
+}
