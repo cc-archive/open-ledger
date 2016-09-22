@@ -13,6 +13,7 @@ def deploy():
     with cd(CODE_DIR):
         run('git pull origin ' + CURRENT_BRANCH)
         run('./venv/bin/pip install -r requirements.txt')
+    restart_host()
 
 def restart_host():
     sudo('service openledger restart', shell=False)
