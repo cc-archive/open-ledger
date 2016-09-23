@@ -21,11 +21,3 @@ def test_random():
     """Images with the random hasher should _always_ fail to return the same hash"""
     for imgset in ALL_IMAGES:
         assert random(imgset[0]) != random(imgset[1])
-
-def test_simple():
-    """Images with the simple hasher should be within a certain threshold"""
-    imgs = ALL_IMAGES[0]
-    img1 = simple(imgs[0])
-    img2 = simple(imgs[1])
-    print(_hamming_distance(img1, img2))
-    raise Exception
