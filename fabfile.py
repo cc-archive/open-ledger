@@ -11,7 +11,7 @@ CURRENT_BRANCH = 'master'
 
 def deploy():
     with cd(CODE_DIR):
-        run('git pull origin ' + CURRENT_BRANCH)
+        run('git pull --force origin ' + CURRENT_BRANCH)
         run('./venv/bin/pip install -r requirements.txt')
     restart_host()
 
