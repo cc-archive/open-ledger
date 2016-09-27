@@ -58,3 +58,13 @@ This is the idea of a transactional record of all changes to CC works:
 items _enter_ the record, changes to metadata are recorded, and new
 instances of that work appear on known partners. Right now this is purely
 theoretical.
+
+## Testing
+
+### Webapp
+
+Run pytest from the root of the project as:
+
+```
+python -m pytest openledger
+```

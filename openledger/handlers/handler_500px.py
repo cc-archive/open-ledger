@@ -4,6 +4,7 @@ from requests_oauthlib import OAuth1Session, OAuth1
 from oauthlib.oauth2 import BackendApplicationClient
 
 from openledger import app
+from openledger.licenses import license_match
 
 BASE_URL = 'https://api.500px.com'
 ENDPOINT_PHOTOS = BASE_URL + '/v1/photos/search'
@@ -20,16 +21,13 @@ LICENSES = {
     "BY-NC-SA": 3,
     "PDM": 7,
     "CC0": 8,
-    "ALL-CC": "1,2,3,4,5,6,7,8"
 }
 LICENSE_LOOKUP = {v: k for k, v in LICENSES.items()}
 
 def auth():
     return OAuth1(app.config['API_500PX_KEY'], client_secret=app.config['API_500PX_SECRET'])
 
-def photos(search=None, licenses=["ALL-CC"]):
-    from openledger.util import license_match
-
+def photos(search=None, licenses=["ALL"]):
     params = {
         'license_type': license_match(licenses, LICENSES),
         'term': search,

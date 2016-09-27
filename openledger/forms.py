@@ -3,15 +3,7 @@ from wtforms import StringField, SelectMultipleField
 from wtforms.validators import DataRequired
 from wtforms import widgets
 
-LICENSES = (
-    ("BY", "BY"),
-    ("BY-NC", "BY-NC"),
-    ("BY-ND", "BY-ND"),
-    ("BY-SA", "BY-SA"),
-    ("BY-NC-ND", "BY-NC-ND"),
-    ("BY-NC-SA", "BY-NC-SA"),
-    ("PDM", "PDM"),
-    ("CC0", "CC0"),)
+from openledger.licenses import LICENSES
 
 class MultiCheckboxField(SelectMultipleField):
     """

@@ -26,7 +26,7 @@
 {% if results %}
 <div class="row column results">
   <h2>Results for <i>{{ search }}</i> </h2>
-  <small>{{user_licenses|join(', ')}} or unrestricted use</small>  
+  <small>{{user_licenses|join(', ')}} or unrestricted use</small>
 
   <!-- Flickr -->
   <h3>{{ results.flickr.photos.total }} photos from Flickr</h3>
@@ -42,7 +42,7 @@
           </a>
         </div>
         <figcaption>
-          {{ result.ownername }} | {{ licenses.flickr[result.license]}}
+          {{ result.ownername }} | {{ licenses_map.flickr[result.license]}}
         </figcaption>
       </figure>
     </div>
@@ -62,7 +62,7 @@
           </a>
         </div>
         <figcaption>
-          {{ result.user.username }} | {{ licenses.fpx[result.license_type]}}
+          {{ result.user.username }} | {{ licenses_map.fpx[result.license_type]}}
         </figcaption>
       </figure>
     </div>

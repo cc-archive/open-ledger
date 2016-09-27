@@ -8,6 +8,7 @@ requests_log.propagate = False
 import flickrapi
 
 from openledger import app
+from openledger.licenses import license_match
 
 log = logging.getLogger(__name__)
 
@@ -21,7 +22,6 @@ LICENSES = {
     "BY-NC-SA": '1',
     "PDM": '7',
     "CC0": '9',
-    "ALL-CC": "1,2,3,4,5,6",
 }
 
 LICENSE_LOOKUP = {v: k for k, v in LICENSES.items()}
@@ -31,9 +31,7 @@ def auth():
                                app.config['FLICKR_SECRET'],
                                format='parsed-json')
 
-
-def photos(search=None, licenses=["ALL-CC"]):
-    from openledger.util import license_match
+def photos(search=None, licenses=["ALL"]):
     flickr = auth()
     photos = flickr.photos.search(safe_search=1,  # safe-search on
                          content_type=1,  # Photos only, no screenshots
