@@ -52,8 +52,13 @@ def license_match(licenses, license_dict):
     If an unknown license is passed in, it is ignored."""
 
     full_license_set = licenses[:]
+    license_groups_selected = []
     for license in licenses:
         if LICENSE_GROUPS.get(license):
-            full_license_set += LICENSE_GROUPS.get(license)
+            license_groups_selected.append([x for x in LICENSE_GROUPS.get(license)])
+
+    # If we got some license groups, filter down to the intersection of those
+    if license_groups_selected:
+        full_license_set = set.intersection(*map(set, license_groups_selected))
     license_strings = sorted([str(license_dict.get(k)) for k in full_license_set if license_dict.get(k)])
     return ",".join(license_strings) if license_strings else None

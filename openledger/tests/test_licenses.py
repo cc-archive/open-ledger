@@ -30,3 +30,8 @@ def test_license_match_groups():
     assert '1,2,3,4,5,6' == licenses.license_match(["ALL-CC"], mapping)
     assert '4,5,6,7,9' == licenses.license_match(["ALL-$"], mapping)
     assert '1,2,4,5,7,9' == licenses.license_match(["ALL-MOD"], mapping)
+
+def test_license_match_groups_intersection():
+    """The license match function should return the intersection of multiple groups, not the union"""
+    mapping = handler_flickr.LICENSES
+    assert '4,5,7,9' == licenses.license_match(["ALL-$", "ALL-MOD"], mapping)
