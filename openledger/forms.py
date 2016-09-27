@@ -3,7 +3,10 @@ from wtforms import StringField, SelectMultipleField
 from wtforms.validators import DataRequired
 from wtforms import widgets
 
-from openledger.licenses import LICENSES
+LICENSE_CHOICES = (
+    ('ALL-$', 'Use for commercial purposes'),
+    ('ALL-MOD', 'Modify, adapt, or build upon'),
+)
 
 class MultiCheckboxField(SelectMultipleField):
     """
@@ -17,4 +20,4 @@ class MultiCheckboxField(SelectMultipleField):
 
 class SearchForm(Form):
     search = StringField('Search', validators=[DataRequired()])
-    licenses = MultiCheckboxField('License', choices=LICENSES)
+    licenses = MultiCheckboxField('License', choices=LICENSE_CHOICES)
