@@ -13,3 +13,9 @@ def licenses():
         "fpx": l500px,
         "flickr": lflickr
     }
+
+def license_match(licenses, license_dict):
+    """Given an array of licenses chosen by a user and a dictionary of handler-
+    specific license values, find all matching items and return a
+    comma-separated list of values"""
+    return ",".join([str(license_dict[k]) for k in licenses])

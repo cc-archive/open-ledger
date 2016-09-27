@@ -5,20 +5,28 @@
 
 <form method="GET" action="/">
   <div class="row" style="margin-top: 2em">
-    <div class="column shrink">
+    <div class="column medium-6">
       {{ form.search.label }}
-    </div>
-    <div class="column shrink">
       {{ form.search }}
+      <p>Searches to try: <a href="/?search=paris">paris</a> | <a href="/?search=sunset">sunset</a> | <a href="?search=open">open</a> | <a href="?search=sheep&licenses=CC0">sheep, CC0-only</a></p>
+
     </div>
-    <p>Searches to try: <a href="/?search=paris">paris</a> | <a href="/?search=sunset">sunset</a> | <a href="?search=open">open</a> </p>
+    <div class="column medium-6">
+      <fieldset>
+        <legend>
+          Licenses
+        </legend>
+      {{ form.licenses }}
+      </fieldset>
+    </div>
   </div>
 
 </form>
 
 {% if results %}
 <div class="row column results">
-  <h2>Results for {{ search }} </h2>
+  <h2>Results for <i>{{ search }}</i> </h2>
+  <small>{{user_licenses|join(', ')}} or unrestricted use</small>  
 
   <!-- Flickr -->
   <h3>{{ results.flickr.photos.total }} photos from Flickr</h3>

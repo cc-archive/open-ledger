@@ -9,14 +9,17 @@ from openledger.handlers.handler_wikimedia import photos as search_wikimedia
 
 @app.route("/")
 def index():
-
-    search = request.args.get('search')
     form = forms.SearchForm()
+    search = request.args.get('search')
+    licenses = request.args.getlist('licenses') or ["ALL-CC"]
     results = {}
+
     if search:
+        results['flickr'] = search_flickr(search=search, licenses=licenses)
+        results['fpx'] = search_500(search=search, licenses=licenses)
         results['wikimedia'] = search_wikimedia(search=search)
-        results['fpx'] = search_500(search=search)
         results['rijks'] = search_rijks(search=search)
-        results['flickr'] = search_flickr(search=search)
+        results['wikimedia'] = search_wikimedia(search=search)
     return render_template('index.html', results=results, form=form,
+                           user_licenses=licenses,
                            search=search, licenses=util.licenses())

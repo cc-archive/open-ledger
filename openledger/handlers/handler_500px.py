@@ -27,9 +27,11 @@ LICENSE_LOOKUP = {v: k for k, v in LICENSES.items()}
 def auth():
     return OAuth1(app.config['API_500PX_KEY'], client_secret=app.config['API_500PX_SECRET'])
 
-def photos(search=None, licenses=LICENSES["ALL-CC"]):
+def photos(search=None, licenses=["ALL-CC"]):
+    from openledger.util import license_match
+
     params = {
-        'license_type': licenses,
+        'license_type': license_match(licenses, LICENSES),
         'term': search,
         'image_size': IMAGE_SIZE_THUMBNAIL,
     }

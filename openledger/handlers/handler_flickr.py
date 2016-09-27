@@ -31,11 +31,13 @@ def auth():
                                app.config['FLICKR_SECRET'],
                                format='parsed-json')
 
-def photos(search=None, licenses=LICENSES["ALL-CC"]):
+
+def photos(search=None, licenses=["ALL-CC"]):
+    from openledger.util import license_match
     flickr = auth()
     photos = flickr.photos.search(safe_search=1,  # safe-search on
                          content_type=1,  # Photos only, no screenshots
-                         license=licenses,
+                         license=license_match(licenses, LICENSES),
                          text=search,
                          extras='url_m,owner_name,license',
                          sort='relevance',
