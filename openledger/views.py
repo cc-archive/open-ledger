@@ -24,3 +24,12 @@ def index():
                            user_licenses=user_licenses,
                            search=search,
                            license_map=licenses.license_map_from_partners())
+
+@app.template_filter('pluralize')
+def pluralize(number, singular='', plural='s'):
+    try:
+        number = int(number)
+    except ValueError:
+        number = 0
+    finally:
+        return singular if number == 1 else plural

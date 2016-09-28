@@ -28,7 +28,7 @@
   <h2>Results for <i>{{ search }}</i> </h2>
 
   <!-- Flickr -->
-  <h3>{{ results.flickr.photos.total }} photos from Flickr</h3>
+  <h3>{{ results.flickr.photos.total }} photo{{ results.flickr.photos.total|pluralize }} from Flickr</h3>
 
   <div class="row">
     {% for result in results.flickr.photos.photo %}
@@ -50,7 +50,7 @@
   </div>
 
   <!-- 500px -->
-  <h3>{{ results.fpx.total_items }} photos from 500px</h3>
+  <h3>{{ results.fpx.total_items }} photo{{ results.fpx.total_items|pluralize }} from 500px</h3>
 
   <div class="row">
     {% for result in results.fpx.photos %}
@@ -71,7 +71,7 @@
   </div>
 
   <!-- rijksmuseum -->
-  <h3>{{ results.rijks.count }} photos from Rijksmuseum</h3>
+  <h3>{{ results.rijks.count }} photo{{ results.rijks.count|pluralize }} from Rijksmuseum</h3>
   <div class="row">
     {% for result in results.rijks.artObjects %}
     <div class="shrink columns">
@@ -93,7 +93,7 @@
 
   <!-- Wikimedia -->
   {% if results.wikimedia %}
-  <h3>{{ results.wikimedia.results.bindings|length }} photos from Wikimedia Commons</h3>
+  <h3>{{ results.wikimedia.results.bindings|length }} photo{{ results.wikimedia.results.bindings|length|pluralize }} from Wikimedia Commons</h3>
   <div class="row">
     {% for result in results.wikimedia.results.bindings %}
     <div class="shrink columns">
