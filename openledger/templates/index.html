@@ -41,7 +41,8 @@
           </a>
         </div>
         <figcaption>
-          {{ result.ownername }} | {{ license_map.flickr[result.license]}}
+          {{ result.ownername }}
+          <img src="{{ url_for('static', filename='images/' + license_map.flickr[result.license].lower() + '.png')}}" alt="{{ license_map.flickr[result.license] }}" title="{{ license_map.flickr[result.license] }}"/ />
         </figcaption>
       </figure>
     </div>
@@ -61,7 +62,8 @@
           </a>
         </div>
         <figcaption>
-          {{ result.user.username }} | {{ license_map.fpx[result.license_type]}}
+          {{ result.user.username }}
+          <img src="{{ url_for('static', filename='images/' + license_map.fpx[result.license_type].lower() + '.png')}}" alt="{{ license_map.fpx[result.license_type] }}" title="{{ license_map.fpx[result.license_type] }}"/ />
         </figcaption>
       </figure>
     </div>
@@ -80,7 +82,8 @@
           </a>
         </div>
         <figcaption>
-          {{ result.title }} | CC0
+          {{ result.title }}
+          <img src="{{ url_for('static', filename='images/cc0.png')}}" alt="CC0" title="CC0"/ />
         </figcaption>
       </figure>
     </div>
@@ -101,7 +104,8 @@
           </a>
         </div>
         <figcaption>
-          {{ result.itemLabel.value }} | CC0
+          {{ result.itemLabel.value }}
+          <img src="{{ url_for('static', filename='images/cc0.png')}}" alt="CC0" title="CC0"/ />
         </figcaption>
       </figure>
     </div>
