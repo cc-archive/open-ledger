@@ -31,8 +31,9 @@ def auth():
                                app.config['FLICKR_SECRET'],
                                format='parsed-json')
 
-def photos(search=None, licenses=["ALL"], page=1):
+def photos(search=None, licenses=["ALL"], page=1, per_page=20, **kwargs):
     flickr = auth()
+    print(page)
     photos = flickr.photos.search(safe_search=1,  # safe-search on
                          content_type=1,  # Photos only, no screenshots
                          license=license_match(licenses, LICENSES),
@@ -40,5 +41,5 @@ def photos(search=None, licenses=["ALL"], page=1):
                          extras='url_m,owner_name,license',
                          sort='relevance',
                          page=page,
-                         per_page=20)  # FIXME make this configurable and global to all handlers
+                         per_page=per_page)
     return photos

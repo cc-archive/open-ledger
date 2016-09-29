@@ -1,3 +1,4 @@
+{% import "includes/pagination.html" as pagination %}
 <!doctype html>
 <title>Open Ledger prototype</title>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/foundation/6.2.3/foundation-flex.min.css">
@@ -30,26 +31,7 @@
   {% if results.flickr %}
     <h3>{{ results.flickr.photos.total }} photo{{ results.flickr.photos.total|pluralize }} from Flickr</h3>
 
-    <div class="row column text-center">
-      <ul class="pagination" role="navigation" aria-label="Pagination">
-
-        <li class="pagination-previous {% if results.flickr.photos.page == 1 %}disabled{% endif %}">
-          {% if results.flickr.photos.page > 1 %}
-            <a aria-label="Previous page" href="/flickr?search={{ search|urlencode }}&page={{ results.flickr.photos.page - 1 }}">Previous</a>
-          {% else %}
-            Previous
-          {% endif %}
-        </li>
-
-        <li class="pagination-next {% if results.flickr.photos.page >= results.flickr.photos.pages %}disabled{% endif %}">
-          {% if results.flickr.photos.page < results.flickr.photos.pages %}
-          <a aria-label="Next page" href="/flickr?search={{ search|urlencode }}&page={{ results.flickr.photos.page + 1 }}">Next</a>
-          {% else %}
-            Next
-          {% endif %}
-        </li>
-      </ul>
-    </div>
+    {{ pagination.paginate(results.flickr.photos.page, results.flickr.photos.pages, search, 'flickr')}}
 
     <div class="row">
       {% for result in results.flickr.photos.photo %}

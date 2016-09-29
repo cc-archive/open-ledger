@@ -12,25 +12,23 @@ log = logging.getLogger(__name__)
 BASE_URL = 'https://www.wikidata.org/w/api.php'
 WIKIDATA_URL = 'https://query.wikidata.org/sparql'
 
-LIMIT = 20
-
 def auth():
     pass
 
-def photos(search=None):
+def photos(search=None, page=1, per_page=20, **kwargs):
     params = {
         'search': search,
         'language': 'en',
         'action': 'wbsearchentities',
         'format': 'json',
-        'limit': LIMIT,
+        'limit': per_page,
     }
     r = requests.get(BASE_URL, params).json()
     if r.get('search') and len(r.get('search')) > 0:
         # Take the first representation, as that's likely to be the best
         entity = r.get('search')[0]
         entity_id = entity.get('id')
-        image_query_for_entity = image_query.substitute(entity_id=entity_id, limit=LIMIT)
+        image_query_for_entity = image_query.substitute(entity_id=entity_id, limit=per_page)
         sparams = {
             'query': image_query_for_entity,
             'format': 'json',

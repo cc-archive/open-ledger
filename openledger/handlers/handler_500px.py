@@ -27,7 +27,7 @@ LICENSE_LOOKUP = {v: k for k, v in LICENSES.items()}
 def auth():
     return OAuth1(app.config['API_500PX_KEY'], client_secret=app.config['API_500PX_SECRET'])
 
-def photos(search=None, licenses=["ALL"]):
+def photos(search=None, licenses=["ALL"], page=1, per_page=20, **kwargs):
     params = {
         'license_type': license_match(licenses, LICENSES),
         'term': search,
