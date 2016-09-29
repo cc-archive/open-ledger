@@ -25,6 +25,22 @@ def index():
                            search=search,
                            license_map=licenses.license_map_from_partners())
 
+@app.route("/flickr")
+def flickr():
+    form = forms.SearchForm()
+    search = request.args.get('search')
+    page = request.args.get('page') or 1
+    user_licenses = request.args.getlist('licenses') or ["ALL"]
+    results = {}
+
+    if search:
+        results['flickr'] = search_flickr(search=search, licenses=user_licenses, page=page)
+
+    return render_template('index.html', results=results, form=form,
+                           user_licenses=user_licenses,
+                           search=search,
+                           license_map=licenses.license_map_from_partners())
+
 @app.template_filter('pluralize')
 def pluralize(number, singular='', plural='s'):
     try:
