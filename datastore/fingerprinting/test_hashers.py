@@ -1,5 +1,7 @@
 import os
 
+import pytest
+
 from hashers import *
 
 IMAGE_DIR = 'samples'
@@ -14,7 +16,7 @@ IMAGE_TESTS = ('cropped',  # One image is a cropped version of the other
                'color',      # Same image, desaturated and not
                )
 
-THRESHOLD_SIMILARITY = 50  # We'd like all values we consider to be identical to be
+THRESHOLD_SIMILARITY = 15  # We'd like all values we consider to be identical to be
                            # at or below this value
 
 for test in IMAGE_TESTS:
@@ -54,8 +56,12 @@ def test_blockhash_different():
     hash2 = blockhash(imagefile2)
     assert hash1 != hash2
 
+@pytest.mark.xfail
 def test_blockhash_pairs_cropped():
-    """Processing cropped pairs through the blockhash hasher should return "same" results"""
+    """Processing cropped pairs through the blockhash hasher should return "same" results
+    Note: This is expected to fail; this algorithm doesn't come within the similarity guidelines
+    for these images
+    """
     imgs = ALL_IMAGES['cropped']
     h1 = blockhash(imgs[0])[imgs[0]]
     h2 = blockhash(imgs[1])[imgs[1]]
@@ -76,4 +82,38 @@ def test_blockhash_pairs_color():
     h1 = blockhash(imgs[0])[imgs[0]]
     h2 = blockhash(imgs[1])[imgs[1]]
     dist = hamming_distance(h1, h2)
+    assert dist <= THRESHOLD_SIMILARITY
+
+def test_imagehash_same():
+    """Processing the same image with the imagehash hasher twice should return the same hash"""
+    imagefile = ALL_IMAGES['cropped'][0]
+    hash1 = imagehash(imagefile)
+    hash2 = imagehash(imagefile)
+    assert hash1 == hash2
+
+def test_imagehash_pairs_cropped():
+    """Processing cropped pairs through the imagehash hasher should return "same" results
+    Note: This is expected to fail; this algorithm doesn't come within the similarity guidelines
+    for these images
+    """
+    imgs = ALL_IMAGES['cropped']
+    h1 = imagehash(imgs[0])[imgs[0]]
+    h2 = imagehash(imgs[1])[imgs[1]]
+    dist = h1 - h2
+    assert dist <= THRESHOLD_SIMILARITY
+
+def test_imagehash_pairs_providers():
+    """Processing providers pairs through the imagehash hasher should return "same" results"""
+    imgs = ALL_IMAGES['providers']
+    h1 = imagehash(imgs[0])[imgs[0]]
+    h2 = imagehash(imgs[1])[imgs[1]]
+    dist = h1 - h2
+    assert dist <= THRESHOLD_SIMILARITY
+
+def test_imagehash_pairs_color():
+    """Processing color pairs through the imagehash hasher should return "same" results"""
+    imgs = ALL_IMAGES['color']
+    h1 = imagehash(imgs[0])[imgs[0]]
+    h2 = imagehash(imgs[1])[imgs[1]]
+    dist = h1 - h2
     assert dist <= THRESHOLD_SIMILARITY

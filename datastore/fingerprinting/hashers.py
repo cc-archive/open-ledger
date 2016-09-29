@@ -24,7 +24,7 @@ def phash(imgfile):
     raise NotImplementedError("Not intending to include")
 
 def blockhash(imgfile):
-    # Algorithm from https://github.com/creativecommons/blockhash-python
+    """Use the hashing algorithm from https://github.com/creativecommons/blockhash-python"""
     # This fails on images that are cropped/resized
     from blockhash import process_images
     options = {
@@ -35,3 +35,19 @@ def blockhash(imgfile):
         'debug': False,
     }
     return process_images([imgfile], options=options)
+
+def imagehash(imgfile, method="phash"):
+    """Use the imagehashing algorithm from https://github.com/JohannesBuchner/imagehash/,
+    which includes multiple hashing mechanisms:
+      ahash:      Average hash
+      phash:      Perceptual hash
+      dhash:      Difference hash
+      whash-haar: Haar wavelet hash
+      whash-db4:  Daubechies wavelet hash
+
+    Subtracting two of these values will return a Hamming distance value between them.
+    """
+    import imagehash
+    im = Image.open(imgfile)
+    hashfunc = getattr(imagehash, method)
+    return {imgfile: hashfunc(im)}

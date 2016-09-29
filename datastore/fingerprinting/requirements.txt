@@ -1,3 +1,4 @@
 Pillow
 pytest
 git+git://github.com/creativecommons/blockhash-python.git#egg=blockhash-python
+imagehash
