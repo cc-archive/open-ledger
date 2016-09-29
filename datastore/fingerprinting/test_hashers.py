@@ -14,10 +14,15 @@ IMAGE_TESTS = ('cropped',  # One image is a cropped version of the other
                'providers',  # Same work, same dimensions, but sourced from
                              # two different providers (different binaries)
                'color',      # Same image, desaturated and not
+               'similar',    # Different images, but seen as "similar" by Google img query
+               'memed',      # Same image, but with meme-like text applied
                )
 
-THRESHOLD_SIMILARITY = 15  # We'd like all values we consider to be identical to be
+THRESHOLD_IDENTITY = 12  # We'd like all values we consider to be identical to be
                            # at or below this value
+
+THRESHOLD_SIMILARITY = 20 # We'd consider values below this (but above IDENTITY) to be likely derivative works
+
 
 for test in IMAGE_TESTS:
     pair = [os.path.join(IMAGE_DIR, f) for f in os.listdir(IMAGE_DIR) if f.startswith(test)]
@@ -29,10 +34,10 @@ def test_random():
         assert random(imgset[0]) != random(imgset[1])
 
 def test_different_threshold():
-    """Totally different identifiers should exceed our THRESHOLD_SIMILARITY"""
+    """Totally different identifiers should exceed our THRESHOLD_IDENTITY"""
     h1 = 'e60439a9-49d5-4580-a024-eecc43fd4dd2'
     h2 = '418fafd3-37d8-477e-9b3e-11b60b060dd6'
-    assert hamming_distance(h1, h2) > THRESHOLD_SIMILARITY
+    assert hamming_distance(h1, h2) > THRESHOLD_IDENTITY
 
 def test_same_threshold():
     """Totally identical identifiers should have a difference value of 0"""
@@ -66,7 +71,7 @@ def test_blockhash_pairs_cropped():
     h1 = blockhash(imgs[0])[imgs[0]]
     h2 = blockhash(imgs[1])[imgs[1]]
     dist = hamming_distance(h1, h2)
-    assert dist <= THRESHOLD_SIMILARITY
+    assert dist <= THRESHOLD_IDENTITY
 
 def test_blockhash_pairs_providers():
     """Processing providers pairs through the blockhash hasher should return "same" results"""
@@ -74,7 +79,7 @@ def test_blockhash_pairs_providers():
     h1 = blockhash(imgs[0])[imgs[0]]
     h2 = blockhash(imgs[1])[imgs[1]]
     dist = hamming_distance(h1, h2)
-    assert dist <= THRESHOLD_SIMILARITY
+    assert dist <= THRESHOLD_IDENTITY
 
 def test_blockhash_pairs_color():
     """Processing color pairs through the blockhash hasher should return "same" results"""
@@ -82,7 +87,7 @@ def test_blockhash_pairs_color():
     h1 = blockhash(imgs[0])[imgs[0]]
     h2 = blockhash(imgs[1])[imgs[1]]
     dist = hamming_distance(h1, h2)
-    assert dist <= THRESHOLD_SIMILARITY
+    assert dist <= THRESHOLD_IDENTITY
 
 def test_imagehash_same():
     """Processing the same image with the imagehash hasher twice should return the same hash"""
@@ -100,7 +105,7 @@ def test_imagehash_pairs_cropped():
     h1 = imagehash(imgs[0])[imgs[0]]
     h2 = imagehash(imgs[1])[imgs[1]]
     dist = h1 - h2
-    assert dist <= THRESHOLD_SIMILARITY
+    assert dist <= THRESHOLD_IDENTITY
 
 def test_imagehash_pairs_providers():
     """Processing providers pairs through the imagehash hasher should return "same" results"""
@@ -108,7 +113,7 @@ def test_imagehash_pairs_providers():
     h1 = imagehash(imgs[0])[imgs[0]]
     h2 = imagehash(imgs[1])[imgs[1]]
     dist = h1 - h2
-    assert dist <= THRESHOLD_SIMILARITY
+    assert dist <= THRESHOLD_IDENTITY
 
 def test_imagehash_pairs_color():
     """Processing color pairs through the imagehash hasher should return "same" results"""
@@ -116,4 +121,21 @@ def test_imagehash_pairs_color():
     h1 = imagehash(imgs[0])[imgs[0]]
     h2 = imagehash(imgs[1])[imgs[1]]
     dist = h1 - h2
-    assert dist <= THRESHOLD_SIMILARITY
+    assert dist <= THRESHOLD_IDENTITY
+
+def test_imagehash_pairs_similar():
+    """Processing two different images that were identified as "similiar" by Google image query
+    should fall _above_ THRESHOLD_IDENTITY"""
+    imgs = ALL_IMAGES['similar']
+    h1 = imagehash(imgs[0])[imgs[0]]
+    h2 = imagehash(imgs[1])[imgs[1]]
+    dist = h1 - h2
+    assert dist > THRESHOLD_IDENTITY   # Seems to return 28
+
+def test_imagehash_pairs_memed():
+    """The same image with overlaid text (like a meme) should be considered a candidate derivative work"""
+    imgs = ALL_IMAGES['memed']
+    h1 = imagehash(imgs[0])[imgs[0]]
+    h2 = imagehash(imgs[1])[imgs[1]]
+    dist = h1 - h2
+    assert dist > THRESHOLD_IDENTITY and dist < THRESHOLD_SIMILARITY
