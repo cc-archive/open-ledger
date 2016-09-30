@@ -1,24 +1,17 @@
 import unittest
 import responses
-import flickrapi
 import requests
 
-from openledger import app
 from openledger.handlers.handler_500px import photos as search_500
 from openledger.handlers.handler_rijks import photos as search_rijks
 from openledger.handlers.handler_flickr import photos as search_flickr
 from openledger.handlers.handler_wikimedia import photos as search_wikimedia
 
-from openledger.tests.utils import load_json_data
+from openledger.tests.utils import *
 
 class FlickrTestCase(unittest.TestCase):
     def setUp(self):
-        from openledger.handlers.handler_flickr import auth
-        app.config['TESTING'] = True
-        self.flickr = auth()
-        self.template = load_json_data('flickr-response.json')
-        responses.add(responses.POST, self.flickr.REST_URL, status=200, content_type='application/json',
-                      json=self.template)
+        activate_flickr_mocks()
 
     @responses.activate
     def test_flickr_search(self):
@@ -53,11 +46,7 @@ class FlickrTestCase(unittest.TestCase):
 
 class FiveHundredPixelsTestCase(unittest.TestCase):
     def setUp(self):
-        from openledger.handlers.handler_500px import ENDPOINT_PHOTOS
-        app.config['TESTING'] = True
-        self.template = load_json_data('500px-response.json')
-        responses.add(responses.GET, ENDPOINT_PHOTOS, status=200, content_type='application/json',
-                      json=self.template)
+        activate_500px_mocks()
 
     @responses.activate
     def test_500px_photos(self):
@@ -92,11 +81,7 @@ class FiveHundredPixelsTestCase(unittest.TestCase):
 
 class RijksTestCase(unittest.TestCase):
     def setUp(self):
-        from openledger.handlers.handler_rijks import ENDPOINT_PHOTOS
-        app.config['TESTING'] = True
-        self.template = load_json_data('rijks-response.json')
-        responses.add(responses.GET, ENDPOINT_PHOTOS, status=200, content_type='application/json',
-                      json=self.template)
+        activate_rijks_mocks()
 
     @responses.activate
     def test_rijks_search(self):
@@ -130,14 +115,7 @@ class RijksTestCase(unittest.TestCase):
 
 class WikimediaTestCase(unittest.TestCase):
     def setUp(self):
-        from openledger.handlers.handler_wikimedia import BASE_URL, WIKIDATA_URL
-        app.config['TESTING'] = True
-        self.entities_template = load_json_data('wikimedia-entities-response.json')
-        self.wikidata_template = load_json_data('wikimedia-data-response.json')
-        responses.add(responses.GET, BASE_URL, status=200, content_type='application/json',
-                      json=self.entities_template)
-        responses.add(responses.GET, WIKIDATA_URL, status=200, content_type='application/json',
-                      json=self.wikidata_template)
+        activate_wikimedia_mocks()
 
     @responses.activate
     def test_wikimedia_entity(self):
