@@ -12,29 +12,39 @@ log = logging.getLogger(__name__)
 BASE_URL = 'https://www.wikidata.org/w/api.php'
 WIKIDATA_URL = 'https://query.wikidata.org/sparql'
 
+# TODO: Cache these results since we're paginating ourselves
+MAX_LIMIT = 500  # The total number of results we'll ever ask for
+
 def auth():
     pass
 
 def photos(search=None, page=1, per_page=20, **kwargs):
+
     params = {
         'search': search,
         'language': 'en',
         'action': 'wbsearchentities',
         'format': 'json',
-        'limit': per_page,
+        'limit': 1,  # May want to change that if we want to expand the entity space
     }
     r = requests.get(BASE_URL, params).json()
     if r.get('search') and len(r.get('search')) > 0:
         # Take the first representation, as that's likely to be the best
         entity = r.get('search')[0]
         entity_id = entity.get('id')
-        image_query_for_entity = image_query.substitute(entity_id=entity_id, limit=per_page)
+        image_query_for_entity = image_query.substitute(entity_id=entity_id, limit=MAX_LIMIT)
         sparams = {
             'query': image_query_for_entity,
             'format': 'json',
         }
         sr = requests.get(WIKIDATA_URL, sparams)
-        results = sr.json()
+        # We have to do pagination ourselves, whee
+        offset = (int(page) - 1) * int(per_page)
+        results = {'results': sr.json()['results']['bindings']}
+        results['page'] = int(page)
+        results['total'] = len(results['results'])
+        results['pages'] = results['total']/ per_page
+        results['results'] =  results['results'][offset:offset + per_page]
         return results
 
 

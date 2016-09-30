@@ -4,7 +4,7 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/foundation/6.2.3/foundation-flex.min.css">
 <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
 
-<form method="GET" action="">
+<form method="GET" action="/">
   <div class="row" style="margin-top: 2em">
     <div class="column medium-6">
       {{ form.search.label }}
@@ -105,9 +105,12 @@
 
   <!-- Wikimedia -->
   {% if results.wikimedia %}
-  <h3>{{ results.wikimedia.results.bindings|length }} photo{{ results.wikimedia.results.bindings|length|pluralize }} from Wikimedia Commons</h3>
+  <h3>Page {{ results.wikimedia.page }} of {{ results.wikimedia.total }} photo{{ results.wikimedia.total|pluralize }} from Wikimedia Commons</h3>
+
+   {{ pagination.paginate(results.wikimedia.page, results.wikimedia.pages, search, 'wikimedia')}}
+
   <div class="row">
-    {% for result in results.wikimedia.results.bindings %}
+    {% for result in results.wikimedia.results %}
     <div class="shrink columns">
       <figure>
         <div class="figure-wrapper">
