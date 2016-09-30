@@ -18,20 +18,29 @@ search_funcs = {
 
 @app.route("/")
 def index(provider=None):
+    """Primary entry point for the search page"""
+    results = {}
     form = forms.SearchForm()
     search = request.args.get('search')
     page = request.args.get('page') or 1
     per_page = request.args.get('per_page') or PER_PAGE
     user_licenses = request.args.getlist('licenses') or ["ALL"]
+
+    # Prepopulate the user's search data in the form
+    form.search.process_data(search)
+    form.licenses.process_data(user_licenses)
+
+    search_data = {'search': search, 'licenses': user_licenses}
+
     providers = search_funcs.keys() if not provider else [provider]
-    results = {}
+
 
     if search:
         for p in providers:
             results[p] = search_funcs[p](search=search, licenses=user_licenses, page=page, per_page=per_page)
     return render_template('index.html', results=results, form=form,
                            user_licenses=user_licenses,
-                           search=search,
+                           search_data=search_data,
                            license_map=licenses.license_map_from_partners())
 
 @app.route("/provider/<provider>")
