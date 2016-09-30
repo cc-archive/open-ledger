@@ -14,7 +14,7 @@ BASE_URL = 'https://www.wikidata.org/w/api.php'
 WIKIDATA_URL = 'https://query.wikidata.org/sparql'
 
 # TODO: Cache these results since we're paginating ourselves
-MAX_LIMIT = 500  # The total number of results we'll ever ask for
+MAX_LIMIT = 100  # The total number of results we'll ever ask for
 
 def auth():
     pass

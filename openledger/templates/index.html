@@ -31,7 +31,7 @@
 <div class="row column results">
   <h2>Results for <i>{{ search_data.search }}</i> </h2>
   <!-- Flickr -->
-  {% if results.flickr.photos.total > 0 %}
+  {% if results.flickr and results.flickr.photos.total > 0 %}
     <h3>Page {{ results.flickr.photos.page }} of {{ results.flickr.photos.total }} photo{{ results.flickr.photos.total|pluralize }} from Flickr</h3>
 
     {{ pagination.paginate(results.flickr.photos.page, results.flickr.photos.pages, search_data, 'flickr')}}
@@ -57,7 +57,7 @@
   {% endif %}
 
   <!-- 500px -->
-  {% if results.fpx.total_items > 0 %}
+  {% if results.fpx and results.fpx.total_items > 0 %}
     <h3>Page {{ results.fpx.current_page }} of {{ results.fpx.total_items }} photo{{ results.fpx.total_items|pluralize }} from 500px</h3>
 
     {{ pagination.paginate(results.fpx.current_page, results.fpx.total_pages, search_data, 'fpx')}}
@@ -82,7 +82,7 @@
   {% endif %}
 
   <!-- rijksmuseum -->
-  {% if results.rijks.count > 0 %}
+  {% if results.rijks and results.rijks.count > 0 %}
   <h3>Page {{ results.rijks.page }} of {{ results.rijks.count }} photo{{ results.rijks.count|pluralize }} from Rijksmuseum</h3>
 
    {{ pagination.paginate(results.rijks.page, results.rijks.pages, search_data, 'rijks')}}
@@ -107,7 +107,7 @@
   {% endif %}
 
   <!-- Wikimedia -->
-  {% if results.wikimedia.total > 0 %}
+  {% if results.wikimedia and results.wikimedia.total > 0 %}
   <h3>Page {{ results.wikimedia.page }} of {{ results.wikimedia.total }} photo{{ results.wikimedia.total|pluralize }} from Wikimedia Commons</h3>
 
    {{ pagination.paginate(results.wikimedia.page, results.wikimedia.pages, search_data, 'wikimedia')}}
