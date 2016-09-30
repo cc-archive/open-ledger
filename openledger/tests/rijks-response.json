@@ -1,0 +1,621 @@
+{
+  "elapsedMilliseconds": 91,
+  "count": 5489,
+  "artObjects": [
+    {
+      "links": {
+        "self": "https://www.rijksmuseum.nl/api/en/collection/SK-C-251",
+        "web": "https://www.rijksmuseum.nl/en/collection/SK-C-251"
+      },
+      "id": "en-SK-C-251",
+      "objectNumber": "SK-C-251",
+      "title": "Woman Reading a Letter",
+      "hasImage": true,
+      "principalOrFirstMaker": "Johannes Vermeer",
+      "longTitle": "Woman Reading a Letter, Johannes Vermeer, c. 1663",
+      "showImage": true,
+      "permitDownload": true,
+      "webImage": {
+        "guid": "d55075aa-00cc-4565-b727-067b2f072cd9",
+        "offsetPercentageX": 50,
+        "offsetPercentageY": 28,
+        "width": 2502,
+        "height": 3000,
+        "url": "http://lh3.ggpht.com/_hNgP8xlzkSVD_XfBIy3j6BSWyGqdc0N921xFJbXG7jwFbQ7hi8IuTO6AIAsQf_RI3_dt4_EEncuuLY5pVO0vT50qpY=s0"
+      },
+      "headerImage": {
+        "guid": "a07137ac-d93d-442e-91d4-a01a20d9df02",
+        "offsetPercentageX": 50,
+        "offsetPercentageY": 50,
+        "width": 1920,
+        "height": 460,
+        "url": "http://lh5.ggpht.com/gA7msaOYZhWGH8DuhYG5d_tZ3Tx5MrVD8koMz4VhkrvsDlGvyrBUF2ggnzIi9Yvrw3w0ENQy7ZxkD_DJOFs_9ifnwq0=s0"
+      },
+      "productionPlaces": []
+    },
+    {
+      "links": {
+        "self": "https://www.rijksmuseum.nl/api/en/collection/SK-C-597",
+        "web": "https://www.rijksmuseum.nl/en/collection/SK-C-597"
+      },
+      "id": "en-SK-C-597",
+      "objectNumber": "SK-C-597",
+      "title": "Portrait of a Woman, Possibly Maria Trip",
+      "hasImage": true,
+      "principalOrFirstMaker": "Rembrandt Harmensz. van Rijn",
+      "longTitle": "Portrait of a Woman, Possibly Maria Trip, Rembrandt Harmensz. van Rijn, 1639",
+      "showImage": true,
+      "permitDownload": true,
+      "webImage": {
+        "guid": "9bddf96c-8d58-4d4d-a5e0-afd29b028717",
+        "offsetPercentageX": 50,
+        "offsetPercentageY": 35,
+        "width": 2031,
+        "height": 2676,
+        "url": "http://lh6.ggpht.com/EcRbIeCJDvhPrCvIapeonP-VAWdGUwJNBuIq5DqY9d9O-1DNtvrxOYQCFOlpLvuDcOqynNafPpcJXzI7KXDvV1Eqnw=s0"
+      },
+      "headerImage": {
+        "guid": "f0270e59-baca-4429-ba00-d6c37b9ad00f",
+        "offsetPercentageX": 50,
+        "offsetPercentageY": 50,
+        "width": 1920,
+        "height": 460,
+        "url": "http://lh6.ggpht.com/ASwaTgfcusaGA14kKqbSFnjH0koq8Gb-UwEq_B7Yntz3J_CUPRT0ax9TJUG4DHwOQlaSvS6zajyLENFK_AXa35r9DBtl=s0"
+      },
+      "productionPlaces": []
+    },
+    {
+      "links": {
+        "self": "https://www.rijksmuseum.nl/api/en/collection/NG-2005-24",
+        "web": "https://www.rijksmuseum.nl/en/collection/NG-2005-24"
+      },
+      "id": "en-NG-2005-24",
+      "objectNumber": "NG-2005-24",
+      "title": "Diorama of a slave dance",
+      "hasImage": true,
+      "principalOrFirstMaker": "Gerrit Schouten",
+      "longTitle": "Diorama of a slave dance, Gerrit Schouten, 1830",
+      "showImage": true,
+      "permitDownload": true,
+      "webImage": {
+        "guid": "73b31152-75fa-460f-a1eb-ff0917bf4fd6",
+        "offsetPercentageX": 50,
+        "offsetPercentageY": 100,
+        "width": 2500,
+        "height": 2084,
+        "url": "http://lh6.ggpht.com/7OHEXw0f2ysa_4r7k9Z0ejcr0AmsuTIm7VNZm9413kTTr_ReCXj_LfTBZVUDxV-ZE4qM0JVZVBdYj0zPhsWPmz1Hu4s=s0"
+      },
+      "headerImage": {
+        "guid": "c172e636-f59c-4d66-b25a-6e033966d6f7",
+        "offsetPercentageX": 50,
+        "offsetPercentageY": 50,
+        "width": 1920,
+        "height": 460,
+        "url": "http://lh6.ggpht.com/XOSSu-FiAF3SVw3iOllZ9BlzKDQf3bWbZ1wn42HSEJCi8ZL6JEnFbrL73sWG-WhU99BD6oWXifPfWMQ6uSPv-B38Acw=s0"
+      },
+      "productionPlaces": []
+    },
+    {
+      "links": {
+        "self": "https://www.rijksmuseum.nl/api/en/collection/SK-A-4981",
+        "web": "https://www.rijksmuseum.nl/en/collection/SK-A-4981"
+      },
+      "id": "en-SK-A-4981",
+      "objectNumber": "SK-A-4981",
+      "title": "Adolf and Catharina Croeser, Known as ‘The Burgomaster of Delft and his Daughter’",
+      "hasImage": true,
+      "principalOrFirstMaker": "Jan Havicksz. Steen",
+      "longTitle": "Adolf and Catharina Croeser, Known as ‘The Burgomaster of Delft and his Daughter’, Jan Havicksz. Steen, 1655",
+      "showImage": true,
+      "permitDownload": true,
+      "webImage": {
+        "guid": "d0562385-d784-47e8-b7b2-a6563ea1c0c1",
+        "offsetPercentageX": 50,
+        "offsetPercentageY": 50,
+        "width": 2096,
+        "height": 2500,
+        "url": "http://lh4.ggpht.com/ZNBzbFkUW6mAlhpu0sB8KMS5IVFYl8zy8cFWtBf57VH-CWNSnT5c2kYDkE6n1LPIvCrihqwSJDi4Yb5dJt72uqFpQxI=s0"
+      },
+      "headerImage": {
+        "guid": "7acf8ede-54a6-49af-9d28-651d804da698",
+        "offsetPercentageX": 50,
+        "offsetPercentageY": 50,
+        "width": 1923,
+        "height": 461,
+        "url": "http://lh3.ggpht.com/kEUheUtcaqszB2hWit7npY3OfwvU6P9ysXGZAxy0fr0LHWUVLNTLl_FNkcGViq5CUaVHPKx1VrUQBOcfE7DoLnwzhA=s0"
+      },
+      "productionPlaces": []
+    },
+    {
+      "links": {
+        "self": "https://www.rijksmuseum.nl/api/en/collection/SK-A-3580",
+        "web": "https://www.rijksmuseum.nl/en/collection/SK-A-3580"
+      },
+      "id": "en-SK-A-3580",
+      "objectNumber": "SK-A-3580",
+      "title": "The Singel Bridge at the Paleisstraat in Amsterdam",
+      "hasImage": true,
+      "principalOrFirstMaker": "George Hendrik Breitner",
+      "longTitle": "The Singel Bridge at the Paleisstraat in Amsterdam, George Hendrik Breitner, 1896",
+      "showImage": true,
+      "permitDownload": true,
+      "webImage": {
+        "guid": "db096ff7-ad07-44ee-b798-655bf036f3a9",
+        "offsetPercentageX": 50,
+        "offsetPercentageY": 50,
+        "width": 2880,
+        "height": 1897,
+        "url": "http://lh5.ggpht.com/0-ZgadVGiJ83JIG0DOQZ4-m6qifm1TwHZfWAIfFdJfysOm58_5e4rdmPdpzJe4TD4ch6HHyCKuVGenVsZvkIKJwoUwg=s0"
+      },
+      "headerImage": {
+        "guid": "fef39f74-9783-44c9-acae-69eac3a76b01",
+        "offsetPercentageX": 50,
+        "offsetPercentageY": 50,
+        "width": 1920,
+        "height": 460,
+        "url": "http://lh6.ggpht.com/G-wwG6IcF90YL27pZ0EZH6V0YFaqDBBdjdEdfekzyJxJwVX7Upjvu844uuGc5Losy8oJHppFRpnCBD0a9Dm0ojsmU04=s0"
+      },
+      "productionPlaces": []
+    },
+    {
+      "links": {
+        "self": "https://www.rijksmuseum.nl/api/en/collection/SK-A-5005",
+        "web": "https://www.rijksmuseum.nl/en/collection/SK-A-5005"
+      },
+      "id": "en-SK-A-5005",
+      "objectNumber": "SK-A-5005",
+      "title": "Girl in a Large Hat",
+      "hasImage": true,
+      "principalOrFirstMaker": "Caesar Boëtius van Everdingen",
+      "longTitle": "Girl in a Large Hat, Caesar Boëtius van Everdingen, c. 1645 - c. 1650",
+      "showImage": true,
+      "permitDownload": true,
+      "webImage": {
+        "guid": "d7371c74-102f-4836-84c6-5654f4526f68",
+        "offsetPercentageX": 50,
+        "offsetPercentageY": 26,
+        "width": 2655,
+        "height": 3000,
+        "url": "http://lh6.ggpht.com/VbhHPsrs78UnqqNYPCG9rXtyilQLQdOZGGZCPXOyXb6K7sKzGD7rFYBiOgrEqm29YM-vdBHrkM2DfqcGGq_IQpQdVO8=s0"
+      },
+      "headerImage": null,
+      "productionPlaces": []
+    },
+    {
+      "links": {
+        "self": "https://www.rijksmuseum.nl/api/en/collection/SK-A-372",
+        "web": "https://www.rijksmuseum.nl/en/collection/SK-A-372"
+      },
+      "id": "en-SK-A-372",
+      "objectNumber": "SK-A-372",
+      "title": "Mary Magdalene",
+      "hasImage": true,
+      "principalOrFirstMaker": "Jan van Scorel",
+      "longTitle": "Mary Magdalene, Jan van Scorel, c. 1530",
+      "showImage": true,
+      "permitDownload": true,
+      "webImage": {
+        "guid": "0935cdeb-3bae-4399-9945-3723372e6ad9",
+        "offsetPercentageX": 50,
+        "offsetPercentageY": 44,
+        "width": 2833,
+        "height": 2465,
+        "url": "http://lh4.ggpht.com/63ihNfp589xL3z8GTq4gGeY1dLk37LgcGAPyT1_meK5KT3QdKLI3jj4mvcAv7t9EUkbsOVDCnNyBt-5kLjDp8sPgrgg=s0"
+      },
+      "headerImage": {
+        "guid": "6a9a1b0d-f2c2-45b0-8df4-e908a6af5eee",
+        "offsetPercentageX": 50,
+        "offsetPercentageY": 50,
+        "width": 1920,
+        "height": 459,
+        "url": "http://lh6.ggpht.com/MQR4nQCGgXxPkMKTnAbMvPyfldC_jCFGJkq6ZnE5bU3Cf0C07L9DS0krm9yDxbuyjGc1DYRvgrQhMNnosEegx5n0hRA=s0"
+      },
+      "productionPlaces": []
+    },
+    {
+      "links": {
+        "self": "https://www.rijksmuseum.nl/api/en/collection/SK-A-404",
+        "web": "https://www.rijksmuseum.nl/en/collection/SK-A-404"
+      },
+      "id": "en-SK-A-404",
+      "objectNumber": "SK-A-404",
+      "title": "Gallant Conversation, Known as ‘The Paternal Admonition’",
+      "hasImage": true,
+      "principalOrFirstMaker": "Gerard ter Borch (II)",
+      "longTitle": "Gallant Conversation, Known as ‘The Paternal Admonition’, Gerard ter Borch (II), c. 1654",
+      "showImage": true,
+      "permitDownload": true,
+      "webImage": {
+        "guid": "551b08ab-5dd2-4bb5-b6b4-244620fa366d",
+        "offsetPercentageX": 50,
+        "offsetPercentageY": 68,
+        "width": 2593,
+        "height": 2514,
+        "url": "http://lh4.ggpht.com/Y67gZImh7YyQCvJCwHeuncnqZBbV3hospIwAGRRfMNnK3jVhO9yWPKLvttE2zsCIVEB5-Fn-JAzB5uRZDCf4aYzMnic=s0"
+      },
+      "headerImage": {
+        "guid": "48d5a82a-915f-4e94-af3d-78437355c255",
+        "offsetPercentageX": 50,
+        "offsetPercentageY": 50,
+        "width": 1920,
+        "height": 461,
+        "url": "http://lh6.ggpht.com/EO_ij0IkACEg3v3G6PL9JQ6nhjsXaQrfr935XlMwxFr5Pt8AicXcNpcSm93p2JIcaLXxvvQ6jZlkCrc1M18Z8q1T1t4=s0"
+      },
+      "productionPlaces": []
+    },
+    {
+      "links": {
+        "self": "https://www.rijksmuseum.nl/api/en/collection/SK-A-2344",
+        "web": "https://www.rijksmuseum.nl/en/collection/SK-A-2344"
+      },
+      "id": "en-SK-A-2344",
+      "objectNumber": "SK-A-2344",
+      "title": "The Milkmaid",
+      "hasImage": true,
+      "principalOrFirstMaker": "Johannes Vermeer",
+      "longTitle": "The Milkmaid, Johannes Vermeer, c. 1660",
+      "showImage": true,
+      "permitDownload": true,
+      "webImage": {
+        "guid": "6f254c96-de55-46fc-b8fa-32af7f11211b",
+        "offsetPercentageX": 50,
+        "offsetPercentageY": 27,
+        "width": 2261,
+        "height": 2548,
+        "url": "http://lh3.ggpht.com/XUw3NdeiA0MsT-mygp8NT1oPUd17GB3BK2nSRYvyTAY-N64KwsLOO5QU3muSDEk2AdMzonIVLgjge581mOobVqsQrA=s0"
+      },
+      "headerImage": {
+        "guid": "bef0795c-923a-463f-aab8-6a9cb24da44b",
+        "offsetPercentageX": 50,
+        "offsetPercentageY": 50,
+        "width": 1919,
+        "height": 459,
+        "url": "http://lh3.ggpht.com/Zvh28aRXZEAYayKg77H6b9eM_clRt5Vo2CK1AsSvN_NEU0oiXP-1ZdKu2dz_B2uqjYhK-0aC_bKSMNKb8vlGsS8ozA=s0"
+      },
+      "productionPlaces": []
+    },
+    {
+      "links": {
+        "self": "https://www.rijksmuseum.nl/api/en/collection/SK-A-128",
+        "web": "https://www.rijksmuseum.nl/en/collection/SK-A-128"
+      },
+      "id": "en-SK-A-128",
+      "objectNumber": "SK-A-128",
+      "title": "The Massacre of the Innocents",
+      "hasImage": true,
+      "principalOrFirstMaker": "Cornelis Cornelisz. van Haarlem",
+      "longTitle": "The Massacre of the Innocents, Cornelis Cornelisz. van Haarlem, 1590",
+      "showImage": true,
+      "permitDownload": true,
+      "webImage": {
+        "guid": "bac842ff-a272-4fb2-8e1e-171e260b8785",
+        "offsetPercentageX": 50,
+        "offsetPercentageY": 50,
+        "width": 2940,
+        "height": 1998,
+        "url": "http://lh5.ggpht.com/JH0svNh0Pkov_W97MDHw8v2-qKS8AdixVJ-CiPL_xBECNdEyTBkicMvZBsqgW6GQ0TB9moKnfGUYacWQS32rqeoEjA4=s0"
+      },
+      "headerImage": {
+        "guid": "20e8decb-f374-4dd6-ad72-a2cd7cba7e87",
+        "offsetPercentageX": 50,
+        "offsetPercentageY": 50,
+        "width": 1920,
+        "height": 460,
+        "url": "http://lh4.ggpht.com/Lo6NMdc692stDUugE-WamD4COtfL8D4AeTITvL0FpDX-CVk5q18bOOforfzHlwoWTgsauOC8xC82GCuElqmEW-sZ0DY=s0"
+      },
+      "productionPlaces": []
+    },
+    {
+      "links": {
+        "self": "https://www.rijksmuseum.nl/api/en/collection/SK-C-241",
+        "web": "https://www.rijksmuseum.nl/en/collection/SK-C-241"
+      },
+      "id": "en-SK-C-241",
+      "objectNumber": "SK-C-241",
+      "title": "Portrait of a woman",
+      "hasImage": true,
+      "principalOrFirstMaker": "Abraham van den Tempel",
+      "longTitle": "Portrait of a woman, Abraham van den Tempel, 1646",
+      "showImage": true,
+      "permitDownload": true,
+      "webImage": {
+        "guid": "59de63c8-9127-48cf-8176-617e179758ec",
+        "offsetPercentageX": 50,
+        "offsetPercentageY": 50,
+        "width": 2156,
+        "height": 2500,
+        "url": "http://lh6.ggpht.com/--CIRn0_g9LPoO8cR-fxx3HSvI61VwEo22N7MQuyh6OKvlWGNWIKYVP1qygl180-xSD3wl9cwtiYoHJT8-VxizwySg=s0"
+      },
+      "headerImage": {
+        "guid": "b76ab878-e036-4231-ad66-e45b586cf95e",
+        "offsetPercentageX": 50,
+        "offsetPercentageY": 50,
+        "width": 1920,
+        "height": 460,
+        "url": "http://lh6.ggpht.com/BoNqvdMxBiTk9Ge_ycKQj0wdwunnlmHuVr-mG5XcK94FspSLN4MGwl23Oc1TQT2IwSCvt6svlZckbmBozurRYAOfbQ=s0"
+      },
+      "productionPlaces": []
+    },
+    {
+      "links": {
+        "self": "https://www.rijksmuseum.nl/api/en/collection/SK-A-2041",
+        "web": "https://www.rijksmuseum.nl/en/collection/SK-A-2041"
+      },
+      "id": "en-SK-A-2041",
+      "objectNumber": "SK-A-2041",
+      "title": "A Turkish Woman",
+      "hasImage": true,
+      "principalOrFirstMaker": "Jean Baptiste Vanmour",
+      "longTitle": "A Turkish Woman, Jean Baptiste Vanmour, c. 1720 - 1737",
+      "showImage": true,
+      "permitDownload": true,
+      "webImage": {
+        "guid": "a52dae03-b052-48d9-99d5-f557d670df7d",
+        "offsetPercentageX": 50,
+        "offsetPercentageY": 20,
+        "width": 1858,
+        "height": 2500,
+        "url": "http://lh5.ggpht.com/8SXr-eayJbdM9u2bzGuRlvkOn9SyUkp4MYwa_m2yFuLifpvVzJ5C5Q2wqoNG637mTwOUqc1KLANEVHd1DuA-yF87LA=s0"
+      },
+      "headerImage": {
+        "guid": "af4d4531-9b4b-437b-af44-93a870310986",
+        "offsetPercentageX": 50,
+        "offsetPercentageY": 50,
+        "width": 1920,
+        "height": 460,
+        "url": "http://lh4.ggpht.com/o-B0PGSRMKMjcPEaAJ-jcluYMuvoLREghpZvYCcg2LheSDX__4odRs98wrWL-RE4R72SWam8UxsE5BFsgLrUbfaKc9qn=s0"
+      },
+      "productionPlaces": []
+    },
+    {
+      "links": {
+        "self": "https://www.rijksmuseum.nl/api/en/collection/SK-C-25",
+        "web": "https://www.rijksmuseum.nl/en/collection/SK-C-25"
+      },
+      "id": "en-SK-C-25",
+      "objectNumber": "SK-C-25",
+      "title": "Portrait of a Woman",
+      "hasImage": true,
+      "principalOrFirstMaker": "Herman Verelst",
+      "longTitle": "Portrait of a Woman, Herman Verelst, 1667",
+      "showImage": true,
+      "permitDownload": true,
+      "webImage": {
+        "guid": "df8b50ce-e606-4a2c-872b-1eff54b2de22",
+        "offsetPercentageX": 50,
+        "offsetPercentageY": 50,
+        "width": 2020,
+        "height": 2500,
+        "url": "http://lh4.ggpht.com/4-gwWThnEDqBW9k6HUHHxNX6NrYm3RFUEnziIZ2eNjfyeM9VhZRw4dOPTbYc9t82ISJx9t0x4AoI3pnWmT7iF37uDq0=s0"
+      },
+      "headerImage": {
+        "guid": "9a234215-e0b3-4246-8978-0b27b38c2a95",
+        "offsetPercentageX": 50,
+        "offsetPercentageY": 50,
+        "width": 1920,
+        "height": 460,
+        "url": "http://lh4.ggpht.com/nkrQdjNzQdQPP9y2vHzuHaoNTyo2lgCrJ8EwvhkYrsYhhb0gd39OauFtUOSoeuSP6jQ4tnQfNhNtFdZvKmycvFWBhwM=s0"
+      },
+      "productionPlaces": []
+    },
+    {
+      "links": {
+        "self": "https://www.rijksmuseum.nl/api/en/collection/SK-A-3044",
+        "web": "https://www.rijksmuseum.nl/en/collection/SK-A-3044"
+      },
+      "id": "en-SK-A-3044",
+      "objectNumber": "SK-A-3044",
+      "title": "Portrait of a Woman",
+      "hasImage": true,
+      "principalOrFirstMaker": "Marie Wandscheer",
+      "longTitle": "Portrait of a Woman, Marie Wandscheer, 1886",
+      "showImage": true,
+      "permitDownload": true,
+      "webImage": {
+        "guid": "ee7e8331-73a2-436f-927a-080a28570809",
+        "offsetPercentageX": 50,
+        "offsetPercentageY": 33,
+        "width": 1904,
+        "height": 2646,
+        "url": "http://lh5.ggpht.com/RI6TG3EUWHAxQQYAERS3sXq-YgvpwLS1ETp3YoSpF54VHQ3FK9LsnD8xuTHPs87illiehyeg4pICgoUpl8_oJyIat6zT=s0"
+      },
+      "headerImage": {
+        "guid": "56d310b2-f69a-429f-a264-739cf082c32d",
+        "offsetPercentageX": 50,
+        "offsetPercentageY": 50,
+        "width": 1920,
+        "height": 460,
+        "url": "http://lh4.ggpht.com/7teGqUYSm_t9gGXMBdd-gqnnYhmiLZ0Ausb_Jo7ZxfZfaz9C3Bp0KISMvOzMqT0I56kBsccSAopvLTNcVU6F8_lWZYA=s0"
+      },
+      "productionPlaces": []
+    },
+    {
+      "links": {
+        "self": "https://www.rijksmuseum.nl/api/en/collection/SK-A-4782",
+        "web": "https://www.rijksmuseum.nl/en/collection/SK-A-4782"
+      },
+      "id": "en-SK-A-4782",
+      "objectNumber": "SK-A-4782",
+      "title": "Portrait of a Woman",
+      "hasImage": true,
+      "principalOrFirstMaker": "Gijsbertus Johannus van den Berg",
+      "longTitle": "Portrait of a Woman, Gijsbertus Johannus van den Berg, 1798",
+      "showImage": true,
+      "permitDownload": true,
+      "webImage": {
+        "guid": "1b3233f4-9023-41a1-b4a3-cb2de9b9b282",
+        "offsetPercentageX": 50,
+        "offsetPercentageY": 50,
+        "width": 2495,
+        "height": 2526,
+        "url": "http://lh6.ggpht.com/I28clJx94kCO2ZvrTWsXw8cw_owkGvZuX_c-RtgnBEai8vztUDgk6l9j-75ZTxJ2OvcktBgcSWhV-CtfEjpnZNHQ3gMx=s0"
+      },
+      "headerImage": {
+        "guid": "b243110f-d3f6-428a-9d89-fa6724d2f7c9",
+        "offsetPercentageX": 50,
+        "offsetPercentageY": 50,
+        "width": 1920,
+        "height": 460,
+        "url": "http://lh3.ggpht.com/pxaXAWE4cgkePgCQp09ub3cHrTwK3DNKdK3vFTmn1Zg8i-tV5O-sNeGarr-g9k2NdSHxxuI2bgxMs9MfiW0OzGYZ9Ws=s0"
+      },
+      "productionPlaces": []
+    },
+    {
+      "links": {
+        "self": "https://www.rijksmuseum.nl/api/en/collection/SK-C-140",
+        "web": "https://www.rijksmuseum.nl/en/collection/SK-C-140"
+      },
+      "id": "en-SK-C-140",
+      "objectNumber": "SK-C-140",
+      "title": "Woman at the Virginal",
+      "hasImage": true,
+      "principalOrFirstMaker": "Jan Miense Molenaer",
+      "longTitle": "Woman at the Virginal, Jan Miense Molenaer, 1630 - 1640",
+      "showImage": true,
+      "permitDownload": true,
+      "webImage": {
+        "guid": "b90b5132-c8a2-4e20-9c48-76d239a1eb79",
+        "offsetPercentageX": 50,
+        "offsetPercentageY": 50,
+        "width": 1910,
+        "height": 2500,
+        "url": "http://lh3.ggpht.com/ts66hju2QxvtJvXLabJWI_t4ZAgLqoPnEOXPmQwh4NeVv6yg86phDmltn4J_mLqqqitA1lsL1VZH79YAHXmTrJJ4Sw=s0"
+      },
+      "headerImage": {
+        "guid": "78492cdf-7c90-4a0c-a822-d065ab13637b",
+        "offsetPercentageX": 50,
+        "offsetPercentageY": 50,
+        "width": 1920,
+        "height": 460,
+        "url": "http://lh3.ggpht.com/qXEZh_rGazrx2uX5V5FlOIZU0WqRxaAdDmJ4u7q3y6hvjcT4kSasTrifwvYgBaewLvE86dQD7ShNZlDnePVplEu7sGw=s0"
+      },
+      "productionPlaces": []
+    },
+    {
+      "links": {
+        "self": "https://www.rijksmuseum.nl/api/en/collection/SK-A-1442",
+        "web": "https://www.rijksmuseum.nl/en/collection/SK-A-1442"
+      },
+      "id": "en-SK-A-1442",
+      "objectNumber": "SK-A-1442",
+      "title": "Portrait of a Woman",
+      "hasImage": true,
+      "principalOrFirstMaker": "Balthasar Denner",
+      "longTitle": "Portrait of a Woman, Balthasar Denner, 1731",
+      "showImage": true,
+      "permitDownload": true,
+      "webImage": {
+        "guid": "378b412b-26af-4f00-9c15-698d0b8e2e2c",
+        "offsetPercentageX": 50,
+        "offsetPercentageY": 50,
+        "width": 2048,
+        "height": 2500,
+        "url": "http://lh4.ggpht.com/GBD4A3XJ1Tx9uXqOzf7cP6TARuWU6ise7sKyQVYC3aaQXLZsxDWj4nawsFre4QLgjr-f0FR9XJBuhHJt6-oX81upay5z=s0"
+      },
+      "headerImage": {
+        "guid": "fe5cc1bb-5712-4cde-8fbd-fa155a556097",
+        "offsetPercentageX": 50,
+        "offsetPercentageY": 50,
+        "width": 1920,
+        "height": 460,
+        "url": "http://lh5.ggpht.com/3degiYwdN8EXcSgMozgw0Sg1gh9oAkpl4Y5qRqS4ExP1kWklYnxTsQMdTKjbRteS-J17gxnetNb7V-XfzOZmUXDgRio=s0"
+      },
+      "productionPlaces": []
+    },
+    {
+      "links": {
+        "self": "https://www.rijksmuseum.nl/api/en/collection/SK-A-3993",
+        "web": "https://www.rijksmuseum.nl/en/collection/SK-A-3993"
+      },
+      "id": "en-SK-A-3993",
+      "objectNumber": "SK-A-3993",
+      "title": "Portrait of a Woman",
+      "hasImage": true,
+      "principalOrFirstMaker": "Giovanni Bellini",
+      "longTitle": "Portrait of a Woman, Giovanni Bellini, 1450 - 1470",
+      "showImage": true,
+      "permitDownload": true,
+      "webImage": {
+        "guid": "fc7d6749-37ef-4c8f-bf0d-e783a9daa02c",
+        "offsetPercentageX": 50,
+        "offsetPercentageY": 50,
+        "width": 1899,
+        "height": 2436,
+        "url": "http://lh4.ggpht.com/S9ovv7lLWMkzn4P4RAmeaFxHsBoQ7y2q8eeejheYNwz_MmJpPa9gsZ4Nv87WISAO_0H2fARmkgF3-fofassZqc7N89ej=s0"
+      },
+      "headerImage": {
+        "guid": "90f9a818-1309-4e9a-bc25-c679da3556ae",
+        "offsetPercentageX": 50,
+        "offsetPercentageY": 50,
+        "width": 1919,
+        "height": 460,
+        "url": "http://lh5.ggpht.com/aeOeVl9pJFYGWxvrWhDUujDHvQLtzp7lt47AAkpR8VD2nGefTI4-i328r_9CYo4JAezvYs1S3nJenYz6L3XUQeACFx4=s0"
+      },
+      "productionPlaces": []
+    },
+    {
+      "links": {
+        "self": "https://www.rijksmuseum.nl/api/en/collection/SK-A-969",
+        "web": "https://www.rijksmuseum.nl/en/collection/SK-A-969"
+      },
+      "id": "en-SK-A-969",
+      "objectNumber": "SK-A-969",
+      "title": "Portrait of a Woman",
+      "hasImage": true,
+      "principalOrFirstMaker": "anonymous",
+      "longTitle": "Portrait of a Woman, anonymous, 1603",
+      "showImage": true,
+      "permitDownload": true,
+      "webImage": {
+        "guid": "0eb55089-b587-4c27-a548-adfb2e092f82",
+        "offsetPercentageX": 50,
+        "offsetPercentageY": 50,
+        "width": 2031,
+        "height": 2532,
+        "url": "http://lh6.ggpht.com/K1nbU4t2DmDVHLUcJQRe8b0feKZQvMKWmyHpEY1PNM5F9AfBbCP0kOCY5d8LlfdroXNN09DBQCFng5byNeWPJrB2vJ2f=s0"
+      },
+      "headerImage": {
+        "guid": "672e7462-9b19-41f5-8170-558b85f416c2",
+        "offsetPercentageX": 50,
+        "offsetPercentageY": 50,
+        "width": 1920,
+        "height": 460,
+        "url": "http://lh4.ggpht.com/M1BOXRkEzZ7qgZpqLbf_hlizu7gVP3ARWTeDTVCs7HH-4Kp-thqX44LUFQw7raYQV5H9WUTPPVZm7B6Xg3i2iygSzp8=s0"
+      },
+      "productionPlaces": [
+        "Germany"
+      ]
+    },
+    {
+      "links": {
+        "self": "https://www.rijksmuseum.nl/api/en/collection/SK-A-1480",
+        "web": "https://www.rijksmuseum.nl/en/collection/SK-A-1480"
+      },
+      "id": "en-SK-A-1480",
+      "objectNumber": "SK-A-1480",
+      "title": "Portrait of a Woman",
+      "hasImage": true,
+      "principalOrFirstMaker": "Gerard van Honthorst",
+      "longTitle": "Portrait of a Woman, Gerard van Honthorst, 1655",
+      "showImage": true,
+      "permitDownload": true,
+      "webImage": {
+        "guid": "76a3c3c0-a176-4f90-990e-c11e139e81eb",
+        "offsetPercentageX": 50,
+        "offsetPercentageY": 50,
+        "width": 2012,
+        "height": 2528,
+        "url": "http://lh6.ggpht.com/v0xN2YYmMWcmqmBrLoGbePXKZl2zOteSSW80mgeHVCrIlYEiaQBevCe1QDw-aAJsIel1AhZHKbZHte3ZDNxZMaxJ_mb4=s0"
+      },
+      "headerImage": {
+        "guid": "efe13220-3034-4135-9d54-0fee81c39027",
+        "offsetPercentageX": 50,
+        "offsetPercentageY": 50,
+        "width": 1920,
+        "height": 460,
+        "url": "http://lh3.ggpht.com/Ee6Q4ae4imbZX6kQJGbE2JcYrfDJsBQcUv9kWjIhq-rcTywug-OR0zgLV_Ojm2qmdCphKJLhj3K12sVgwZkRjaHGPo8=s0"
+      },
+      "productionPlaces": []
+    }
+  ]
+}

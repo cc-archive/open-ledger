@@ -26,5 +26,5 @@ def photos(search=None, page=1, per_page=20, **kwargs):
 
     # Rijks doesn't give us a nice set of pages, so do that ourselves
     results['page'] = int(page)
-    results['pages'] = int(results['count']) / per_page
+    results['pages'] = int(int(results['count']) / per_page)
     return results
