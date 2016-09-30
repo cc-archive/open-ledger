@@ -31,6 +31,8 @@ def photos(search=None, licenses=["ALL"], page=1, per_page=20, **kwargs):
     params = {
         'license_type': license_match(licenses, LICENSES),
         'term': search,
+        'page': page,
+        'rpp': per_page,
         'image_size': IMAGE_SIZE_THUMBNAIL,
     }
     r = requests.get(ENDPOINT_PHOTOS, params=params, auth=auth())
