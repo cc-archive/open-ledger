@@ -42,13 +42,13 @@ class FlickrTestCase(unittest.TestCase):
     def test_flickr_total_pages(self):
         """The Flickr handler should return the total number of pages of the result set"""
         resp = search_flickr(search="test")
-        assert '739' == resp['photos']['pages']  # For some reason Flickr gives this as a string, sigh
+        assert 739 == resp['photos']['pages']  # For some reason Flickr gives this as a string, sigh
 
     @responses.activate
     def test_flickr_total_results(self):
         """The Flickr handler should return the total number of results"""
         resp = search_flickr(search="test")
-        assert '14771' == resp['photos']['total']  # For some reason Flickr gives this as a string, sigh
+        assert 14771 == resp['photos']['total']  # For some reason Flickr gives this as a string, sigh
 
 
 class FiveHundredPixelsTestCase(unittest.TestCase):
@@ -176,5 +176,3 @@ class WikimediaTestCase(unittest.TestCase):
         from openledger.handlers.handler_wikimedia import prepare_sparql_query
         q = prepareQuery(prepare_sparql_query("W30", 100))
         assert q  # This should parse successfully
-
-        

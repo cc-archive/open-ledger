@@ -41,4 +41,7 @@ def photos(search=None, licenses=["ALL"], page=1, per_page=20, **kwargs):
                          sort='relevance',
                          page=page,
                          per_page=per_page)
+    photos['photos']['total'] = int(photos['photos']['total'])  # seriously why is this a string
+    photos['photos']['pages'] = int(photos['photos']['pages'])  # seriously why is this a string
+
     return photos
