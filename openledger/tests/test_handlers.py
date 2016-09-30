@@ -40,7 +40,7 @@ class HandlerTestCase(unittest.TestCase):
         assert '739' == resp['photos']['pages']  # For some reason Flickr gives this as a string, sigh
 
     @responses.activate
-    def test_flickr_total_pages(self):
+    def test_flickr_total_results(self):
         """The Flickr handler should return the total number of results"""
         resp = photos(search="test")
         assert '14771' == resp['photos']['total']  # For some reason Flickr gives this as a string, sigh
