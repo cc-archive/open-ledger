@@ -33,7 +33,6 @@ def auth():
 
 def photos(search=None, licenses=["ALL"], page=1, per_page=20, **kwargs):
     flickr = auth()
-    print(page)
     photos = flickr.photos.search(safe_search=1,  # safe-search on
                          content_type=1,  # Photos only, no screenshots
                          license=license_match(licenses, LICENSES),
