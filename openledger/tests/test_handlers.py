@@ -99,7 +99,7 @@ class RijksTestCase(unittest.TestCase):
                       json=self.template)
 
     @responses.activate
-    def test_rijks_search_500(self):
+    def test_rijks_search(self):
         """The rijks handler should return a rijks API object when authenticating"""
         resp = search_rijks(search="test")
         assert resp
@@ -127,3 +127,54 @@ class RijksTestCase(unittest.TestCase):
         """The rijks handler should return the total number of results"""
         resp = search_rijks(search="test")
         assert 5489 == resp['count']
+
+class WikimediaTestCase(unittest.TestCase):
+    def setUp(self):
+        from openledger.handlers.handler_wikimedia import BASE_URL, WIKIDATA_URL
+        app.config['TESTING'] = True
+        self.entities_template = load_json_data('wikimedia-entities-response.json')
+        self.wikidata_template = load_json_data('wikimedia-data-response.json')
+        responses.add(responses.GET, BASE_URL, status=200, content_type='application/json',
+                      json=self.entities_template)
+        responses.add(responses.GET, WIKIDATA_URL, status=200, content_type='application/json',
+                      json=self.wikidata_template)
+
+    @responses.activate
+    def test_wikimedia_entity(self):
+        """The wikimedia handler should return an entity response to a text query"""
+        from openledger.handlers.handler_wikimedia import entity_search
+        resp = entity_search(search="test")
+        assert 1 == len(resp.get('search'))
+
+    @responses.activate
+    def test_wikimedia_response_length(self):
+        """The wikimedia handler should return the expected number of responses"""
+        resp = search_wikimedia(search="test")
+        assert 9 == len(resp['results'])
+
+    @responses.activate
+    def test_wikimedia_page(self):
+        """The wikimedia handler should return the current page of the result set"""
+        resp = search_wikimedia(search="test")
+        assert 1 == resp['page']
+
+    @responses.activate
+    def test_wikimedia_total_pages(self):
+        """The wikimedia handler should return the total number of pages of the result set"""
+        resp = search_wikimedia(search="test")
+        assert 1 == resp['pages']
+
+    @responses.activate
+    def test_wikimedia_total_results(self):
+        """The wikimedia handler should return the total number of results"""
+        resp = search_wikimedia(search="test")
+        assert 9 == resp['total']
+
+    def test_wikimedia_sparql(self):
+        """The SPARQL construction method should return a valid SPARQL statement"""
+        from rdflib.plugins.sparql import prepareQuery
+        from openledger.handlers.handler_wikimedia import prepare_sparql_query
+        q = prepareQuery(prepare_sparql_query("W30", 100))
+        assert q  # This should parse successfully
+
+        

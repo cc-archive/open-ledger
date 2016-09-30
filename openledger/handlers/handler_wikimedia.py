@@ -1,6 +1,7 @@
 # encoding: utf-8
-import os
+import math
 import logging
+import os
 from pprint import pprint
 import requests
 from string import Template
@@ -18,8 +19,8 @@ MAX_LIMIT = 500  # The total number of results we'll ever ask for
 def auth():
     pass
 
-def photos(search=None, page=1, per_page=20, **kwargs):
-
+def entity_search(search):
+    """Identify a particular Wikidata entity for a given search query"""
     params = {
         'search': search,
         'language': 'en',
@@ -27,12 +28,21 @@ def photos(search=None, page=1, per_page=20, **kwargs):
         'format': 'json',
         'limit': 1,  # May want to change that if we want to expand the entity space
     }
-    r = requests.get(BASE_URL, params).json()
+    r = requests.get(BASE_URL, params)
+    return r.json()
+
+def prepare_sparql_query(entity_id, limit):
+    return image_query.substitute(entity_id=entity_id, limit=MAX_LIMIT)
+
+def photos(search=None, page=1, per_page=20, **kwargs):
+    r = entity_search(search)
+
     if r.get('search') and len(r.get('search')) > 0:
         # Take the first representation, as that's likely to be the best
         entity = r.get('search')[0]
         entity_id = entity.get('id')
-        image_query_for_entity = image_query.substitute(entity_id=entity_id, limit=MAX_LIMIT)
+        image_query_for_entity = prepare_sparql_query(entity_id=entity_id, limit=MAX_LIMIT)
+
         sparams = {
             'query': image_query_for_entity,
             'format': 'json',
@@ -43,8 +53,8 @@ def photos(search=None, page=1, per_page=20, **kwargs):
         results = {'results': sr.json()['results']['bindings']}
         results['page'] = int(page)
         results['total'] = len(results['results'])
-        results['pages'] = results['total']/ per_page
-        results['results'] =  results['results'][offset:offset + per_page]
+        results['pages'] = math.ceil(results['total']/ per_page)
+        results['results'] = results['results'][offset:offset + per_page]
         return results
 
 
@@ -53,6 +63,15 @@ def photos(search=None, page=1, per_page=20, **kwargs):
 # Properties used: instance of (P31), image (P18)]
 # Depicts: P180
 image_query = Template("""
+PREFIX wd: <http://www.wikidata.org/entity/>
+PREFIX wdt: <http://www.wikidata.org/prop/direct/>
+PREFIX wikibase: <http://wikiba.se/ontology#>
+PREFIX p: <http://www.wikidata.org/prop/>
+PREFIX ps: <http://www.wikidata.org/prop/statement/>
+PREFIX pq: <http://www.wikidata.org/prop/qualifier/>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX bd: <http://www.bigdata.com/rdf#>
+
 SELECT ?item ?itemLabel ?pic
 WHERE
 {

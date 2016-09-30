@@ -8,3 +8,4 @@ WTForms
 Flask-WTF
 flickrapi
 responses
+rdflib
