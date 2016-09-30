@@ -48,7 +48,9 @@
           </div>
           <figcaption>
             {{ result.ownername }}
-            <img src="{{ url_for('static', filename='images/' + license_map.flickr[result.license].lower() + '.png')}}" alt="{{ license_map.flickr[result.license] }}" title="{{ license_map.flickr[result.license] }}"/ />
+            {% set license = result.license|int %}
+            <img src="{{ url_for('static', filename='images/' + license_map.flickr[license].lower() + '.png')}}" alt="{{ license_map.flickr[license] }}" title="{{ license_map.flickr[license] }}"/ />
+
           </figcaption>
         </figure>
       </div>

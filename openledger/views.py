@@ -34,7 +34,6 @@ def index(provider=None):
 
     providers = search_funcs.keys() if not provider else [provider]
 
-
     if search:
         for p in providers:
             results[p] = search_funcs[p](search=search, licenses=user_licenses, page=page, per_page=per_page)

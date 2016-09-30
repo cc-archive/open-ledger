@@ -12,16 +12,15 @@ from openledger.licenses import license_match
 
 log = logging.getLogger(__name__)
 
-# Flickr will return these values as strings, so keep them as strings
 LICENSES = {
-    "BY": '4',
-    "BY-NC": '2',
-    "BY-ND": '6',
-    "BY-SA": '5',
-    "BY-NC-ND": '3',
-    "BY-NC-SA": '1',
-    "PDM": '7',
-    "CC0": '9',
+    "BY": 4,
+    "BY-NC": 2,
+    "BY-ND": 6,
+    "BY-SA": 5,
+    "BY-NC-ND": 3,
+    "BY-NC-SA": 1,
+    "PDM": 7,
+    "CC0": 9,
 }
 
 LICENSE_LOOKUP = {v: k for k, v in LICENSES.items()}
