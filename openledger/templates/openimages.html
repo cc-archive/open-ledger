@@ -1,0 +1,29 @@
+{% import "includes/pagination.html" as pagination %}
+{% extends "base.html" %}
+
+{% block body %}
+
+{% if results %}
+<div class="row column results">
+
+    <div class="row">
+      {% for result in results %}
+      <div class="shrink columns">
+        <figure>
+          <div class="figure-wrapper">
+            <a href="{{ result.original_landing_url }}">
+              <img src="{{ result.image_url }}" class="thumbnail" width="200" />
+            </a>
+          </div>
+          <figcaption>
+            {{ result.title }}
+            <a href="{{ result.author_url }}">{{ result.author }}</a>
+            <img src="{{ url_for('static', filename='images/by.png')}}" alt="CC-BY" title="CC-BY"/ />
+          </figcaption>
+        </figure>
+      </div>
+      {% endfor %}
+    </div>
+  {% endif %}
+
+{% endblock %}

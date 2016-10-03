@@ -1,9 +1,7 @@
 {% import "includes/pagination.html" as pagination %}
-<!doctype html>
-<title>Open Ledger prototype</title>
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/foundation/6.2.3/foundation-flex.min.css">
-<link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+{% extends "base.html" %}
 
+{% block body %}
  <form method="GET" action="/">
   <div class="row" style="margin-top: 2em">
     <div class="column medium-6">
@@ -135,3 +133,5 @@
 </div>
 
 {% endif %}
+
+{% endblock body %}

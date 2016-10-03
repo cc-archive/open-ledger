@@ -9,3 +9,7 @@ Flask-WTF
 flickrapi
 responses
 rdflib
+flask-sqlalchemy
+flask-migrate
+psycopg2
+sqlalchemy

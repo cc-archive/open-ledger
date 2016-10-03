@@ -6,6 +6,7 @@ from openledger.handlers.handler_500px import photos as search_500
 from openledger.handlers.handler_rijks import photos as search_rijks
 from openledger.handlers.handler_flickr import photos as search_flickr
 from openledger.handlers.handler_wikimedia import photos as search_wikimedia
+from openledger.models import db, Image
 
 PER_PAGE = 20
 
@@ -45,6 +46,16 @@ def index(provider=None):
 @app.route("/provider/<provider>")
 def by_provider(provider):
     return index(provider=provider)
+
+@app.route("/source/openimages")
+def openimages():
+    """Images sourced from Google's OpenImage project"""
+    search = request.args.get('search')
+    page = request.args.get('page') or 1
+    per_page = request.args.get('per_page') or PER_PAGE
+    results = Image.query.limit(20).all()
+    return render_template('openimages.html', results=results)
+
 
 @app.template_filter('pluralize')
 def pluralize(number, singular='', plural='s'):
