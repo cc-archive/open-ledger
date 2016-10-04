@@ -1,0 +1,18 @@
+<form method="GET" action="{{ endpoint }}">
+ <div class="row" style="margin-top: 2em">
+   <div class="column medium-6">
+     {{ form.search.label }}
+     {{ form.search }}
+     <p>Searches to try: <a href="/?search=paris">paris</a> | <a href="/?search=sunset">sunset</a> | <a href="?search=open">open</a> | <a href="?search=sheep&licenses=CC0">sheep, CC0-only</a></p>
+   </div>
+   <div class="column medium-6">
+     <fieldset>
+       <legend>
+         I want something I can...
+       </legend>
+     {{ form.licenses }}
+     <input type="submit" class="button" value="GO" />
+     </fieldset>
+   </div>
+ </div>
+</form>

@@ -26,3 +26,8 @@ class TestViews(unittest.TestCase):
         with self.app as c:
             rv = self.app.get('/?search=' + query)
             assert request.args['search'] == query
+
+    def test_openimages(self):
+        """The openimages endpoint should load without errors"""
+        rv = self.app.get('/source/openimages')
+        assert rv

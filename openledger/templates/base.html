@@ -3,4 +3,14 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/foundation/6.2.3/foundation-flex.min.css">
 <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
 
+<nav class="top-bar">
+    <div class="top-bar-left">
+      <ul class="dropdown menu" data-dropdown-menu>
+        <li class="menu-text"><a href="{{ url_for('index')}}">Open Ledger Search Prototype</a></li>
+        <li>
+          <a href="{{ url_for('index')}}">Home</a></a>
+        </li>
+        <li><a href="{{ url_for('openimages')}}">Open Images source</a></li>
+      </ul>
+</nav>
 {% block body %}{% endblock %}

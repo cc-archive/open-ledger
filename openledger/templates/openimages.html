@@ -3,6 +3,11 @@
 
 {% block body %}
 
+{% with %}
+  {% set endpoint = url_for('openimages') %}
+  {% include "includes/search-form.html" %}
+{% endwith %}
+
 {% if results %}
 <div class="row column results">
 
