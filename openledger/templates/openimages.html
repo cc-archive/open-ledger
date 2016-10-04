@@ -3,6 +3,14 @@
 
 {% block body %}
 
+<div class="row column" style="margin-top: 1rem">
+  <h3>Open Images dataset</h3>
+  <p>
+    Images displayed here are sourced from the 9 million <a href="https://github.com/openimages/dataset">Open Images dataset</a>.
+      Metadata is provided by Google Inc. under an <a href="https://creativecommons.org/licenses/by/4.0/">Attributions 4.0</a> license.
+  </p>
+</div>
+
 {% with %}
   {% set endpoint = url_for('openimages') %}
   {% include "includes/search-form.html" %}

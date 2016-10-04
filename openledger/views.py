@@ -70,6 +70,7 @@ def init_search(provider=None):
                    'licenses': user_licenses}
 
     return (form, search_data)
+
 @app.template_filter('pluralize')
 def pluralize(number, singular='', plural='s'):
     try:
