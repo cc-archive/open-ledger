@@ -1,6 +1,8 @@
 import sys
 import csv
 
+from sqlalchemy.exc import IntegrityError
+
 from openledger.models import db, Image
 
 filename = sys.argv[1]
@@ -20,5 +22,8 @@ with open(filename) as csvfile:
         image.author = row['Author']
         image.title = row['Title']
         db.session.add(image)
-
-    db.session.commit()
+        try:
+            db.session.commit()
+            print("Adding image ", row['ImageID'])
+        except IntegrityError:
+            db.session.rollback()
