@@ -1,12 +1,12 @@
 from flask import Flask, render_template, request
+from sqlalchemy import and_, or_, not_
 
 from openledger import app, forms, licenses
-
 from openledger.handlers.handler_500px import photos as search_500
 from openledger.handlers.handler_rijks import photos as search_rijks
 from openledger.handlers.handler_flickr import photos as search_flickr
 from openledger.handlers.handler_wikimedia import photos as search_wikimedia
-from openledger.models import db, Image
+from openledger.models import db, Image, Tag
 
 PER_PAGE = 20
 
@@ -46,7 +46,13 @@ def openimages():
     form, search_data = init_search()
 
     if search_data['search']:
-        results = Image.query.filter(Image.title.contains(search_data['search'])).limit(20).all()
+        s = search_data['search']
+        results = Image.query.join('tags').filter(
+            or_(
+                Image.title.contains(s),
+                Tag.tag.contains(s),
+                )
+            ).limit(20)
     return render_template('openimages.html',
                            results=results,
                            form=form,
@@ -56,7 +62,7 @@ def init_search(provider=None):
     """Set up common search initialization; returns a tuple"""
     results = {}
     form = forms.SearchForm()
-    search = request.args.get('search')
+    search = request.args.get('search').lower().strip()
     user_licenses = request.args.getlist('licenses') or ["ALL"]
 
     # Prepopulate the user's search data in the form
