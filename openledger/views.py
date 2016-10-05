@@ -56,7 +56,9 @@ def openimages():
                     ) for s in terms
                 ]
               )
-            ).limit(20)
+            ).paginate(page=search_data['page'],
+                       per_page=search_data['per_page'],
+                       error_out=False)
     return render_template('openimages.html',
                            results=results,
                            form=form,
@@ -80,6 +82,9 @@ def init_search(provider=None):
                    'per_page': request.args.get('per_page') or PER_PAGE,
                    'providers': search_funcs.keys() if not provider else [provider],
                    'licenses': user_licenses}
+
+    search_data['page'] = int(search_data['page'])
+    search_data['per_page'] = int(search_data['per_page'])
 
     return (form, search_data)
 

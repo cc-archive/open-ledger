@@ -19,8 +19,31 @@
 {% if results %}
 <div class="row column results">
 
+  <h5>Page {{ results.page }} of {{ results.total }} photo{{ results.total|pluralize }} from Open Images</h5>
+  <div class="row column text-center">
+    <ul class="pagination" role="navigation" aria-label="Pagination">
+
+      <li class="pagination-previous {{ "disabled" if results.page == 1 }}">
+        {% if results.page > 1 %}
+          <a aria-label="Previous page" href="{{ url_for('openimages', page=search_data.page-1, per_page=search_data.per_page, search=search_data.search) }}">Previous</a>
+        {% else %}
+          Previous
+        {% endif %}
+      </li>
+
+      <li class="pagination-next {{ "disabled" if results.page >= results.pages }}">
+        {% if results.page < results.pages %}
+        <a aria-label="Next page" href="{{ url_for('openimages', page=search_data.page+1, per_page=search_data.per_page, search=search_data.search) }}">Next</a>
+        {% else %}
+          Next
+        {% endif %}
+      </li>
+    </ul>
+  </div>
+
+
     <div class="row">
-      {% for result in results %}
+      {% for result in results.items %}
       <div class="shrink columns">
         <figure>
           <div class="figure-wrapper">
