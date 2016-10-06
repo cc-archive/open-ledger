@@ -36,7 +36,7 @@ def photos(search=None, licenses=["ALL"], page=1, per_page=20, **kwargs):
                          content_type=1,  # Photos only, no screenshots
                          license=license_match(licenses, LICENSES),
                          text=search,
-                         extras='url_l,url_m, owner_name,license',
+                         extras='url_l,url_m,url_s,owner_name,license',
                          sort='relevance',
                          page=page,
                          per_page=per_page)

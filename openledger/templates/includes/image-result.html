@@ -1,0 +1,17 @@
+{% import "includes/license-logo.html" as license_logo %}
+
+{% macro show(detail_url, thumbnail, creator, title, license) -%}
+<div class="shrink columns">
+  <figure>
+    <div class="figure-wrapper">
+      <a href="{{ detail_url }}">
+        <img src="{{ thumbnail }}" class="thumbnail" width="200" />
+      </a>
+    </div>
+    <figcaption>
+      {{ creator }}
+      {{ license_logo.license(license) }}
+    </figcaption>
+  </figure>
+</div>
+{%- endmacro %}
