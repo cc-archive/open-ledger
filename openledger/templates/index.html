@@ -97,19 +97,17 @@
 
   <div class="row">
     {% for result in results.wikimedia.results %}
-    <div class="shrink columns">
-      <figure>
-        <div class="figure-wrapper">
-          <a href="{{ result.item.value }}">
-            <img src="{{ result.pic.value }}" class="thumbnail" width="200">
-          </a>
-        </div>
-        <figcaption>
-          {{ result.itemLabel.value }}
-          <img src="{{ url_for('static', filename='images/cc0.png')}}" alt="CC0" title="CC0"/ />
-        </figcaption>
-      </figure>
-    </div>
+      {% set license = "cc0" %}
+      {% set creator = "" %}
+      {% set url = result.pic.value %}
+      {% set title = result.itemLabel.value %}
+      {% set provider_url = result.item.value %}
+      {% set thumbnail = result.pic.value %}
+
+      {% set detail_url = url_for('by_image', url=url, provider_url=provider_url, license=license, creator=creator, title=title) %}
+
+      {{ image_result.show(detail_url, thumbnail, creator, title, license) }}
+
     {% endfor %}
   </div>
   {% endif %}
