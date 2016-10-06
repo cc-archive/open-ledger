@@ -30,14 +30,18 @@
         <!-- https://www.flickr.com/photos/{user-id}/{photo-id} - individual photo -->
         <figure>
           <div class="figure-wrapper">
-            <a href="https://www.flickr.com/photos/{{ result.owner }}/{{ result.id }}">
+            {% set orig_license = result.license|int %}
+            {% set license = license_map.flickr[orig_license].lower() %}
+            {% set creator = result.ownername %}
+            {% set url = result.url_m %}
+            {% set provider_url = "https://www.flickr.com/photos/" + result.owner + "/" + result.id %}
+            <a href="{{ url_for('by_image', url=url, provider_url=provider_url, license=license, creator=creator) }}">
               <img src="{{ result.url_m }}" class="thumbnail" width="200" />
             </a>
           </div>
           <figcaption>
             {{ result.ownername }}
-            {% set license = result.license|int %}
-            <img src="{{ url_for('static', filename='images/' + license_map.flickr[license].lower() + '.png')}}" alt="{{ license_map.flickr[license] }}" title="{{ license_map.flickr[license] }}"/ />
+            <img src="{{ url_for('static', filename='images/' + license + '.png')}}" alt="{{ license.upper() }}" title="{{ license }}"/ />
 
           </figcaption>
         </figure>

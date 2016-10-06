@@ -39,6 +39,22 @@ def index(provider=None):
 def by_provider(provider):
     return index(provider=provider)
 
+@app.route("/image/external/")
+def by_image():
+    """Load an image from an external provider, where values will be passed by query string"""
+    url = request.args.get('url')
+    provider_url = request.args.get('provider_url')
+    license = request.args.get('license')
+    creator = request.args.get('creator')
+    return render_template('image-external.html',
+                           url=url,
+                           provider_url=provider_url,
+                           license=license,
+                           creator=creator)
+
+
+
+
 @app.route("/source/openimages")
 def openimages():
     """Images sourced from Google's OpenImage project"""
