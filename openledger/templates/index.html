@@ -91,16 +91,22 @@
 
     <div class="row">
       {% for result in results.rijks.artObjects %}
+      {% set license = "cc0" %}
+      {% set creator = result.principalOrFirstMaker %}
+      {% set url = result.webImage.url %}
+      {% set title = result.title %}
+      {% set provider_url = result.links.web %}
+
       <div class="shrink columns">
         <figure>
           <div class="figure-wrapper">
-            <a href="{{ result.links.web }}">
+            <a href="{{ url_for('by_image', url=url, provider_url=provider_url, license=license, creator=creator, title=title) }}">
               <img src="{{ result.webImage.url }}" class="thumbnail" width="200">
             </a>
           </div>
           <figcaption>
             {{ result.title }}
-            <img src="{{ url_for('static', filename='images/cc0.png')}}" alt="CC0" title="CC0"/ />
+            {{ license_logo.license(license) }}
           </figcaption>
         </figure>
       </div>
