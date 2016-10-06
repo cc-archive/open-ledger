@@ -2,27 +2,34 @@
 
 {% block body %}
 
-<div class="row" style="margin-top: 2rem">
-
-  <div class="column shrink">
+<div class="callout hero">
+    <div class="column text-center">
     <figure>
       <img src="{{ url }}"  />
 
     </figure>
   </div>
-  <div class="column shrink">
-    <div>
-      Title: {{ title }}
-    </div>
-    <div>
-      Creator: {{ creator }}
-    </div>
-    <div>
-      License: <img src="{{ url_for('static', filename='images/' + license + '.png')}}" alt="{{ license.upper() }}" title="{{ license }}"/ />
-    </div>
-    <div>
-      <a href="{{ provider_url }}">Original source</a>
-    </div>
+</div>
+<div class="row">
+  <div class="column metadata">
+    <h3>About this photo</h3>
+    <ul>
+      <li>
+        <h4>Title</h4>
+        <span>{{ title }}</span>
+      </li>
+      <li>
+        <h4>Creator</h4>
+        <span>{{ creator }}</span>
+      </li>
+      <li>
+        <h4>License</h4>
+        <img src="{{ url_for('static', filename='images/' + license + '.png')}}" alt="{{ license.upper() }}" title="{{ license }}"/ />
+      </li>
+      <li>
+        <a href="{{ provider_url }}">Original source</a>
+      </li>
+    </ul>
   </div>
 </div>
 

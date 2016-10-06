@@ -1,3 +1,4 @@
+
 figure {
   margin: 0;
 }
@@ -27,4 +28,25 @@ ul#licenses li {
 }
 ul#licenses input {
   margin: 0
+}
+.hero {
+  background: linear-gradient(to bottom, rgba(255,255,255,1) 80%, rgba(233,233,233,1) 100%);
+  border: none;
+  border-bottom: 1px solid rgb(200,200,200);
+  padding: 2rem 0 2rem 0;
+}
+.metadata h4 {
+  font-size: 1rem;
+  font-weight: bold;
+  line-height: 1rem;
+  margin: 0;
+  padding: 0;
+}
+
+.metadata ul {
+  list-style-type: none;
+  margin: 0;
+}
+.metadata li {
+  line-height: 2rem;
 }
