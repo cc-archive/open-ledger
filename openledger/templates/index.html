@@ -33,11 +33,11 @@
             {% set orig_license = result.license|int %}
             {% set license = license_map.flickr[orig_license].lower() %}
             {% set creator = result.ownername %}
-            {% set url = result.url_m %}
+            {% set url = result.url_l %}
             {% set title = result.title %}
             {% set provider_url = "https://www.flickr.com/photos/" + result.owner + "/" + result.id %}
             <a href="{{ url_for('by_image', url=url, provider_url=provider_url, license=license, creator=creator, title=title) }}">
-              <img src="{{ result.url_m }}" class="thumbnail" width="200" />
+              <img src="{{ result.url_l }}" class="thumbnail" width="200" />
             </a>
           </div>
           <figcaption>
