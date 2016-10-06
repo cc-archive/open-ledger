@@ -10,6 +10,7 @@ BASE_URL = 'https://api.500px.com'
 ENDPOINT_PHOTOS = BASE_URL + '/v1/photos/search'
 
 IMAGE_SIZE_THUMBNAIL = 3  # 200x200
+IMAGE_SIZE_FULL = 1080 # 1080x
 
 # 500px will return these values as integers, so keep them as integers
 LICENSES = {
@@ -33,7 +34,7 @@ def photos(search=None, licenses=["ALL"], page=1, per_page=20, **kwargs):
         'term': search,
         'page': page,
         'rpp': per_page,
-        'image_size': IMAGE_SIZE_THUMBNAIL,
+        'image_size': "%s,%s" % (IMAGE_SIZE_THUMBNAIL, IMAGE_SIZE_FULL)
     }
     r = requests.get(ENDPOINT_PHOTOS, params=params, auth=auth())
     return r.json()

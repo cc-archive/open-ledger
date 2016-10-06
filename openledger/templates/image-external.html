@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-
+{% import "includes/license-logo.html" as license_logo %}
 {% block body %}
 
 <div class="callout hero">
@@ -12,8 +12,7 @@
 </div>
 <div class="row">
   <div class="column metadata">
-    <h3>About this photo</h3>
-    <ul>
+    <h3>About this photo</h3>    <ul>
       <li>
         <h4>Title</h4>
         <span>{{ title }}</span>
@@ -24,7 +23,7 @@
       </li>
       <li>
         <h4>License</h4>
-        <img src="{{ url_for('static', filename='images/' + license + '.png')}}" alt="{{ license.upper() }}" title="{{ license }}"/ />
+        {{ license_logo.license(license) }}
       </li>
       <li>
         <a href="{{ provider_url }}">Original source</a>
