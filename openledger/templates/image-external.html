@@ -2,10 +2,31 @@
 
 {% block body %}
 
-<img src="{{ url }}"  />
+<div class="row" style="margin-top: 2rem">
 
-Creator: {{ creator }}
-License: {{ license }}
-Source location: {{ provider_url }}
+  <div class="column shrink">
+    <figure>
+      <img src="{{ url }}"  />
+
+    </figure>
+  </div>
+  <div class="column shrink">
+    <div>
+      Title: {{ title }}
+    </div>
+    <div>
+      Creator: {{ creator }}
+    </div>
+    <div>
+      License: <img src="{{ url_for('static', filename='images/' + license + '.png')}}" alt="{{ license.upper() }}" title="{{ license }}"/ />
+    </div>
+    <div>
+      <a href="{{ provider_url }}">Original source</a>
+    </div>
+  </div>
+</div>
+
+
+
 
 {% endblock body %}

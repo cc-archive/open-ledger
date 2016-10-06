@@ -44,10 +44,12 @@ def by_image():
     """Load an image from an external provider, where values will be passed by query string"""
     url = request.args.get('url')
     provider_url = request.args.get('provider_url')
+    title = request.args.get('title')
     license = request.args.get('license')
     creator = request.args.get('creator')
     return render_template('image-external.html',
                            url=url,
+                           title=title,
                            provider_url=provider_url,
                            license=license,
                            creator=creator)
