@@ -48,10 +48,12 @@
       {% for result in results.items %}
       {% set creator = result.author %}
       {% set license = "by" %}
-      {% set provider_url = original_landing_url %}
+      {% set provider_url = result.original_landing_url %}
       {% set title = result.title %}
-      {% set url = result.image_url %}
+      {% set image_url = result.image_url %}
       {% set thumbnail = result.image_url %}
+
+      {% set detail_url = url_for('by_image', url=image_url, provider_url=provider_url, license=license, creator=creator, title=title) %}
 
       {{ image_result.show(detail_url, thumbnail, creator, title, license) }}
 

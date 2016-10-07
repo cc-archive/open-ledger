@@ -40,30 +40,29 @@ def index(provider=None):
 def by_provider(provider):
     return index(provider=provider)
 
-@app.route("/image/external/")
+@app.route("/image/detail/")
 def by_image():
-    """Load an image from an external provider, where values will be passed by query string"""
+    """Load an image in detail view, passing parameters by query string so that
+    we can either load an image from an external provider or from our own datastore."""
     url = request.args.get('url')
     provider_url = request.args.get('provider_url')
     title = request.args.get('title')
     license = request.args.get('license')
     creator = request.args.get('creator')
-    return render_template('image-external.html',
+    return render_template('detail.html',
                            url=url,
                            title=title,
                            provider_url=provider_url,
                            license=license,
                            creator=creator)
 
-
-
-
 @app.route("/source/openimages")
 def openimages():
-    """Images sourced from Google's OpenImage project"""
+    """Search a local database of images sourced from Google's OpenImage project"""
     results = []
     form, search_data = init_search()
 
+    # For each search term, check in both the image title field and linked Tags
     if search_data['search']:
         terms = search_data['search'].split(' ')
         results = Image.query.distinct().join('tags').filter(
@@ -84,7 +83,9 @@ def openimages():
                            search_data=search_data,)
 
 def init_search(provider=None):
-    """Set up common search initialization; returns a tuple"""
+    """Set up common search initialization; returns a tuple of the initialized
+    search form and the search data extracted from the user's query or defaults.
+    """
     results = {}
     form = forms.SearchForm()
     search = request.args.get('search')
