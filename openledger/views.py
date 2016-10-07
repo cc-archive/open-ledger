@@ -69,7 +69,7 @@ def detail(identifier):
     title = image.title
     provider = 'flickr'  # These images are Flickr-sourced, so treat this like a Flickr provider
     license_version = licenses.license_map_from_partners()[provider]['version']
-    license = 'BY'  # This source contains only CC-BY
+    license = 'BY'  # This source contains only CC
     license_url = licenses.get_license_url(license, license_version)
     creator = image.author
     return render_template('detail.html',
@@ -95,7 +95,7 @@ def openimages():
                 *[
                     or_(
                         Image.title.contains(s),
-                        Tag.tag.contains(s),
+                        Tag.tag.startswith(s),
                     ) for s in terms
                 ]
               )
