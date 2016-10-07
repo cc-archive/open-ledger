@@ -9,7 +9,7 @@
       </a>
     </div>
     <figcaption>
-      {{ title|truncate(20) }} by {{ creator }}
+      {{ title|truncate(20) }} {% if creator %} by {{ creator }} {% endif %}
       {{ license_logo.license(license) }}
     </figcaption>
   </figure>
