@@ -29,6 +29,7 @@ def index(provider=None):
                                          licenses=search_data['licenses'],
                                          page=search_data['page'],
                                          per_page=search_data['per_page'])
+
     return render_template('index.html',
                            results=results,
                            form=form,
