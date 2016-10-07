@@ -18,103 +18,102 @@
 {% endwith %}
 
 {% if results %}
-<div class="row column results">
+  <div class="row column results">
 
-  <!-- Flickr -->
-  {% if results.flickr and results.flickr.photos.total > 0 %}
-    <h5>Page {{ results.flickr.photos.page }} of {{ results.flickr.photos.total }} photo{{ results.flickr.photos.total|pluralize }} from Flickr</h5>
+    <!-- Flickr -->
+    {% if results.flickr and results.flickr.photos.total > 0 %}
+      <h5>Page {{ results.flickr.photos.page }} of {{ results.flickr.photos.total }} photo{{ results.flickr.photos.total|pluralize }} from Flickr</h5>
 
-    {{ pagination.paginate(results.flickr.photos.page, results.flickr.photos.pages, search_data, 'flickr')}}
+      {{ pagination.paginate(results.flickr.photos.page, results.flickr.photos.pages, search_data, 'flickr')}}
 
-    <div class="row">
-      {% for result in results.flickr.photos.photo %}
+      <div class="row">
+        {% for result in results.flickr.photos.photo %}
 
-        {% set creator = result.ownername %}
-        {% set image_url = result.url_l %}
-        {% set orig_license = result.license|int %}
-        {% set license = license_map.flickr[orig_license].lower() %}
-        {% set provider_url = "https://www.flickr.com/photos/" + result.owner + "/" + result.id %}
-        {% set thumbnail = result.url_s %}
-        {% set title = result.title %}
-        {% set provider = "flickr" %}
-        {% set detail_url = url_for('by_image', url=image_url, provider_url=provider_url, license=license, creator=creator, title=title, provider=provider) %}
+          {% set creator = result.ownername %}
+          {% set image_url = result.url_l %}
+          {% set orig_license = result.license|int %}
+          {% set license = license_map.flickr[orig_license].lower() %}
+          {% set provider_url = "https://www.flickr.com/photos/" + result.owner + "/" + result.id %}
+          {% set thumbnail = result.url_s %}
+          {% set title = result.title %}
+          {% set provider = "flickr" %}
+          {% set detail_url = url_for('by_image', url=image_url, provider_url=provider_url, license=license, creator=creator, title=title, provider=provider) %}
 
-        {{ image_result.show(detail_url, thumbnail, creator, title, license) }}
+          {{ image_result.show(detail_url, thumbnail, creator, title, license) }}
 
-      {% endfor %}
-    </div>
-  {% endif %}
+        {% endfor %}
+      </div>
+    {% endif %}
 
-  <!-- 500px -->
-  {% if results.fpx and results.fpx.total_items > 0 %}
-    <h5>Page {{ results.fpx.current_page }} of {{ results.fpx.total_items }} photo{{ results.fpx.total_items|pluralize }} from 500px</h5>
+    <!-- 500px -->
+    {% if results.fpx and results.fpx.total_items > 0 %}
+      <h5>Page {{ results.fpx.current_page }} of {{ results.fpx.total_items }} photo{{ results.fpx.total_items|pluralize }} from 500px</h5>
 
-    {{ pagination.paginate(results.fpx.current_page, results.fpx.total_pages, search_data, 'fpx')}}
+      {{ pagination.paginate(results.fpx.current_page, results.fpx.total_pages, search_data, 'fpx')}}
 
-    <div class="row">
-      {% for result in results.fpx.photos %}
-        {% set creator = result.user.username %}
-        {% set license = license_map.fpx[result.license_type].lower() %}
-        {% set provider_url = "https://500px.com/" + result.url %}
-        {% set title = result.name %}
-        {% set url = result.images.1.https_url %}
-        {% set thumbnail = result.images.0.https_url %}
-        {% set provider = "fpx" %}
-        {% set detail_url = url_for('by_image', url=url, provider_url=provider_url, license=license, creator=creator, title=title, provider=provider) %}
+      <div class="row">
+        {% for result in results.fpx.photos %}
+          {% set creator = result.user.username %}
+          {% set license = license_map.fpx[result.license_type].lower() %}
+          {% set provider_url = "https://500px.com/" + result.url %}
+          {% set title = result.name %}
+          {% set url = result.images.1.https_url %}
+          {% set thumbnail = result.images.0.https_url %}
+          {% set provider = "fpx" %}
+          {% set detail_url = url_for('by_image', url=url, provider_url=provider_url, license=license, creator=creator, title=title, provider=provider) %}
 
-        {{ image_result.show(detail_url, thumbnail, creator, title, license) }}
-      {% endfor %}
-    </div>
-  {% endif %}
+          {{ image_result.show(detail_url, thumbnail, creator, title, license) }}
+        {% endfor %}
+      </div>
+    {% endif %}
 
-  <!-- rijksmuseum -->
-  {% if results.rijks and results.rijks.count > 0 %}
-  <h5>Page {{ results.rijks.page }} of {{ results.rijks.count }} photo{{ results.rijks.count|pluralize }} from Rijksmuseum</h5>
+    <!-- rijksmuseum -->
+    {% if results.rijks and results.rijks.count > 0 %}
+    <h5>Page {{ results.rijks.page }} of {{ results.rijks.count }} photo{{ results.rijks.count|pluralize }} from Rijksmuseum</h5>
 
-   {{ pagination.paginate(results.rijks.page, results.rijks.pages, search_data, 'rijks')}}
+     {{ pagination.paginate(results.rijks.page, results.rijks.pages, search_data, 'rijks')}}
 
-    <div class="row">
-      {% for result in results.rijks.artObjects %}
+      <div class="row">
+        {% for result in results.rijks.artObjects %}
+          {% set license = "cc0" %}
+          {% set creator = result.principalOrFirstMaker %}
+          {% set url = result.webImage.url %}
+          {% set title = result.title %}
+          {% set provider_url = result.links.web %}
+          {% set thumbnail = result.webImage.url %}
+          {% set provider = "rijks" %}
+
+          {% set detail_url = url_for('by_image', url=url, provider_url=provider_url, license=license, creator=creator, title=title, provider=provider) %}
+
+          {{ image_result.show(detail_url, thumbnail, creator, title, license) }}
+        {% endfor %}
+      </div>
+    {% endif %}
+
+    <!-- Wikimedia -->
+    {% if results.wikimedia and results.wikimedia.total > 0 %}
+    <h5>Page {{ results.wikimedia.page }} of {{ results.wikimedia.total }} photo{{ results.wikimedia.total|pluralize }} from Wikimedia Commons</h5>
+
+     {{ pagination.paginate(results.wikimedia.page, results.wikimedia.pages, search_data, 'wikimedia')}}
+
+     <div class="row">
+      {% for result in results.wikimedia.results %}
         {% set license = "cc0" %}
-        {% set creator = result.principalOrFirstMaker %}
-        {% set url = result.webImage.url %}
-        {% set title = result.title %}
-        {% set provider_url = result.links.web %}
-        {% set thumbnail = result.webImage.url %}
-        {% set provider = "rijks" %}
+        {% set creator = "" %}
+        {% set url = result.pic.value %}
+        {% set title = result.itemLabel.value %}
+        {% set provider_url = result.item.value %}
+        {% set thumbnail = result.pic.value %}
+        {% set provider = "wikimedia" %}
 
         {% set detail_url = url_for('by_image', url=url, provider_url=provider_url, license=license, creator=creator, title=title, provider=provider) %}
 
         {{ image_result.show(detail_url, thumbnail, creator, title, license) }}
+
       {% endfor %}
+     </div>
+    {% endif %}
   </div>
-  {% endif %}
-
-  <!-- Wikimedia -->
-  {% if results.wikimedia and results.wikimedia.total > 0 %}
-  <h5>Page {{ results.wikimedia.page }} of {{ results.wikimedia.total }} photo{{ results.wikimedia.total|pluralize }} from Wikimedia Commons</h5>
-
-   {{ pagination.paginate(results.wikimedia.page, results.wikimedia.pages, search_data, 'wikimedia')}}
-
-  <div class="row">
-    {% for result in results.wikimedia.results %}
-      {% set license = "cc0" %}
-      {% set creator = "" %}
-      {% set url = result.pic.value %}
-      {% set title = result.itemLabel.value %}
-      {% set provider_url = result.item.value %}
-      {% set thumbnail = result.pic.value %}
-      {% set provider = "wikimedia" %}
-
-      {% set detail_url = url_for('by_image', url=url, provider_url=provider_url, license=license, creator=creator, title=title, provider=provider) %}
-
-      {{ image_result.show(detail_url, thumbnail, creator, title, license) }}
-
-    {% endfor %}
-  </div>
-  {% endif %}
-</div>
-
 {% endif %}
 
 {% endblock body %}
