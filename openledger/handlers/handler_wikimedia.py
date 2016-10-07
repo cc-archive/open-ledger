@@ -13,6 +13,9 @@ log = logging.getLogger(__name__)
 BASE_URL = 'https://www.wikidata.org/w/api.php'
 WIKIDATA_URL = 'https://query.wikidata.org/sparql'
 
+LICENSE_VERSION = "1.0"
+LICENSE_URL = "https://creativecommons.org/publicdomain/zero/1.0/"
+
 # TODO: Cache these results since we're paginating ourselves
 MAX_LIMIT = 100  # The total number of results we'll ever ask for
 

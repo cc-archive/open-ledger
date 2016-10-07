@@ -22,6 +22,7 @@ LICENSES = {
     "PDM": 7,
     "CC0": 9,
 }
+LICENSE_VERSION = "2.0"
 
 LICENSE_LOOKUP = {v: k for k, v in LICENSES.items()}
 

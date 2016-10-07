@@ -5,6 +5,9 @@ from openledger import app
 BASE_URL = 'https://www.rijksmuseum.nl'
 ENDPOINT_PHOTOS = BASE_URL + '/api/en/collection'
 
+LICENSE_VERSION = "1.0"
+LICENSE_URL = "https://creativecommons.org/publicdomain/zero/1.0/"
+
 def photos(search=None, page=1, per_page=20, **kwargs):
     # Rijks pages are zero-indexed, so always subtract one before the request
     p = int(page) - 1

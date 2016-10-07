@@ -23,6 +23,8 @@ LICENSES = {
     "PDM": 7,
     "CC0": 8,
 }
+LICENSE_VERSION = "3.0"
+
 LICENSE_LOOKUP = {v: k for k, v in LICENSES.items()}
 
 def auth():
