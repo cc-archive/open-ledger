@@ -49,11 +49,36 @@ def by_image():
     title = request.args.get('title')
     license = request.args.get('license')
     creator = request.args.get('creator')
+    provider = request.args.get('provider')
+    license_version = licenses.license_map_from_partners()[provider]['version']
+    license_url = licenses.get_license_url(license, license_version)
     return render_template('detail.html',
                            url=url,
                            title=title,
                            provider_url=provider_url,
                            license=license,
+                           license_url=license_url,
+                           creator=creator)
+
+@app.route ("/ledger/detail/<identifier>")
+def detail(identifier):
+    """Get a detailed representation of an item in the ledger"""
+    image = Image.query.filter_by(google_imageid=identifier).first()  # Eventually we'll want our own identifer here
+    url = image.image_url
+    provider_url = image.original_landing_url
+    title = image.title
+    provider = 'flickr'  # These images are Flickr-sourced, so treat this like a Flickr provider
+    license_version = licenses.license_map_from_partners()[provider]['version']
+    license = 'BY'  # This source contains only CC-BY
+    license_url = licenses.get_license_url(license, license_version)
+    creator = image.author
+    return render_template('detail.html',
+                           image=image,
+                           url=url,
+                           title=title,
+                           provider_url=provider_url,
+                           license=license,
+                           license_url=license_url,
                            creator=creator)
 
 @app.route("/source/openimages")

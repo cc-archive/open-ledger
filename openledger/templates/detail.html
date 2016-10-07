@@ -28,6 +28,20 @@
         <a href="{{ provider_url }}">Original source</a>
       </li>
     </ul>
+    {% if image and image.tags %}
+      {% for tag in image.tags %}
+        <span class="secondary label">{{ tag.tag }}</span>
+      {% endfor %}
+    {% endif %}
+  </div>
+  <div class="column">
+    <h3>How to use this work</h3>
+    <blockquote class="attribution">
+      <a href="{{ provider_url }}">“{{ title }}”</a> by <i>{{ creator }}</i> is licensed under
+      <a href="{{ license_url }}">CC {{ license|upper }}</a>
+    </blockquote>
+  </div>
+
   </div>
 </div>
 
