@@ -36,8 +36,8 @@
         {% set provider_url = "https://www.flickr.com/photos/" + result.owner + "/" + result.id %}
         {% set thumbnail = result.url_s %}
         {% set title = result.title %}
-
-        {% set detail_url = url_for('by_image', url=image_url, provider_url=provider_url, license=license, creator=creator, title=title) %}
+        {% set provider = "flickr" %}
+        {% set detail_url = url_for('by_image', url=image_url, provider_url=provider_url, license=license, creator=creator, title=title, provider=provider) %}
 
         {{ image_result.show(detail_url, thumbnail, creator, title, license) }}
 
@@ -59,8 +59,8 @@
         {% set title = result.name %}
         {% set url = result.images.1.https_url %}
         {% set thumbnail = result.images.0.https_url %}
-
-        {% set detail_url = url_for('by_image', url=url, provider_url=provider_url, license=license, creator=creator, title=title) %}
+        {% set provider = "fpx" %}
+        {% set detail_url = url_for('by_image', url=url, provider_url=provider_url, license=license, creator=creator, title=title, provider=provider) %}
 
         {{ image_result.show(detail_url, thumbnail, creator, title, license) }}
       {% endfor %}
@@ -81,7 +81,9 @@
         {% set title = result.title %}
         {% set provider_url = result.links.web %}
         {% set thumbnail = result.webImage.url %}
-        {% set detail_url = url_for('by_image', url=url, provider_url=provider_url, license=license, creator=creator, title=title) %}
+        {% set provider = "rijks" %}
+
+        {% set detail_url = url_for('by_image', url=url, provider_url=provider_url, license=license, creator=creator, title=title, provider=provider) %}
 
         {{ image_result.show(detail_url, thumbnail, creator, title, license) }}
       {% endfor %}
@@ -102,8 +104,9 @@
       {% set title = result.itemLabel.value %}
       {% set provider_url = result.item.value %}
       {% set thumbnail = result.pic.value %}
+      {% set provider = "wikimedia" %}
 
-      {% set detail_url = url_for('by_image', url=url, provider_url=provider_url, license=license, creator=creator, title=title) %}
+      {% set detail_url = url_for('by_image', url=url, provider_url=provider_url, license=license, creator=creator, title=title, provider=provider) %}
 
       {{ image_result.show(detail_url, thumbnail, creator, title, license) }}
 

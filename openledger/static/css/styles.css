@@ -51,3 +51,9 @@ ul#licenses input {
 .metadata li {
   line-height: 2rem;
 }
+
+footer.callout {
+  margin:0;
+  margin-top: 2rem;
+
+}

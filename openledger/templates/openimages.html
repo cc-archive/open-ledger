@@ -53,7 +53,7 @@
       {% set image_url = result.image_url %}
       {% set thumbnail = result.image_url %}
 
-      {% set detail_url = url_for('by_image', url=image_url, provider_url=provider_url, license=license, creator=creator, title=title) %}
+      {% set detail_url = url_for('detail', identifier=result.google_imageid) %}
 
       {{ image_result.show(detail_url, thumbnail, creator, title, license) }}
 

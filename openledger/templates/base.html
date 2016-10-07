@@ -5,8 +5,7 @@
 
 <body>
 
-
-<nav class="top-bar">
+  <nav class="top-bar">
     <div class="top-bar-left">
       <ul class="dropdown menu" data-dropdown-menu>
         <li class="menu-text"><a href="{{ url_for('index')}}">Open Ledger Search Prototype</a></li>
@@ -15,8 +14,17 @@
         </li>
         <li><a href="{{ url_for('openimages')}}">Open Images source</a></li>
       </ul>
-</nav>
+  </nav>
 
-{% block body %}{% endblock %}
+  {% block body %}{% endblock %}
+
+  <footer class="callout secondary">
+    <p>
+      This is a prototype of the <a href="https://creativecommons.org/2016/07/15/meeting-debrief-next-steps-challenge-attribution-view-source-3d-printing/">Open Ledger</a>, aggregating data from publicly available repositories of open content.
+    </p>
+    <p>
+      <a href="https://github.com/creativecommons/open-ledger/">Github repository</a>
+    </p>
+  </footer>
 
 </body>
