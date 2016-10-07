@@ -9,7 +9,7 @@
       </a>
     </div>
     <figcaption>
-      {{ creator }}
+      {{ title|truncate(20) }} by {{ creator }}
       {{ license_logo.license(license) }}
     </figcaption>
   </figure>

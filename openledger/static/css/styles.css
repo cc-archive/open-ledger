@@ -12,6 +12,7 @@ figure {
 figcaption {
   text-align: center;
   max-width: 200px;
+  font-size: .75rem;
 }
 
 h5 {
