@@ -1,5 +1,6 @@
 {% extends "base.html" %}
 {% import "includes/license-logo.html" as license_logo %}
+
 {% block body %}
 
 <div class="callout hero">
@@ -46,3 +47,28 @@
 </div>
 
 {% endblock body %}
+
+{% block head %}
+{% set page_title = title + " via the Creative Commons Open Ledger" %}
+{% set description = "Openly licensed image '" + title + "'" %}
+<!-- FIXME URL -->
+{% set page_url = "https://openledger.lizadaly.com/" + request.path %}
+
+<!-— facebook open graph tags -->
+<meta property="og:type" content="website" />
+<meta property="og:url" content="{{ page_url }}" />
+<meta property="og:title" content="{{ page_title }}" />
+<meta property="og:description" content="{{ description }}" />
+<meta property="og:image" content="{{ url }}" />
+
+<!-— twitter card tags additive with the og: tags -->
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:domain" value="creativecommons.org" />
+<meta name="twitter:title" value="{{ page_title }}" />
+<meta name="twitter:description" value="{{ description }}" />
+<meta name="twitter:image" content="{{ url }}" />
+<meta name="twitter:url" value="{{ page_url }}" />
+<meta name="twitter:label1" value="Open license" />
+<meta name="twitter:data1" value="{{ license|upper }}" />
+
+{% endblock head %}
