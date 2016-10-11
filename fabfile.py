@@ -13,7 +13,8 @@ def deploy():
     with cd(CODE_DIR):
         run('git pull --force origin ' + CURRENT_BRANCH)
         run('./venv/bin/pip install -r requirements.txt')
-        run('npm install')        
+        run('npm install')
+        run('NODE_ENV=production webpack')
     restart_host()
 
 def restart_host():

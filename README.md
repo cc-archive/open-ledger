@@ -67,6 +67,14 @@ theoretical.
 pip install -r requirements
 ```
 
+* JavaScript
+
+Ensure that npm is installed.
+
+```
+npm install
+```
+
 * postgresql
 
 Install header files and other dependencies. On Ubuntu:
@@ -93,7 +101,39 @@ Flask uses the `instance/config.py` file per-host to specify environment variabl
 
 A sample is included in `config.py.example`. Copy that into `instance/config.py` and update the values for your host.
 
+## Open Images dataset
 
+To include the Google-provided Open Images dataset from  https://github.com/openimages/dataset
+
+1. Download the files linked as:
+
+* Image URLs and metadata
+* Human image-level annotations (validation set)
+
+(as of 11 Oct 16 we aren't yet including the machine annotations)
+
+2. Run the database import script:
+
+```
+. venv/bin/activate
+python database_import.py /path/to/images_2016_08/train/images.csv
+python database_import.py /path/to/images_2016_08/validation/images.csv
+```
+
+(This loads 9 million image records; be patient!)
+
+## Development
+
+JavaScript dependencies are managed with `npm` and built with `webpack`.
+`Babel` is a dependency as the code is written in ES6+.
+
+When JavaScript assets are changed, run webpack:
+
+```
+webpack
+```
+
+It is run automatically on deploy.
 
 ## Testing
 
