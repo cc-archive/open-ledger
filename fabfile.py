@@ -11,10 +11,10 @@ CURRENT_BRANCH = 'master'
 
 def deploy():
     with cd(CODE_DIR):
-        run('git pull --force origin ' + CURRENT_BRANCH)
+        run('git pull origin ' + CURRENT_BRANCH)
         run('./venv/bin/pip install -r requirements.txt')
         run('npm install')
-        run('NODE_ENV=production webpack')
+        run('NODE_ENV=production node_modules/.bin/webpack')
     restart_host()
 
 def restart_host():

@@ -9,9 +9,7 @@ module.exports = [{
   entry: "./index",
   output: {
     path: __dirname + root + "/js/build",
-    filename: PROD
-      ? 'openledger.min.js'
-      : 'openledger.js'
+    filename: 'openledger.js'
   },
   module: {
     loaders: [{

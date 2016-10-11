@@ -69,7 +69,13 @@ pip install -r requirements
 
 * JavaScript
 
-Ensure that npm is installed.
+Ensure that npm is installed. On Ubuntu, you will probably need:
+
+```
+ln -s /usr/bin/nodejs /usr/bin/node
+```
+
+Then:
 
 ```
 npm install
