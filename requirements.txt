@@ -13,3 +13,4 @@ flask-sqlalchemy
 flask-migrate
 psycopg2
 sqlalchemy
+flask_debugtoolbar

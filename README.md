@@ -59,6 +59,42 @@ items _enter_ the record, changes to metadata are recorded, and new
 instances of that work appear on known partners. Right now this is purely
 theoretical.
 
+## Installation
+
+* Python 3
+
+```
+pip install -r requirements
+```
+
+* postgresql
+
+Install header files and other dependencies. On Ubuntu:
+
+```
+sudo apt install libpq-dev python3-dev postgresql-client-common postgresql-contrib
+```
+
+Database setup should be similar to:
+```
+$ sudo -u postgres psql
+
+postgres=# CREATE USER XXX WITH PASSWORD 'XXX';
+CREATE ROLE
+postgres=# create database openledger;
+CREATE DATABASE
+postgres=# GRANT ALL PRIVILEGES ON DATABASE "openledger" to XXX;
+GRANT
+```
+
+## Instance configuration
+
+Flask uses the `instance/config.py` file per-host to specify environment variables. For this application, most of these are going to be API keys or database configuration.
+
+A sample is included in `config.py.example`. Copy that into `instance/config.py` and update the values for your host.
+
+
+
 ## Testing
 
 ### Webapp
