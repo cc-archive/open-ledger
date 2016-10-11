@@ -93,3 +93,4 @@ ENV/
 .ropeproject
 secret
 .DS_Store
+node_modules

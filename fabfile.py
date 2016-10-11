@@ -13,6 +13,7 @@ def deploy():
     with cd(CODE_DIR):
         run('git pull --force origin ' + CURRENT_BRANCH)
         run('./venv/bin/pip install -r requirements.txt')
+        run('npm install')        
     restart_host()
 
 def restart_host():

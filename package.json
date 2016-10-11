@@ -1,0 +1,21 @@
+{
+  "name": "open-ledger",
+  "version": "1.0.0",
+  "description": "A prototype repository for reuse of freely licensed imagery",
+  "scripts": {
+    "test": "test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/creativecommons/open-ledger.git"
+  },
+  "author": "Liza Daly",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/creativecommons/open-ledger/issues"
+  },
+  "homepage": "https://github.com/creativecommons/open-ledger#readme",
+  "dependencies": {
+    "clipboard": "^1.5.12"
+  }
+}
