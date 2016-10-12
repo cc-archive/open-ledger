@@ -1,5 +1,5 @@
-from openledger import app
+from openledger import application
 
 if __name__ == '__main__':
     # Run me in development as 'python -m app' to avoid path/import problems
-    app.run(debug=True)
+    application.run(debug=True)

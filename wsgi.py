@@ -1,4 +1,4 @@
-from openledger import app
+from openledger import application
 
 if __name__ == "__main__":
-    app.run()
+    application.run()
