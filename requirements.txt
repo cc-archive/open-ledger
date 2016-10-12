@@ -64,3 +64,7 @@ wcwidth==0.1.7
 websocket-client==0.37.0
 Werkzeug==0.11.11
 WTForms==2.1
+
+lxml
+html5lib==0.9999999
+cssselect
