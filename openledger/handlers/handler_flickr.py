@@ -29,7 +29,9 @@ LICENSE_LOOKUP = {v: k for k, v in LICENSES.items()}
 def auth():
     return flickrapi.FlickrAPI(app.config['FLICKR_KEY'],
                                app.config['FLICKR_SECRET'],
-                               format='parsed-json')
+                               format='parsed-json',
+                               store_token=False,
+                               cache=True)
 
 def photos(search=None, licenses=["ALL"], page=1, per_page=20, **kwargs):
     flickr = auth()
