@@ -46,16 +46,16 @@
 
     <div class="row">
       {% for result in results.items %}
-      {% set creator = result.author %}
-      {% set license = "by" %}
-      {% set provider_url = result.original_landing_url %}
+      {% set creator = result.creator %}
+      {% set license = result.license %}
+      {% set provider_url = result.foreign_landing_url %}
       {% set title = result.title %}
       {% set image_url = result.image_url %}
       {% set thumbnail = result.image_url %}
 
-      {% set detail_url = url_for('detail', identifier=result.google_imageid) %}
+      {% set detail_url = url_for('detail', identifier=result.identifier) %}
 
-      {{ image_result.show(detail_url, thumbnail, creator, title, license) }}
+      {{ image_result.show(detail_url, thumbnail, creator, creator_url, title, license) }}
 
       {% endfor %}
     </div>
