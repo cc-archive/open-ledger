@@ -9,12 +9,16 @@ from sqlalchemy.exc import IntegrityError
 
 from openledger.models import db, Image
 
-logging.basicConfig()
+console = logging.StreamHandler()
+
 log = logging.getLogger(__name__)
+log.addHandler(console)
+log.setLevel(logging.DEBUG)
 
 def import_from_open_images(fh):
     fields = ('ImageID', 'Subset', 'OriginalURL', 'OriginalLandingURL', 'License',
               'AuthorProfileURL', 'Author', 'Title')
+    log.info("Creating database schema if it doesnt' exist...")
     db.create_all()
     reader = csv.DictReader(csvfile)
     for row in reader:
@@ -29,7 +33,7 @@ def import_from_open_images(fh):
         db.session.add(image)
         try:
             db.session.commit()
-            print("Adding image ", row['ImageID'])
+            log.info("Adding image ", row['ImageID'])
         except IntegrityError:
             db.session.rollback()
 
