@@ -18,6 +18,8 @@ log = logging.getLogger(__name__)
 log.addHandler(console)
 log.setLevel(logging.DEBUG)
 
+TAG_CONFIDENCE_THRESHOLD = 0.5  # Don't import tags with confidence levels lower than this
+
 def import_images_from_openimages(filename):
     """Import image records from the `open-images` dataset"""
     fields = ('ImageID', 'Subset', 'OriginalURL', 'OriginalLandingURL', 'License',
@@ -50,6 +52,25 @@ def import_images_from_openimages(filename):
                     log.warn(e)
             db.session.commit()
 
+def import_images_tags_from_openimages(filename):
+    """Import tag/image relationships from the `open-images` dataset"""
+    with app.app_context():
+        db.create_all()
+        with open(filename) as fh:
+            reader = csv.DictReader(fh)
+            for row in reader:
+                image_id = row['ImageID']
+                tag_id = row['LabelName']
+                confidence = row['Confidence']
+                if float(confidence) < TAG_CONFIDENCE_THRESHOLD:
+                    continue
+                img = Image.query.filter_by(foreign_identifier=image_id).first()
+                tag = Tag.query.filter_by(foreign_identifier=tag_id).first()
+                if tag and img:
+                    log.info("Adding tag %s to image %s ", tag.name, img.title)
+                    img.tags.append(tag)
+            db.session.commit()
+
 def import_tags_from_openimages(filename):
     """Import tag names from the `open-images` dataset"""
     with app.app_context():
@@ -60,10 +81,10 @@ def import_tags_from_openimages(filename):
                 try:
                     with db.session.begin_nested():
                         tag = Tag()
-                        tag.mid = row[0].strip()
-                        tag.tag = row[1].strip()
+                        tag.foreign_identifier = row[0].strip()
+                        tag.name = row[1].strip()
                         tag.source = 'openimages'
-                        log.info("Adding tag %s", tag.mid)
+                        log.info("Adding tag %s", tag.name)
                         db.session.merge(tag)
                 except Exception as e:
                     log.warn(e)

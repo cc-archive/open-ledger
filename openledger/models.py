@@ -4,9 +4,11 @@ from openledger import app
 
 db = SQLAlchemy(app)
 
-tags = db.Table('tags',
+image_tags = db.Table('image_tags',
     db.Column('tag_id', db.Integer, db.ForeignKey('tag.id')),
     db.Column('image_id', db.Integer, db.ForeignKey('image.id')),
+    db.Column('created_on', db.DateTime, server_default=db.func.now()),
+    db.Column('updated_on', db.DateTime, server_default=db.func.now(), onupdate=db.func.now()),
 )
 
 class Image(db.Model):
@@ -68,14 +70,27 @@ class Image(db.Model):
     title = db.Column(db.String(2000), index=True)
 
     # Links to the tags table
-    tags = db.relationship('Tag', secondary=tags, lazy='dynamic',
+    tags = db.relationship('Tag', secondary=image_tags, lazy='dynamic',
                            backref=db.backref('images', lazy='dynamic'))
+
+    created_on = db.Column(db.DateTime, server_default=db.func.now())
+    updated_on = db.Column(db.DateTime, server_default=db.func.now(), onupdate=db.func.now())
+
     def __repr__(self):
         return '<Image %r by %r>' % (self.image_url, self.author)
 
 class Tag(db.Model):
     """A word or phrase associated with this image"""
     id = db.Column(db.Integer, primary_key=True)
-    mid = db.Column(db.String(255))
-    tag = db.Column(db.String(1000), index=True)
+
+    # Foreign identifier, such as a Google Open Images 'mid'
+    foreign_identifier = db.Column(db.String(255))
+
+    # The human-readable name of the tag
+    name = db.Column(db.String(1000), index=True)
+
+    # The source of the data (e.g. 'openimages')
     source = db.Column(db.String(255), index=True)
+
+    created_on = db.Column(db.DateTime, server_default=db.func.now())
+    updated_on = db.Column(db.DateTime, server_default=db.func.now(), onupdate=db.func.now())
