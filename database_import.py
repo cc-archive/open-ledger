@@ -16,7 +16,7 @@ console = logging.StreamHandler()
 
 log = logging.getLogger(__name__)
 log.addHandler(console)
-log.setLevel(logging.DEBUG)
+log.setLevel(logging.INFO)
 
 TAG_CONFIDENCE_THRESHOLD = 0.5  # Don't import tags with confidence levels lower than this
 
@@ -24,14 +24,14 @@ def import_images_from_openimages(filename):
     """Import image records from the `open-images` dataset"""
     fields = ('ImageID', 'Subset', 'OriginalURL', 'OriginalLandingURL', 'License',
               'AuthorProfileURL', 'Author', 'Title')
-    log.info("Creating database schema if it doesn't exist...")
+    log.debug("Creating database schema if it doesn't exist...")
     with app.app_context():
         db.create_all()
         with open(filename) as fh:
             reader = csv.DictReader(fh)
             for row in reader:
                 try:
-                    with db.session.begin_nested():
+                    if not Image.query.filter_by(foreign_identifier=row['ImageID']).first():
                         image = Image()
                         image.identifier = row['OriginalMD5']  # We get a nice unique, stable value, let's use it
                         image.foreign_identifier = row['ImageID']
@@ -46,11 +46,12 @@ def import_images_from_openimages(filename):
                         image.title = row['Title']
                         image.filesize = row['OriginalSize']
 
-                        log.info("Adding image %s", row['ImageID'])
-                        db.session.merge(image)
-                except Exception as e:
-                    log.warn(e)
-            db.session.commit()
+                        log.debug("Adding image %s", row['ImageID'])
+                        db.session.add(image)
+                        db.session.commit()
+                except IntegrityError as e:
+                    db.session.rollback()
+                    log.debug(e)
 
 def import_images_tags_from_openimages(filename):
     """Import tag/image relationships from the `open-images` dataset"""
@@ -67,7 +68,7 @@ def import_images_tags_from_openimages(filename):
                 img = Image.query.filter_by(foreign_identifier=image_id).first()
                 tag = Tag.query.filter_by(foreign_identifier=tag_id).first()
                 if tag and img:
-                    log.info("Adding tag %s to image %s ", tag.name, img.title)
+                    log.debug("Adding tag %s to image %s ", tag.name, img.title)
                     img.tags.append(tag)
             db.session.commit()
 
@@ -79,16 +80,16 @@ def import_tags_from_openimages(filename):
             reader = csv.reader(fh)
             for row in reader:
                 try:
-                    with db.session.begin_nested():
-                        tag = Tag()
-                        tag.foreign_identifier = row[0].strip()
-                        tag.name = row[1].strip()
-                        tag.source = 'openimages'
-                        log.info("Adding tag %s", tag.name)
-                        db.session.merge(tag)
-                except Exception as e:
-                    log.warn(e)
-            db.session.commit()
+                    tag = Tag()
+                    tag.foreign_identifier = row[0].strip()
+                    tag.name = row[1].strip()
+                    tag.source = 'openimages'
+                    log.debug("Adding tag %s", tag.name)
+                    db.session.add(tag)
+                    db.session.commit()
+                except IntegrityError as e:
+                    db.session.rollback()
+                    log.debug(e)
 
 def download_from_s3(filename, bucket_name, source):
     """Download the named file from the CC openledger bucket to begin processing it.
@@ -100,9 +101,9 @@ def download_from_s3(filename, bucket_name, source):
     except botocore.exceptions.ProfileNotFound:
         session = boto3.Session()
     s3 = session.client('s3')
-    f = tempfile.NamedTemporaryFile()
-    s3.download_file(Bucket=bucket_name, Key=filename, Filename=f.name)
-    return f.name
+    (fh, datafile) = tempfile.mkstemp()
+    s3.download_file(Bucket=bucket_name, Key=filename, Filename=datafile)
+    return datafile
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
@@ -120,18 +121,36 @@ if __name__ == '__main__':
                         dest="filesystem",
                         default="local",
                         help="The name of the filesystem: local or s3")
+    parser.add_argument("--verbose",
+                        dest="verbose",
+                        default=False,
+                        help="Be very chatty and run logging at DEBUG")
     args = parser.parse_args()
 
+    if args.verbose:
+        log.setLevel(logging.DEBUG)
+
     # Collect the input files from the local filesystem or S3
+    delete_source_when_done = False
+
     if args.filesystem == 's3':
+        delete_source_when_done = True  # This will be a temporary file
         filename = download_from_s3(args.filepath, args.bucket_name, args.source)
     else:
         filename = args.filepath
 
-    # Process the filetype with the correct handler
-    if args.source == 'openimages' and args.datatype == "images":
-        import_images_from_openimages(filename)
-    elif args.source == 'openimages' and args.datatype == "tags":
-        import_tags_from_openimages(filename)
-    elif args.source == 'openimages' and args.datatype == "image-tags":
-        import_images_tags_from_openimages(filename)
+    try:
+        # Process the filetype with the correct handler
+        if args.source == 'openimages' and args.datatype == "images":
+            import_images_from_openimages(filename)
+        elif args.source == 'openimages' and args.datatype == "tags":
+            import_tags_from_openimages(filename)
+        elif args.source == 'openimages' and args.datatype == "image-tags":
+            import_images_tags_from_openimages(filename)
+
+    except:
+        raise
+
+    finally:
+        if delete_source_when_done:
+            os.remove(filename)

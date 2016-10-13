@@ -97,7 +97,7 @@ def openimages():
                 *[
                     or_(
                         Image.title.contains(s),
-                        Tag.tag.startswith(s),
+                        Tag.name.startswith(s),
                     ) for s in terms
                 ]
               )
