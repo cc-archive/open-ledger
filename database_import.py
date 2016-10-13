@@ -49,6 +49,8 @@ def import_images_from_openimages(filename):
                         log.debug("Adding image %s", row['ImageID'])
                         db.session.add(image)
                         db.session.commit()
+                    else:
+                        log.debug("Skipping existing image %s", row['ImageID'])
                 except IntegrityError as e:
                     db.session.rollback()
                     log.debug(e)
@@ -122,7 +124,7 @@ if __name__ == '__main__':
                         default="local",
                         help="The name of the filesystem: local or s3")
     parser.add_argument("--verbose",
-                        dest="verbose",
+                        action="store_true",
                         default=False,
                         help="Be very chatty and run logging at DEBUG")
     args = parser.parse_args()
