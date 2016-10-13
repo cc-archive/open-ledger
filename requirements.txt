@@ -68,3 +68,4 @@ WTForms==2.1
 lxml
 html5lib==0.9999999
 cssselect
+boto3
