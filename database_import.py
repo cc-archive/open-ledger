@@ -1,6 +1,7 @@
 import argparse
 import csv
 import logging
+import os
 import tempfile
 
 import boto3
@@ -15,27 +16,29 @@ log = logging.getLogger(__name__)
 log.addHandler(console)
 log.setLevel(logging.DEBUG)
 
-def import_from_open_images(fh):
+def import_from_open_images(filename):
     fields = ('ImageID', 'Subset', 'OriginalURL', 'OriginalLandingURL', 'License',
               'AuthorProfileURL', 'Author', 'Title')
-    log.info("Creating database schema if it doesnt' exist...")
+    log.info("Creating database schema if it doesn't exist...")
     db.create_all()
-    reader = csv.DictReader(csvfile)
-    for row in reader:
-        image = Image()
-        image.google_imageid = row['ImageID']
-        image.image_url = row['OriginalURL']
-        image.original_landing_url = row['OriginalLandingURL']
-        image.license_url = row['License']
-        image.author_url = row['AuthorProfileURL']
-        image.author = row['Author']
-        image.title = row['Title']
-        db.session.add(image)
-        try:
-            db.session.commit()
-            log.info("Adding image ", row['ImageID'])
-        except IntegrityError:
-            db.session.rollback()
+    with open(filename) as fh:
+        reader = csv.DictReader(fh)
+        for row in reader:
+            image = Image()
+            image.google_imageid = row['ImageID']
+            image.image_url = row['OriginalURL']
+            image.original_landing_url = row['OriginalLandingURL']
+            image.license_url = row['License']
+            image.author_url = row['AuthorProfileURL']
+            image.author = row['Author']
+            image.title = row['Title']
+            db.session.add(image)
+            try:
+                db.session.commit()
+                log.info("Adding image %s", row['ImageID'])
+            except IntegrityError:
+                log.debug("Skipping already-loaded image %s", row['ImageID'])
+                db.session.rollback()
 
 def download_from_s3(filename, bucket_name, source):
     """Download the named file from the CC openledger bucket to begin processing it"""
@@ -46,13 +49,10 @@ def download_from_s3(filename, bucket_name, source):
     except botocore.exceptions.ProfileNotFound:
         session = boto3.Session()
     s3 = session.client('s3')
-    obj = s3.get_object(Bucket=bucket_name, Key=filename)
-    data = obj['Body']
-    with tempfile.TemporaryFile() as fp:
-        fp.write(data.read())
-        fp.seek(0)
-        if source == 'openimages':
-            import_from_open_images(fp)
+    f = tempfile.NamedTemporaryFile()
+    s3.download_file(Bucket=bucket_name, Key=filename, Filename=f.name)
+    if source == 'openimages':
+        import_from_open_images(f.name)
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
@@ -71,6 +71,5 @@ if __name__ == '__main__':
     args = parser.parse_args()
     if args.filesystem == 's3':
         download_from_s3(args.filepath, args.bucket_name, args.source)
-    if args.source == 'openimages':
-        with open(args.filepath) as fh:
-            import_from_open_images(fh)
+    elif args.source == 'openimages':
+        import_from_open_images(args.filepath)
