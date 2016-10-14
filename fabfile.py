@@ -149,7 +149,7 @@ def deploy():
 def restart_host():
     sudo('service openledger restart', shell=False)
 
-
+# Configuration for EC2 startup
 user_data = """
 #cloud-config
 repo_update: true

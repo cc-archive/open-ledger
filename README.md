@@ -59,7 +59,7 @@ items _enter_ the record, changes to metadata are recorded, and new
 instances of that work appear on known partners. Right now this is purely
 theoretical.
 
-## Installation
+## Installation for development
 
 * Python 3
 
@@ -103,6 +103,42 @@ GRANT
 
 ## Instance configuration
 
+### Elastic Beanstalk deployment
+
+The application is already set up in EB. See the `open-ledger` Application and
+`open-ledger-dev` Environment in the EB console.
+
+### EC2 Loader
+
+Elastic Beanstalk spins up `t2.micro` web workers and a database host, but
+at times it will be necessary to spin up purpose-built EC2 instances to perform
+certain one-off tasks like these large loading jobs.
+
+Fabric is set up to do a limited amount of management of these instances. You'll
+need SSH keys that are registered with AWS:
+
+```fab launchloader -i /path/to/ssh/keys```
+
+Will spin up a single instance of `INSTANCE_TYPE`, provision its packages, and
+install the latest version of the code `from Github` (make sure local changes are pushed!)
+
+Be sure to have in your environment the following values:
+
+```
+export OPEN_LEDGER_LOADER_AMI="XXX" # The AMI name
+export OPEN_LEDGER_LOADER_KEY_NAME="XXX" # An SSH key name registered with Amazon
+export OPEN_LEDGER_LOADER_SECURITY_GROUPS="XXX,XXX" # One or more security groups
+```
+
+You'll need to register the RDS security group here if you want to reach the database.
+
+TODO snapshotting the AMI when it's mature would speed up start time
+
+### Manual install
+
+For installation on a "normal" host, like a Digital Ocean instance, use the instance
+configuration options provided by Flask:
+
 Flask uses the `instance/config.py` file per-host to specify environment variables. For this application, most of these are going to be API keys or database configuration.
 
 A sample is included in `config.py.example`. Copy that into `instance/config.py` and update the values for your host.
@@ -110,6 +146,8 @@ A sample is included in `config.py.example`. Copy that into `instance/config.py`
 ## Open Images dataset
 
 To include the Google-provided Open Images dataset from  https://github.com/openimages/dataset
+you can either download the files locally (faster) or use the versions
+on the CC S3 bucket (used by the AWS deployments)
 
 1. Download the files linked as:
 
@@ -120,13 +158,22 @@ To include the Google-provided Open Images dataset from  https://github.com/open
 
 2. Run the database import script:
 
+The script expects:
+
+* Path to a data file (usually CSV)
+* A 'source' label (the source of the dataset)
+* An identifier of the object type (usual 'images' but potentially also 'tags' or files
+that map images to tags.)
+
 ```
 . venv/bin/activate
-python database_import.py /path/to/images_2016_08/train/images.csv
-python database_import.py /path/to/images_2016_08/validation/images.csv
+
+python database_import.py /path/to/openimages/images_2016_08/validation/images.csv openimages images
+python database_import.py /path/to/openimages/dict.csv openimages tags
+python database_import.py /path/to/openimages/human_ann_2016_08/validation/labels.csv
 ```
 
-(This loads 9 million image records; be patient!)
+This loads the smaller "validation" subject; the "train" files are the full 9 million set.
 
 ## Development
 
