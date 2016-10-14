@@ -69,3 +69,4 @@ lxml
 html5lib==0.9999999
 cssselect
 boto3
+git+git://github.com/lizadaly/fabtools.git#egg=fabtools
