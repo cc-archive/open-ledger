@@ -17,11 +17,15 @@ CURRENT_BRANCH = 'master'
 DEBUG = False
 
 TAG = 'open-ledger-loader'
+DB_TAG = 'open-ledger'
 AMI = os.environ['OPEN_LEDGER_LOADER_AMI']
 KEY_NAME = os.environ['OPEN_LEDGER_LOADER_KEY_NAME']
 SECURITY_GROUPS = os.environ['OPEN_LEDGER_LOADER_SECURITY_GROUP'].split(',')
+REGION = os.environ['OPEN_LEDGER_REGION']
+ACCOUNT_NUMBER = os.environ['OPEN_LEDGER_ACCOUNT']
+DB_PASSWORD = os.environ['OPEN_LEDGER_DATABASE_PASSWORD']
 
-# INSTANCE_TYPE = 'r3.large'
+#INSTANCE_TYPE = 'r3.large'
 INSTANCE_TYPE = 't2.micro'
 
 console = logging.StreamHandler()
@@ -41,6 +45,7 @@ def launchloader():
     try:
         instance = _get_running_instance(resource, client)
         deploy_code(instance.public_ip_address)
+        load_data_from_instance(instance)
     except LoaderException as e:
         log.exception(e)
         instance.stop()
@@ -50,6 +55,11 @@ def launchloader():
         # Stop it if it's running
         #instance.stop()
         pass
+
+def load_data_from_instance():
+    """Call a loading job from an instance"""
+    database = _get_running_database()
+    print(database)
 
 def deploy_code(host_string):
     max_retries = 10
@@ -79,6 +89,27 @@ def terminate_loaders():
     instance_ids, resource = _get_running_instances()
     [resource.Instance(i).terminate() for i in instance_ids]
     log.info("Terminated instances %s", ", ".join(instance_ids)) if len(instance_ids) > 0 else None
+
+def _get_running_database():
+    """Get a single RDS instance we can connect to."""
+    client = _init_rds()
+    resp = client.describe_db_instances()
+    database = {}
+    for r in resp['DBInstances']:
+        identifier = r['DBInstanceIdentifier']
+        resource_identifier = "arn:aws:rds:{}:{}:db:{}".format(REGION, ACCOUNT_NUMBER, identifier)
+        tags = client.list_tags_for_resource(ResourceName=resource_identifier)['TagList']
+        for tag in tags:
+            if tag.get('Key') == 'elasticbeanstalk:environment-name':
+                environment_name = tag.get('Value')
+                if environment_name == 'open-ledger-dev':
+                    # This is the one we want, finally, geez who made this API
+                    database['host'] = r['Endpoint']['Address']
+                    database['port'] = r['Endpoint']['Port']
+                    database['name'] = r['DBName']
+                    database['user'] = r['MasterUsername']
+                    database['password'] = DB_PASSWORD
+                    return database
 
 def _get_running_instances():
     resource, client = _init_ec2()
@@ -113,6 +144,7 @@ def _get_running_instance(resource, client):
                 instance = resource.Instance(i['InstanceId'])
                 log.debug("Starting previously stopped instance %s", i['InstanceId'])
                 instance.start()
+                instance.wait_until_running()
                 break
             if instance:
                 break
@@ -131,12 +163,21 @@ def _get_running_instance(resource, client):
             log.debug("Instance started: %r", instance)
     return instance
 
-def _init_ec2():
-    AMI = 'ami-27612947'
+def _init_aws():
     session = boto3.Session(profile_name='cc-openledger')
+    return session
+
+def _init_ec2():
+    session = _init_aws()
     resource = session.resource('ec2', region_name='us-west-1')
     client = session.client('ec2', region_name='us-west-1')
     return resource, client
+
+def _init_rds():
+    session = _init_aws()
+    client = session.client('rds', region_name='us-west-1')
+    return client
+
 
 def deploy():
     with cd(CODE_DIR):
