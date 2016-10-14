@@ -19,7 +19,7 @@ DEBUG = False
 TAG = 'open-ledger-loader'
 AMI = os.environ['OPEN_LEDGER_LOADER_AMI']
 KEY_NAME = os.environ['OPEN_LEDGER_LOADER_KEY_NAME']
-SECURITY_GROUP = os.environ['OPEN_LEDGER_LOADER_SECURITY_GROUP']
+SECURITY_GROUPS = os.environ['OPEN_LEDGER_LOADER_SECURITY_GROUP'].split(',')
 
 # INSTANCE_TYPE = 'r3.large'
 INSTANCE_TYPE = 't2.micro'
@@ -29,7 +29,7 @@ log = logging.getLogger(__name__)
 log.addHandler(console)
 log.setLevel(logging.DEBUG)
 
-log.debug("Starting up with ami=%s, key=%s, security=%s", AMI, KEY_NAME, SECURITY_GROUP)
+log.debug("Starting up with ami=%s, key=%s", AMI, KEY_NAME)
 
 class LoaderException(Exception):
     pass
@@ -52,7 +52,7 @@ def launchloader():
         pass
 
 def deploy_code(host_string):
-    max_retries = 5
+    max_retries = 10
     retries = 0
     with settings(host_string="ec2-user@" + host_string):
         while True:
@@ -61,7 +61,7 @@ def deploy_code(host_string):
                 with cd('open-ledger'):
                     run('virtualenv venv --python=python3')
                     run('./venv/bin/pip install -r loader-requirements.txt -q')
-                    retries = 6
+                    retries = 999
             except NetworkError:
                 time.sleep(5)
                 retries += 1
@@ -120,7 +120,7 @@ def _get_running_instance(resource, client):
         if not instance:
             log.debug("No stopped instances found; starting a brand new one...")
             instance = resource.create_instances(MinCount=1, MaxCount=1,
-                                                 SecurityGroups=[SECURITY_GROUP],
+                                                 SecurityGroups=SECURITY_GROUPS,
                                                  KeyName=KEY_NAME,
                                                  InstanceType=INSTANCE_TYPE,
                                                  UserData=user_data,

@@ -63,7 +63,7 @@ def by_image():
 @app.route ("/ledger/detail/<identifier>")
 def detail(identifier):
     """Get a detailed representation of an item in the ledger"""
-    image = Image.query.filter_by(image.identifier).first()
+    image = Image.query.filter_by(identifier=identifier).first()
     url = image.url
     provider_url = image.foreign_landing_url
     title = image.title
