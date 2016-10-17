@@ -44,6 +44,8 @@ def photos(search=None, licenses=["ALL"], page=1, per_page=20, **kwargs):
                          page=page,
                          per_page=per_page)
     photos['photos']['total'] = int(photos['photos']['total'])  # seriously why is this a string
-    photos['photos']['pages'] = int(photos['photos']['pages'])  # seriously why is this a string
-
+    photos['photos']['pages'] = int(photos['photos']['pages'])
+    for p in photos['photos']['photo']:
+        p['url'] = p.get('url_l') or p.get('url_m') or p.get('url_s') or ""
+        p['thumbnail'] = p.get('url_s') or ""
     return photos

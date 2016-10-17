@@ -1,3 +1,5 @@
+import logging
+
 from flask import Flask, render_template, request
 from sqlalchemy import and_, or_, not_, distinct
 
@@ -17,6 +19,8 @@ search_funcs = {
     "wikimedia": search_wikimedia,
 }
 
+log = logging.getLogger(__name__)
+
 @app.route("/")
 def index(provider=None):
     """Primary entry point for the search page"""
@@ -29,7 +33,6 @@ def index(provider=None):
                                          licenses=search_data['licenses'],
                                          page=search_data['page'],
                                          per_page=search_data['per_page'])
-
     return render_template('index.html',
                            results=results,
                            form=form,
@@ -118,7 +121,13 @@ def init_search(provider=None):
     search = request.args.get('search')
     if search:
         search = search.lower().strip()
-    user_licenses = request.args.getlist('licenses') or ["ALL"]
+    user_licenses = request.args.getlist('licenses') or [licenses.DEFAULT_LICENSE]
+
+    # Ensure that all the licenses evaluate to something
+    for i, l in enumerate(user_licenses):
+        if l not in licenses.LICENSE_LIST:
+            log.warn("Got an unknown license %s, setting to default %s", l, licenses.DEFAULT_LICENSE)
+            user_licenses[i] = licenses.DEFAULT_LICENSE
 
     # Prepopulate the user's search data in the form
     form.search.process_data(search)

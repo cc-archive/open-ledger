@@ -4,6 +4,7 @@ import logging
 log = logging.getLogger(__name__)
 
 LICENSE_URL_BASE = "https://creativecommons.org"
+
 LICENSES = (
     ("BY", "Attribution"),
     ("BY-NC", "Attribution NonCommercial"),
@@ -14,6 +15,10 @@ LICENSES = (
     ("PDM", "Public Domain Mark"),
     ("CC0", "Public Domain Dedication"),
 )
+
+LICENSE_LIST = set(l[0] for l in LICENSES)
+
+DEFAULT_LICENSE = "ALL"
 
 LICENSE_GROUPS = {
     # All open licenses

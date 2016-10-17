@@ -30,11 +30,11 @@
         {% for result in results.flickr.photos.photo %}
 
           {% set creator = result.ownername %}
-          {% set image_url = result.url_l %}
+          {% set image_url = result.url %}
           {% set orig_license = result.license|int %}
-          {% set license = license_map.flickr[orig_license].lower() %}
+          {% set license = license_map.flickr.get(orig_license, "").lower() %}
           {% set provider_url = "https://www.flickr.com/photos/" + result.owner + "/" + result.id %}
-          {% set thumbnail = result.url_s %}
+          {% set thumbnail = result.thumbnail %}
           {% set title = result.title %}
           {% set provider = "flickr" %}
           {% set detail_url = url_for('by_image', url=image_url, provider_url=provider_url, license=license, creator=creator, title=title, provider=provider) %}
@@ -54,7 +54,7 @@
       <div class="row">
         {% for result in results.fpx.photos %}
           {% set creator = result.user.username %}
-          {% set license = license_map.fpx[result.license_type].lower() %}
+          {% set license = license_map.fpx.get(result.license_type, "").lower() %}
           {% set provider_url = "https://500px.com/" + result.url %}
           {% set title = result.name %}
           {% set url = result.images.1.https_url %}
