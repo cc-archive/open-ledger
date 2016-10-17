@@ -1,6 +1,8 @@
 import json
 import os
 
+import html5lib
+from lxml.html import tostring, html5parser
 import responses
 
 def activate_all_provider_mocks():
@@ -39,3 +41,8 @@ def load_json_data(datafile):
     """Load testing data in JSON format relative to the path where the test lives"""
     dir_path = os.path.dirname(os.path.realpath(__file__))
     return json.loads(open(os.path.join(dir_path, datafile)).read())
+
+def select_node(rv, selector):
+    """Give a response from Flask, return just the HTML fragment defined by `selector`"""
+    h = html5lib.parse(rv.data.decode('utf-8'), treebuilder='lxml', namespaceHTMLElements=False)
+    return h.getroot().cssselect(selector)[0]

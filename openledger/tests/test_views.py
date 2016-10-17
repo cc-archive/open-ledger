@@ -1,7 +1,6 @@
 import unittest
 import responses
-from lxml.html import tostring, html5parser
-import html5lib
+
 from flask import request
 
 from openledger import app
@@ -34,8 +33,7 @@ class TestViews(unittest.TestCase):
         query = 'test'
         with self.app as c:
             rv = self.app.get('/?search=' + query)
-            h = html5lib.parse(rv.data.decode('utf-8'), treebuilder='lxml', namespaceHTMLElements=False)
-            p = h.getroot().cssselect('.pagination-next a')[0]
+            p = select_node(rv, '.pagination-next a')
             assert 'flickr' in p.attrib['href']
 
     @responses.activate
@@ -45,11 +43,8 @@ class TestViews(unittest.TestCase):
         query = 'test&licenses=CC0'
         with self.app as c:
             rv = self.app.get('/?search=' + query)
-            h = html5lib.parse(rv.data.decode('utf-8'), treebuilder='lxml', namespaceHTMLElements=False)
-            p = h.getroot().cssselect('.pagination-next a')[0]
+            p = select_node(rv, '.pagination-next a')
             assert license in p.attrib['href']
-
-
 
     def test_openimages(self):
         """The openimages endpoint should load without errors"""
