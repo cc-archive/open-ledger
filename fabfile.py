@@ -9,6 +9,8 @@ from fabric.api import local, settings, abort, run, cd, env, put, sudo, hosts
 from fabric.contrib.console import confirm
 from fabric.exceptions import NetworkError
 
+import database_import
+
 timestamp="release-%s" % int(time.time() * 1000)
 
 CODE_DIR = '/home/liza/open-ledger'
@@ -20,9 +22,10 @@ TAG = 'open-ledger-loader'
 DB_TAG = 'open-ledger'
 AMI = os.environ['OPEN_LEDGER_LOADER_AMI']
 KEY_NAME = os.environ['OPEN_LEDGER_LOADER_KEY_NAME']
-SECURITY_GROUPS = os.environ['OPEN_LEDGER_LOADER_SECURITY_GROUP'].split(',')
+SECURITY_GROUPS = os.environ['OPEN_LEDGER_LOADER_SECURITY_GROUPS'].split(',')
 REGION = os.environ['OPEN_LEDGER_REGION']
 ACCOUNT_NUMBER = os.environ['OPEN_LEDGER_ACCOUNT']
+
 DB_PASSWORD = os.environ['OPEN_LEDGER_DATABASE_PASSWORD']
 
 #INSTANCE_TYPE = 'r3.large'
@@ -48,7 +51,7 @@ def launchloader():
         load_data_from_instance(instance)
     except LoaderException as e:
         log.exception(e)
-        instance.stop()
+        instance.terminate()
     except:
         raise
     finally:
@@ -56,22 +59,26 @@ def launchloader():
         #instance.stop()
         pass
 
-def load_data_from_instance():
+def load_data_from_instance(instance):
     """Call a loading job from an instance"""
     database = _get_running_database()
-    print(database)
+    image_data_large = 'openimages/images_2016_08/train/images.csv'
+    with settings(host_string="ec2-user@" + instance.public_ip_address):
+        with cd('open-ledger'):
+            run('./venv/bin/python database_import.py {image_data_large} openimages images --filesystem s3'.format(image_data_large=image_data_large))
 
 def deploy_code(host_string):
-    max_retries = 10
+    max_retries = 20
     retries = 0
     with settings(host_string="ec2-user@" + host_string):
         while True:
             try:
                 fabtools.require.git.working_copy('https://github.com/creativecommons/open-ledger.git')
                 with cd('open-ledger'):
-                    run('virtualenv venv --python=python3')
+                    run('virtualenv venv --python=python3 -q')
+                    run('./venv/bin/pip install --upgrade pip -q')
                     run('./venv/bin/pip install -r loader-requirements.txt -q')
-                    retries = 999
+                    break
             except NetworkError:
                 time.sleep(5)
                 retries += 1
@@ -178,7 +185,7 @@ def _init_rds():
     client = session.client('rds', region_name='us-west-1')
     return client
 
-
+# Legacy deployment mechanism for Digital Ocean hosts
 def deploy():
     with cd(CODE_DIR):
         run('git pull origin ' + CURRENT_BRANCH)
