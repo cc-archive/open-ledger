@@ -119,8 +119,8 @@ def init_search(provider=None):
     results = {}
     form = forms.SearchForm()
     search = request.args.get('search')
-    if search:
-        search = search.lower().strip()
+    search = search.lower().strip() if search else None
+
     user_licenses = request.args.getlist('licenses') or [licenses.DEFAULT_LICENSE]
 
     # Ensure that all the licenses evaluate to something

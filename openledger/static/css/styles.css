@@ -19,15 +19,15 @@ h5 {
   margin-top: 4rem;
 }
 
-legend, ul#licenses, ul#licenses li {
+legend, ul#licenses, ul#licenses li, ul#search_fields, ul#search_fields li {
   display: inline-block;
   margin: 0;
   line-height: 1rem;
 }
-ul#licenses li {
+ul#licenses li, ul#search_fields li {
   font-size: 0.5rem;
 }
-ul#licenses input {
+ul#licenses input, ul#search_fields input {
   margin: 0
 }
 .hero {

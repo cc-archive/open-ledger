@@ -1,21 +1,33 @@
 <form method="GET" action="{{ endpoint }}">
-<div class="callout primary">
-
- <div class="row">
-   <div class="column medium-6">
-     {{ form.search.label }}
-     {{ form.search }}
-     <p>Searches to try: <a href="{{ endpoint }}?search=paris">paris</a> | <a href="{{ endpoint }}?search=sunset">sunset</a> | <a href="{{ endpoint }}?search=open">open</a> </p>
-   </div>
-   <div class="column medium-6">
-     <fieldset>
-       <legend>
-         I want something I can...
-       </legend>
-     {{ form.licenses }}
-     <input type="submit" class="button" value="GO" />
-     </fieldset>
-   </div>
- </div>
-</form>
+  <div class="callout primary">
+    <div class="row">
+      <div class="column medium-6">
+        {{ form.search.label }} {{ form.search }}
+      </div>
+      <div class="column medium-6">
+        <fieldset>
+          <legend>
+            I want something I can...
+          </legend>
+          {{ form.licenses }}
+          <input type="submit" class="button" value="GO" />
+        </fieldset>
+      </div>
+    </div>
+    <div class="row">
+        <div class="column">
+          <p>Searches to try: <a href="{{ endpoint }}?search=paris">paris</a> | <a href="{{ endpoint }}?search=sunset">sunset</a> | <a href="{{ endpoint }}?search=open">open</a> </p>
+        </div>
+        {% if endpoint.endswith('openimages') %}
+        <div class="column">
+          <fieldset>
+            <legend style="margin-right: 1rem">
+              Search within:
+            </legend>
+            {{ form.search_fields }}
+          </fieldset>
+        </div>
+        {% endif %}
+    </div>
+  </form>
 </div>

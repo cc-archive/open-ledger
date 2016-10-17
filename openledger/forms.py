@@ -5,7 +5,13 @@ from wtforms import widgets
 
 LICENSE_CHOICES = (
     ('ALL-$', 'Use for commercial purposes'),
-    ('ALL-MOD', 'Modify, adapt, or build upon'),
+    ('ALL-MOD', 'Modify, adapt, or build upon')
+)
+# Search within only these fields
+FIELD_CHOICES = (
+    ('title', 'Title'),
+    ('creator', 'Creator'),
+    ('tags', 'Tags')
 )
 
 class MultiCheckboxField(SelectMultipleField):
@@ -21,3 +27,4 @@ class MultiCheckboxField(SelectMultipleField):
 class SearchForm(Form):
     search = StringField('Search', validators=[DataRequired()])
     licenses = MultiCheckboxField('License', choices=LICENSE_CHOICES)
+    search_fields = MultiCheckboxField('Fields', choices=FIELD_CHOICES, default=['title', 'creator', 'tags'])
