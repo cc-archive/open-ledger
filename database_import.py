@@ -16,7 +16,7 @@ console = logging.StreamHandler()
 
 log = logging.getLogger(__name__)
 log.addHandler(console)
-log.setLevel(logging.INFO)
+log.setLevel(logging.DEBUG)
 
 TAG_CONFIDENCE_THRESHOLD = 0.5  # Don't import tags with confidence levels lower than this
 

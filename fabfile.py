@@ -6,6 +6,7 @@ import logging
 
 import fabtools
 from fabric.api import local, settings, abort, run, cd, env, put, sudo, hosts
+from fabric.context_managers import shell_env
 from fabric.contrib.console import confirm
 from fabric.exceptions import NetworkError
 
@@ -25,8 +26,9 @@ KEY_NAME = os.environ['OPEN_LEDGER_LOADER_KEY_NAME']
 SECURITY_GROUPS = os.environ['OPEN_LEDGER_LOADER_SECURITY_GROUPS'].split(',')
 REGION = os.environ['OPEN_LEDGER_REGION']
 ACCOUNT_NUMBER = os.environ['OPEN_LEDGER_ACCOUNT']
-
 DB_PASSWORD = os.environ['OPEN_LEDGER_DATABASE_PASSWORD']
+AWS_ACCESS_KEY_ID = os.environ['OPEN_LEDGER_ACCESS_KEY_ID']
+AWS_SECRET_ACCESS_KEY = os.environ['OPEN_LEDGER_SECRET_ACCESS_KEY']
 
 #INSTANCE_TYPE = 'r3.large'
 INSTANCE_TYPE = 't2.micro'
@@ -65,7 +67,14 @@ def load_data_from_instance(instance):
     image_data_large = 'openimages/images_2016_08/train/images.csv'
     with settings(host_string="ec2-user@" + instance.public_ip_address):
         with cd('open-ledger'):
-            run('./venv/bin/python database_import.py {image_data_large} openimages images --filesystem s3'.format(image_data_large=image_data_large))
+            with shell_env(RDS_USERNAME=str(database['user']),
+                           RDS_PASSWORD=str(database['password']),
+                           RDS_HOSTNAME=str(database['host']),
+                           RDS_PORT=str(database['port']),
+                           RDS_DB_NAME=str(database['name']),
+                           AWS_SECRET_ACCESS_KEY=AWS_SECRET_ACCESS_KEY,
+                           AWS_ACCESS_KEY_ID=AWS_ACCESS_KEY_ID,):
+                           run('./venv/bin/python database_import.py {image_data_large} openimages images --filesystem s3'.format(image_data_large=image_data_large))
 
 def deploy_code(host_string):
     max_retries = 20
@@ -76,8 +85,7 @@ def deploy_code(host_string):
                 fabtools.require.git.working_copy('https://github.com/creativecommons/open-ledger.git')
                 with cd('open-ledger'):
                     run('virtualenv venv --python=python3 -q')
-                    run('./venv/bin/pip install --upgrade pip -q')
-                    run('./venv/bin/pip install -r loader-requirements.txt -q')
+                    run('./venv/bin/pip install -r requirements.txt -q')
                     break
             except NetworkError:
                 time.sleep(5)
@@ -212,4 +220,8 @@ packages:
  - postgresql93
  - postgresql93-devel
  - libjpeg-turbo-devel
+ - libxml2
+ - libxml2-devel
+ - libxslt
+ - libxslt-devel
 """
