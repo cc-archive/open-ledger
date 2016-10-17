@@ -108,10 +108,15 @@ def openimages():
             ).paginate(page=search_data['page'],
                        per_page=search_data['per_page'],
                        error_out=False)
+
+    # Search data with fields we want to override in pagination removed
+    search_data_for_pagination = {i:search_data[i] for i in search_data if i != 'page'}
+
     return render_template('openimages.html',
                            results=results,
                            form=form,
-                           search_data=search_data,)
+                           search_data=search_data,
+                           search_data_for_pagination=search_data_for_pagination)
 
 def init_search(provider=None):
     """Set up common search initialization; returns a tuple of the initialized

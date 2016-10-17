@@ -27,7 +27,7 @@
 
       <li class="pagination-previous {{ "disabled" if results.page == 1 }}">
         {% if results.page > 1 %}
-          <a aria-label="Previous page" href="{{ url_for('openimages', page=search_data.page-1, per_page=search_data.per_page, search=search_data.search) }}">Previous</a>
+          <a aria-label="Previous page" href="{{ url_for('openimages', page=search_data.page-1, **search_data_for_pagination) }}">Previous</a>
         {% else %}
           Previous
         {% endif %}
@@ -35,7 +35,7 @@
 
       <li class="pagination-next {{ "disabled" if results.page >= results.pages }}">
         {% if results.page < results.pages %}
-        <a aria-label="Next page" href="{{ url_for('openimages', page=search_data.page+1, per_page=search_data.per_page, search=search_data.search) }}">Next</a>
+        <a aria-label="Next page" href="{{ url_for('openimages', page=search_data.page+1, **search_data_for_pagination) }}">Next</a>
         {% else %}
           Next
         {% endif %}
