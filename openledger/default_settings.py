@@ -22,4 +22,4 @@ except ImportError:
                                                                    os.environ['RDS_PORT'],
                                                                    os.environ['RDS_DB_NAME'])
 
-    SQLALCHEMY_TRACK_MODIFICATIONS = os.environ.get('SQLALCHEMY_TRACK_MODIFICATIONS')
+    SQLALCHEMY_TRACK_MODIFICATIONS = False # os.environ.get('SQLALCHEMY_TRACK_MODIFICATIONS')

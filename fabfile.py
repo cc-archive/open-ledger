@@ -53,7 +53,7 @@ def launchloader():
         load_data_from_instance(instance)
     except LoaderException as e:
         log.exception(e)
-        instance.terminate()
+        #instance.terminate()
     except:
         raise
     finally:
@@ -79,6 +79,7 @@ def load_data_from_instance(instance):
 def deploy_code(host_string):
     max_retries = 20
     retries = 0
+    log.debug("Waiting for instance to answer on ssh at {}".format(host_string))
     with settings(host_string="ec2-user@" + host_string):
         while True:
             try:
@@ -90,6 +91,7 @@ def deploy_code(host_string):
             except NetworkError:
                 time.sleep(5)
                 retries += 1
+                log.debug("Retrying {} of {}...".format(retries, max_retries))
             if retries > max_retries:
                 raise LoaderException("Timed out waiting for ssh")
 
@@ -105,8 +107,8 @@ def terminate_loaders():
     [resource.Instance(i).terminate() for i in instance_ids]
     log.info("Terminated instances %s", ", ".join(instance_ids)) if len(instance_ids) > 0 else None
 
-def _get_running_database():
-    """Get a single RDS instance we can connect to."""
+def _get_running_database(allow_ip=None):
+    """Get a single RDS instance we can connect to. If allow_ip is set, add that to the database's ACL """
     client = _init_rds()
     resp = client.describe_db_instances()
     database = {}
@@ -124,6 +126,11 @@ def _get_running_database():
                     database['name'] = r['DBName']
                     database['user'] = r['MasterUsername']
                     database['password'] = DB_PASSWORD
+                    _, ec2 = _init_ec2()
+                    group_id = ec2.describe_security_groups(GroupNames=['default'])['SecurityGroups'][0]['GroupId']
+                    client.modify_db_instance(DBInstanceIdentifier=identifier,
+                                              VpcSecurityGroupIds=[group_id])
+                    log.info("Returning database at {}".format(database['host']))
                     return database
 
 def _get_running_instances():
@@ -166,8 +173,10 @@ def _get_running_instance(resource, client):
 
         if not instance:
             log.debug("No stopped instances found; starting a brand new one...")
+            database = _get_running_database()
+            security_groups = SECURITY_GROUPS
             instance = resource.create_instances(MinCount=1, MaxCount=1,
-                                                 SecurityGroups=SECURITY_GROUPS,
+                                                 SecurityGroups=security_groups,
                                                  KeyName=KEY_NAME,
                                                  InstanceType=INSTANCE_TYPE,
                                                  UserData=user_data,
@@ -220,8 +229,4 @@ packages:
  - postgresql93
  - postgresql93-devel
  - libjpeg-turbo-devel
- - libxml2
- - libxml2-devel
- - libxslt
- - libxslt-devel
 """
