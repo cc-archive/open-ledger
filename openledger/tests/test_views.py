@@ -35,30 +35,27 @@ class TestViews(unittest.TestCase):
     def test_pagination_links_provider(self):
         """The links to paginate among providers should appear and resolve correctly"""
         query = 'test'
-        with self.app as c:
-            rv = self.app.get('/?search=' + query)
-            p = select_node(rv, '.pagination-next a')
-            assert 'flickr' in p.attrib['href']
+        rv = self.app.get('/?search=' + query)
+        p = select_node(rv, '.pagination-next a')
+        assert 'flickr' in p.attrib['href']
 
     @responses.activate
     def test_pagination_links_license(self):
         """[#41] The links to paginate among providers with license filters should include the license"""
         license = 'CC0'
         query = 'test&licenses=' + license
-        with self.app as c:
-            rv = self.app.get('/?search=' + query)
-            p = select_node(rv, '.pagination-next a')
-            assert license in p.attrib['href']
+        rv = self.app.get('/?search=' + query)
+        p = select_node(rv, '.pagination-next a')
+        assert license in p.attrib['href']
 
     @responses.activate
     def test_unknown_license_ignored(self):
         """[#40] The links to paginate among providers with license filters should include the license"""
         license = 'unknown'
         query = 'test&licenses=' + license
-        with self.app as c:
-            rv = self.app.get('/?search=' + query)
-            assert rv.status_code == 200
-            p = select_node(rv, 'body')
+        rv = self.app.get('/?search=' + query)
+        assert rv.status_code == 200
+        p = select_node(rv, 'body')
 
     def test_openimages(self):
         """The openimages endpoint should load without errors"""

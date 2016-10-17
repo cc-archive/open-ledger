@@ -45,4 +45,7 @@ def load_json_data(datafile):
 def select_node(rv, selector):
     """Give a response from Flask, return just the HTML fragment defined by `selector`"""
     h = html5lib.parse(rv.data.decode('utf-8'), treebuilder='lxml', namespaceHTMLElements=False)
-    return h.getroot().cssselect(selector)[0]
+    r = h.getroot().cssselect(selector)
+    if r and len(r) > 0:
+        return r[0]
+    return {}

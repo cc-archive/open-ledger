@@ -91,11 +91,17 @@ def openimages():
     """Search a local database of images sourced from Google's OpenImage project"""
     results = []
     form, search_data = init_search()
-
     # For each search term, check in both the image title field and linked Tags
     if search_data['search']:
         terms = search_data['search'].split(' ')
-        results = Image.query.distinct().join('tags').filter(
+
+        # If we're searching tags, we need a join; otherwise nope
+        if 'tags' in search_data:
+            filter_query = Image.query.distinct().join('tags').filter
+        else:
+            filter_query = Image.query.distinct().filter
+
+        results = filter_query(
             and_(
                 *[
                     or_(
@@ -111,7 +117,6 @@ def openimages():
 
     # Search data with fields we want to override in pagination removed
     search_data_for_pagination = {i:search_data[i] for i in search_data if i != 'page'}
-
     return render_template('openimages.html',
                            results=results,
                            form=form,

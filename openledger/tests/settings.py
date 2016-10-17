@@ -16,3 +16,7 @@ SQLALCHEMY_DATABASE_URI = 'postgresql://{}:{}@{}:{}/{}'.format('cctest',
                                                                'openledgertest')
 
 SQLALCHEMY_TRACK_MODIFICATIONS = False
+
+DEBUG_TB_ENABLED = False
+
+TESTING=True
