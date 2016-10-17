@@ -97,8 +97,16 @@ postgres=# CREATE USER XXX WITH PASSWORD 'XXX';
 CREATE ROLE
 postgres=# create database openledger;
 CREATE DATABASE
-postgres=# GRANT ALL PRIVILEGES ON DATABASE "openledger" to XXX;
+postgres=# GRANT ALL PRIVILEGES ON DATABASE openledger to XXX;
 GRANT
+```
+
+Set up a testing database as well:
+
+```
+create user cctest with password 'cctest';
+create database openledgertest;
+grant all privileges on database openledgertest to cctest;
 ```
 
 ## Instance configuration
@@ -117,7 +125,9 @@ certain one-off tasks like these large loading jobs.
 Fabric is set up to do a limited amount of management of these instances. You'll
 need SSH keys that are registered with AWS:
 
-```fab launchloader -i /path/to/ssh/keys```
+```
+fab launchloader
+```
 
 Will spin up a single instance of `INSTANCE_TYPE`, provision its packages, and
 install the latest version of the code `from Github` (make sure local changes are pushed!)
@@ -127,7 +137,12 @@ Be sure to have in your environment the following values:
 ```
 export OPEN_LEDGER_LOADER_AMI="XXX" # The AMI name
 export OPEN_LEDGER_LOADER_KEY_NAME="XXX" # An SSH key name registered with Amazon
-export OPEN_LEDGER_LOADER_SECURITY_GROUPS="XXX,XXX" # One or more security groups
+export OPEN_LEDGER_LOADER_SECURITY_GROUPS="default,open-ledger-loader"
+export OPEN_LEDGER_REGION="us-west-1"
+export OPEN_LEDGER_ACCOUNT="XXX"  # The AWS account for CC
+export OPEN_LEDGER_DATABASE_PASSWORD="XXX" # This would've been set in RDS when the Elastic Beanstalk cluster was set up
+export OPEN_LEDGER_ACCESS_KEY_ID="XXX" # Use an IAM that can reach these hosts, like 'cc-openledger'
+export OPEN_LEDGER_SECRET_ACCESS_KEY="XXX"
 ```
 
 You'll need to register the RDS security group here if you want to reach the database.
