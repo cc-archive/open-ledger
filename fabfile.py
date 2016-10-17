@@ -30,8 +30,10 @@ DB_PASSWORD = os.environ['OPEN_LEDGER_DATABASE_PASSWORD']
 AWS_ACCESS_KEY_ID = os.environ['OPEN_LEDGER_ACCESS_KEY_ID']
 AWS_SECRET_ACCESS_KEY = os.environ['OPEN_LEDGER_SECRET_ACCESS_KEY']
 
-#INSTANCE_TYPE = 'r3.large'
-INSTANCE_TYPE = 't2.micro'
+# Override from the command line as fab --set instance_type=r3.large
+# This default is here to try to use the free tier whenever possible
+if not env.get('instance_type'):
+    env.instance_type = 't2.micro'
 
 console = logging.StreamHandler()
 log = logging.getLogger(__name__)
@@ -45,6 +47,8 @@ class LoaderException(Exception):
 
 def launchloader():
     """Launch an EC2 instance with the loader"""
+    print(env.instance_type)
+    return
     instance = None
     resource, client = _init_ec2()
     try:
@@ -53,12 +57,14 @@ def launchloader():
         load_data_from_instance(instance)
     except LoaderException as e:
         log.exception(e)
-        #instance.terminate()
-    except:
+        instance.terminate()
+    except Exception as e:
+        log.exception(e)
+        instance.terminate()
         raise
     finally:
         # Stop it if it's running
-        #instance.stop()
+        instance.stop()
         pass
 
 def load_data_from_instance(instance):
@@ -172,13 +178,13 @@ def _get_running_instance(resource, client):
                 break
 
         if not instance:
-            log.debug("No stopped instances found; starting a brand new one...")
+            log.debug("No stopped instances found; starting a brand new type %s instance...", env.instance_type)
             database = _get_running_database()
             security_groups = SECURITY_GROUPS
             instance = resource.create_instances(MinCount=1, MaxCount=1,
                                                  SecurityGroups=security_groups,
                                                  KeyName=KEY_NAME,
-                                                 InstanceType=INSTANCE_TYPE,
+                                                 InstanceType=env.instance_type,
                                                  UserData=user_data,
                                                  ImageId=AMI)[0]
             instance.wait_until_running()
