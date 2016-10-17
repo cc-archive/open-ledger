@@ -47,8 +47,6 @@ class LoaderException(Exception):
 
 def launchloader():
     """Launch an EC2 instance with the loader"""
-    print(env.instance_type)
-    return
     instance = None
     resource, client = _init_ec2()
     try:

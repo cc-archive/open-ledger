@@ -29,7 +29,7 @@ class TestViews(unittest.TestCase):
             assert request.args['search'] == query
 
     @responses.activate
-    def test_pagination_links(self):
+    def test_pagination_links_provider(self):
         """The links to paginate among providers should appear and resolve correctly"""
         query = 'test'
         with self.app as c:
@@ -37,6 +37,19 @@ class TestViews(unittest.TestCase):
             h = html5lib.parse(rv.data.decode('utf-8'), treebuilder='lxml', namespaceHTMLElements=False)
             p = h.getroot().cssselect('.pagination-next a')[0]
             assert 'flickr' in p.attrib['href']
+
+    @responses.activate
+    def test_pagination_links_license(self):
+        """The links to paginate among providers with license filters should include the license"""
+        license = 'CC0'
+        query = 'test&licenses=CC0'
+        with self.app as c:
+            rv = self.app.get('/?search=' + query)
+            h = html5lib.parse(rv.data.decode('utf-8'), treebuilder='lxml', namespaceHTMLElements=False)
+            p = h.getroot().cssselect('.pagination-next a')[0]
+            assert license in p.attrib['href']
+
+
 
     def test_openimages(self):
         """The openimages endpoint should load without errors"""
