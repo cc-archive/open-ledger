@@ -125,7 +125,8 @@ def init_search(provider=None):
 
     # Ensure that all the licenses evaluate to something
     for i, l in enumerate(user_licenses):
-        if l not in licenses.LICENSE_LIST:
+        user_licenses[i] = l.upper()
+        if user_licenses[i] not in licenses.LICENSE_LIST:
             log.warn("Got an unknown license %s, setting to default %s", l, licenses.DEFAULT_LICENSE)
             user_licenses[i] = licenses.DEFAULT_LICENSE
 
