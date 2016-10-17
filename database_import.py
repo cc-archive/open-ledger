@@ -1,5 +1,6 @@
 import argparse
 import csv
+import itertools
 import logging
 import os
 import tempfile
@@ -16,9 +17,48 @@ console = logging.StreamHandler()
 
 log = logging.getLogger(__name__)
 log.addHandler(console)
-log.setLevel(logging.INFO)
+log.setLevel(logging.DEBUG)
 
 TAG_CONFIDENCE_THRESHOLD = 0.5  # Don't import tags with confidence levels lower than this
+
+def grouper_it(n, iterable):
+    it = iter(iterable)
+    while True:
+        chunk_it = itertools.islice(it, n)
+        try:
+            first_el = next(chunk_it)
+        except StopIteration:
+            return
+        yield itertools.chain((first_el,), chunk_it)
+
+def _insert_image(iterator, reader, chunk_size):
+    for chunk in iterator(chunk_size, reader):
+        try:
+            for row in chunk:
+                if not Image.query.filter_by(foreign_identifier=row['ImageID']).first():
+                    image = Image()
+                    image.identifier = row['OriginalMD5']  # We get a nice unique, stable value, let's use it
+                    image.foreign_identifier = row['ImageID']
+                    image.url = row['OriginalURL']
+                    image.foreign_landing_url = row['OriginalLandingURL']
+                    image.license = 'BY'
+                    image.provider = 'flickr'
+                    image.source = 'openimages'
+                    image.license_version = '2.0'
+                    image.creator_url = row['AuthorProfileURL']
+                    image.creator = row['Author']
+                    image.title = row['Title']
+                    image.filesize = row['OriginalSize']
+
+                    log.debug("Adding image %s", row['ImageID'])
+                    db.session.add(image)
+                else:
+                    log.debug("Skipping existing image %s", row['ImageID'])
+            db.session.commit()
+            log.debug("*** Commiting set of %d", chunk_size)
+        except IntegrityError as e:
+            db.session.rollback()
+            log.debug(e)
 
 def import_images_from_openimages(filename):
     """Import image records from the `open-images` dataset"""
@@ -29,31 +69,9 @@ def import_images_from_openimages(filename):
         db.create_all()
         with open(filename) as fh:
             reader = csv.DictReader(fh)
-            for row in reader:
-                try:
-                    if not Image.query.filter_by(foreign_identifier=row['ImageID']).first():
-                        image = Image()
-                        image.identifier = row['OriginalMD5']  # We get a nice unique, stable value, let's use it
-                        image.foreign_identifier = row['ImageID']
-                        image.url = row['OriginalURL']
-                        image.foreign_landing_url = row['OriginalLandingURL']
-                        image.license = 'BY'
-                        image.provider = 'flickr'
-                        image.source = 'openimages'
-                        image.license_version = '2.0'
-                        image.creator_url = row['AuthorProfileURL']
-                        image.creator = row['Author']
-                        image.title = row['Title']
-                        image.filesize = row['OriginalSize']
+            chunk_size = 10
+            _insert_image(grouper_it, reader, chunk_size)
 
-                        log.debug("Adding image %s", row['ImageID'])
-                        db.session.add(image)
-                        db.session.commit()
-                    else:
-                        log.debug("Skipping existing image %s", row['ImageID'])
-                except IntegrityError as e:
-                    db.session.rollback()
-                    log.debug(e)
 
 def import_images_tags_from_openimages(filename):
     """Import tag/image relationships from the `open-images` dataset"""
