@@ -99,8 +99,9 @@ def openimages():
             and_(
                 *[
                     or_(
-                        Image.title.contains(s),
-                        Tag.name.startswith(s),
+                        Image.creator.ilike(s) if 'creator' in search_data.get('search_fields') else None,
+                        Image.title.contains(s) if 'title' in search_data.get('search_fields') else None,
+                        Tag.name == s if 'tags' in search_data.get('search_fields') else None,
                     ) for s in terms
                 ]
               )
@@ -122,6 +123,7 @@ def init_search(provider=None):
     search = search.lower().strip() if search else None
 
     user_licenses = request.args.getlist('licenses') or [licenses.DEFAULT_LICENSE]
+    search_fields = request.args.getlist('search_fields')
 
     # Ensure that all the licenses evaluate to something
     for i, l in enumerate(user_licenses):
@@ -133,12 +135,14 @@ def init_search(provider=None):
     # Prepopulate the user's search data in the form
     form.search.process_data(search)
     form.licenses.process_data(user_licenses)
+    form.search_fields.process_data(search_fields)
 
     search_data = {'search': search,
                    'page': request.args.get('page') or 1,
                    'per_page': request.args.get('per_page') or PER_PAGE,
                    'providers': search_funcs.keys() if not provider else [provider],
-                   'licenses': user_licenses}
+                   'licenses': user_licenses,
+                   'search_fields': search_fields}
 
     search_data['page'] = int(search_data['page'])
     search_data['per_page'] = int(search_data['per_page'])
