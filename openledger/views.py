@@ -91,6 +91,11 @@ def openimages():
     """Search a local database of images sourced from Google's OpenImage project"""
     results = []
     form, search_data = init_search()
+
+    # Set default values (all)
+    form.search_fields.default=forms.FIELD_DEFAULT
+    form.process()
+
     # For each search term, check in both the image title field and linked Tags
     if search_data['search']:
         terms = search_data['search'].split(' ')

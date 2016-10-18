@@ -13,6 +13,7 @@ FIELD_CHOICES = (
     ('creator', 'Creator'),
     ('tags', 'Tags')
 )
+FIELD_DEFAULT = [field[0] for field in FIELD_CHOICES]
 
 class MultiCheckboxField(SelectMultipleField):
     """
@@ -27,4 +28,4 @@ class MultiCheckboxField(SelectMultipleField):
 class SearchForm(Form):
     search = StringField('Search', validators=[DataRequired()])
     licenses = MultiCheckboxField('License', choices=LICENSE_CHOICES)
-    search_fields = MultiCheckboxField('Fields', choices=FIELD_CHOICES, default=['title', 'creator', 'tags'])
+    search_fields = MultiCheckboxField('Fields', choices=FIELD_CHOICES)

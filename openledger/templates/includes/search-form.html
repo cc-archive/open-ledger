@@ -16,7 +16,7 @@
     </div>
     <div class="row">
         <div class="column">
-          <p>Searches to try: <a href="{{ endpoint }}?search=paris">paris</a> | <a href="{{ endpoint }}?search=sunset">sunset</a> | <a href="{{ endpoint }}?search=open">open</a> </p>
+          <p>Searches to try: <a href="{{ endpoint }}?search=paris&search_fields=title&search_fields=tags">paris</a> | <a href="{{ endpoint }}?search=sunset&search_fields=title&search_fields=tags">sunset</a> | <a href="{{ endpoint }}?search=open&search_fields=title&search_fields=tags">open</a> </p>
         </div>
         {% if endpoint.endswith('openimages') %}
         <div class="column">
