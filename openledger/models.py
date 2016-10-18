@@ -77,7 +77,7 @@ class Image(db.Model):
     updated_on = db.Column(db.DateTime, server_default=db.func.now(), onupdate=db.func.now())
 
     def __repr__(self):
-        return '<Image %r by %r>' % (self.image_url, self.author)
+        return '<Image %r found at %r by %r>' % (self.identifier, self.url, self.creator)
 
 class Tag(db.Model):
     """A word or phrase associated with this image"""

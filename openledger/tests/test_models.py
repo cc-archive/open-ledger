@@ -36,6 +36,16 @@ class TestModels(unittest.TestCase):
         models.db.session.commit()
         assert models.Image.query.count() == 1
 
+    def test_image_model_repr(self):
+        """An image model representation should include its identifer, url, and creator"""
+        url = "http://example.com"
+        creator = "jane doe"
+        identifier = "1234"
+        image = models.Image(url=url, license="CC0", identifier=identifier, creator=creator)
+        assert url in image.__repr__()
+        assert creator in image.__repr__()
+        assert identifier in image.__repr__()
+
     def test_tag_model(self):
         """It should be possible to create a Tag with a few basic fields"""
         assert models.Tag.query.count() == 0
