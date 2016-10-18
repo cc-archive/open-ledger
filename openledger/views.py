@@ -96,7 +96,7 @@ def openimages():
         terms = search_data['search'].split(' ')
 
         # If we're searching tags, we need a join; otherwise nope
-        if 'tags' in search_data:
+        if 'tags' in search_data.get('search_fields'):
             filter_query = Image.query.distinct().join('tags').filter
         else:
             filter_query = Image.query.distinct().filter
