@@ -24,7 +24,7 @@
     {% if 'flickr' in results and results.flickr.photos.total > 0 %}
       <h5>Page {{ results.flickr.photos.page }} of {{ results.flickr.photos.pages }} page{{ results.flickr.photos.pages|pluralize }} from Flickr</h5>
 
-      {{ pagination.paginate(results.flickr.photos.page, results.flickr.photos.pages, search_data, 'flickr')}}
+      {{ pagination.paginate_api(results.flickr.photos.page, results.flickr.photos.pages, search_data, 'flickr')}}
 
       <div class="row">
         {% for result in results.flickr.photos.photo %}
@@ -42,14 +42,18 @@
           {{ image_result.show(detail_url, thumbnail, creator, title, license) }}
 
         {% endfor %}
+
       </div>
+
+     {{ pagination.paginate_api(results.flickr.photos.page, results.flickr.photos.pages, search_data, 'flickr')}}
+
     {% endif %}
 
     <!-- 500px -->
     {% if 'fpx' in results and results.fpx.total_items > 0 %}
       <h5>Page {{ results.fpx.current_page }} of {{ results.fpx.total_pages }} page{{ results.fpx.total_pages|pluralize }} from 500px</h5>
 
-      {{ pagination.paginate(results.fpx.current_page, results.fpx.total_pages, search_data, 'fpx')}}
+      {{ pagination.paginate_api(results.fpx.current_page, results.fpx.total_pages, search_data, 'fpx')}}
 
       <div class="row">
         {% for result in results.fpx.photos %}
@@ -65,13 +69,16 @@
           {{ image_result.show(detail_url, thumbnail, creator, title, license) }}
         {% endfor %}
       </div>
+
+      {{ pagination.paginate_api(results.fpx.current_page, results.fpx.total_pages, search_data, 'fpx')}}
+
     {% endif %}
 
     <!-- rijksmuseum -->
     {% if 'rijks' in results and results.rijks.count > 0 %}
     <h5>Page {{ results.rijks.page }} of {{ results.rijks.pages }} page{{ results.rijks.pages|pluralize }} from Rijksmuseum</h5>
 
-     {{ pagination.paginate(results.rijks.page, results.rijks.pages, search_data, 'rijks')}}
+     {{ pagination.paginate_api(results.rijks.page, results.rijks.pages, search_data, 'rijks')}}
 
       <div class="row">
         {% for result in results.rijks.artObjects %}
@@ -88,13 +95,16 @@
           {{ image_result.show(detail_url, thumbnail, creator, title, license) }}
         {% endfor %}
       </div>
+
+     {{ pagination.paginate_api(results.rijks.page, results.rijks.pages, search_data, 'rijks')}}
+
     {% endif %}
 
     <!-- Wikimedia -->
     {% if 'wikimedia' in results and results.wikimedia.total > 0 %}
     <h5>Page {{ results.wikimedia.page }} of {{ results.wikimedia.pages }} page{{ results.wikimedia.pages|pluralize }} from Wikimedia Commons</h5>
 
-     {{ pagination.paginate(results.wikimedia.page, results.wikimedia.pages, search_data, 'wikimedia')}}
+     {{ pagination.paginate_api(results.wikimedia.page, results.wikimedia.pages, search_data, 'wikimedia')}}
 
      <div class="row">
       {% for result in results.wikimedia.results %}
@@ -112,6 +122,8 @@
 
       {% endfor %}
      </div>
+
+     {{ pagination.paginate_api(results.wikimedia.page, results.wikimedia.pages, search_data, 'wikimedia')}}
     {% endif %}
   </div>
 {% endif %}

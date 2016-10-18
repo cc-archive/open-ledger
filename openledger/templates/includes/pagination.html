@@ -1,5 +1,5 @@
 
-{% macro paginate(page, pages, search_data, provider) -%}
+{% macro paginate_api(page, pages, search_data, provider) -%}
     <div class="row column text-center">
       <ul class="pagination" role="navigation" aria-label="Pagination">
 
@@ -22,4 +22,27 @@
     </div>
 
 {%- endmacro %}
-b
+
+{% macro paginate_openledger(page, pages, search_data) -%}
+<div class="row column text-center">
+  <ul class="pagination" role="navigation" aria-label="Pagination">
+
+    <li class="pagination-previous {{ "disabled" if page == 1 }}">
+      {% if page > 1 %}
+        <a aria-label="Previous page" href="{{ url_for('openimages', page=page-1, **search_data) }}">Previous</a>
+      {% else %}
+        Previous
+      {% endif %}
+    </li>
+
+    <li class="pagination-next {{ "disabled" if page >= pages }}">
+      {% if page < pages %}
+      <a aria-label="Next page" href="{{ url_for('openimages', page=page+1, **search_data) }}">Next</a>
+      {% else %}
+        Next
+      {% endif %}
+    </li>
+  </ul>
+</div>
+
+{%- endmacro %}

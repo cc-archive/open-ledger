@@ -22,43 +22,25 @@
 <div class="row column results">
 
   <h5>Page {{ results.page }} of {{ results.pages }} page{{ results.pages|pluralize }} from Open Images</h5>
-  <div class="row column text-center">
-    <ul class="pagination" role="navigation" aria-label="Pagination">
 
-      <li class="pagination-previous {{ "disabled" if results.page == 1 }}">
-        {% if results.page > 1 %}
-          <a aria-label="Previous page" href="{{ url_for('openimages', page=search_data.page-1, **search_data_for_pagination) }}">Previous</a>
-        {% else %}
-          Previous
-        {% endif %}
-      </li>
-
-      <li class="pagination-next {{ "disabled" if results.page >= results.pages }}">
-        {% if results.page < results.pages %}
-        <a aria-label="Next page" href="{{ url_for('openimages', page=search_data.page+1, **search_data_for_pagination) }}">Next</a>
-        {% else %}
-          Next
-        {% endif %}
-      </li>
-    </ul>
-  </div>
-
+   {{ pagination.paginate_openledger(results.page, results.pages, search_data_for_pagination) }}
 
     <div class="row">
       {% for result in results.items %}
-      {% set creator = result.creator %}
-      {% set license = result.license %}
-      {% set provider_url = result.foreign_landing_url %}
-      {% set title = result.title %}
-      {% set image_url = result.url %}
-      {% set thumbnail = result.url %}
+        {% set creator = result.creator %}
+        {% set license = result.license %}
+        {% set provider_url = result.foreign_landing_url %}
+        {% set title = result.title %}
+        {% set image_url = result.url %}
+        {% set thumbnail = result.url %}
 
-      {% set detail_url = url_for('detail', identifier=result.identifier) %}
+        {% set detail_url = url_for('detail', identifier=result.identifier) %}
 
-      {{ image_result.show(detail_url, thumbnail, creator, title, license) }}
+        {{ image_result.show(detail_url, thumbnail, creator, title, license) }}
 
       {% endfor %}
     </div>
+    {{ pagination.paginate_openledger(results.page, results.pages, search_data_for_pagination) }}
   </div>
   {% endif %}
 
