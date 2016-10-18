@@ -69,7 +69,7 @@ def import_images_from_openimages(filename):
         db.create_all()
         with open(filename) as fh:
             reader = csv.DictReader(fh)
-            chunk_size = 10
+            chunk_size = 1000
             _insert_image(grouper_it, reader, chunk_size)
 
 

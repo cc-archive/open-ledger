@@ -30,6 +30,9 @@ DB_PASSWORD = os.environ['OPEN_LEDGER_DATABASE_PASSWORD']
 AWS_ACCESS_KEY_ID = os.environ['OPEN_LEDGER_ACCESS_KEY_ID']
 AWS_SECRET_ACCESS_KEY = os.environ['OPEN_LEDGER_SECRET_ACCESS_KEY']
 
+EB_ENV_ENVIRONMENT_PROD = 'openledger'
+EB_ENV_ENVIRONMENT_DEV = 'openledger-dev'
+
 # Override from the command line as fab --set instance_type=r3.large
 # This default is here to try to use the free tier whenever possible
 if not env.get('instance_type'):
@@ -123,7 +126,7 @@ def _get_running_database(allow_ip=None):
         for tag in tags:
             if tag.get('Key') == 'elasticbeanstalk:environment-name':
                 environment_name = tag.get('Value')
-                if environment_name == 'open-ledger-dev':
+                if environment_name == EB_ENV_ENVIRONMENT_DEV:
                     # This is the one we want, finally, geez who made this API
                     database['host'] = r['Endpoint']['Address']
                     database['port'] = r['Endpoint']['Port']
