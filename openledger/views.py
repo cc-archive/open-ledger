@@ -86,6 +86,11 @@ def detail(identifier):
                            creator=creator,
                            creator_url=creator_url)
 
+@app.route('/fulltext')
+def fulltext():
+    """Search using the Elasticsearch interface"""
+    pass
+
 @app.route("/source/openimages")
 def openimages():
     """Search a local database of images sourced from Google's OpenImage project"""
