@@ -93,11 +93,12 @@ def index_all_images():
         image = db_image_to_index(db_image, defer_tags=True)
         if len(batches) > CHUNK_SIZE:
             log.debug("Pushing batch of %d records to ES", len(batches))
-            resp = helpers.bulk(es, batches)
-            log.debug(resp)
+            helpers.bulk(es, batches)
             batches = []  # Clear the batch size
         else:
             batches.append(image.to_dict(include_meta=True))
+
+    helpers.bulk(es, batches)
 
 def init():
     """Initialize all search objects"""

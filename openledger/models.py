@@ -1,4 +1,5 @@
 from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy.dialects import postgresql
 
 from openledger import app
 
@@ -72,6 +73,9 @@ class Image(db.Model):
     # Links to the tags table
     tags = db.relationship('Tag', secondary=image_tags, lazy='dynamic',
                            backref=db.backref('images', lazy='dynamic'))
+
+    # Denormalized tags as an array, for easier syncing with Elasticsearch
+    tags_list = db.Column(postgresql.ARRAY(db.String))
 
     created_on = db.Column(db.DateTime, server_default=db.func.now())
     updated_on = db.Column(db.DateTime, server_default=db.func.now(), onupdate=db.func.now())

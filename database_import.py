@@ -20,6 +20,8 @@ log.addHandler(console)
 log.setLevel(logging.INFO)
 
 TAG_CONFIDENCE_THRESHOLD = 0.5  # Don't import tags with confidence levels lower than this
+DEFAULT_CHUNK_SIZE = 1000
+
 
 def grouper_it(n, iterable):
     it = iter(iterable)
@@ -50,17 +52,18 @@ def _insert_image(iterator, reader, chunk_size):
                     image.title = row['Title']
                     image.filesize = row['OriginalSize']
 
-                    log.debug("Adding image %s", row['ImageID'])
+                    # log.debug("Adding image %s", row['ImageID'])
                     db.session.add(image)
                 else:
-                    log.debug("Skipping existing image %s", row['ImageID'])
+                    # log.debug("Skipping existing image %s", row['ImageID'])
+                    pass
             db.session.commit()
-            log.debug("*** Commiting set of %d", chunk_size)
+            log.debug("*** Committing set of %d images", chunk_size)
         except IntegrityError as e:
             db.session.rollback()
-            log.debug(e)
+            log.error(e)
 
-def import_images_from_openimages(filename):
+def import_images_from_openimages(filename, chunk_size=DEFAULT_CHUNK_SIZE):
     """Import image records from the `open-images` dataset"""
     fields = ('ImageID', 'Subset', 'OriginalURL', 'OriginalLandingURL', 'License',
               'AuthorProfileURL', 'Author', 'Title')
@@ -69,16 +72,12 @@ def import_images_from_openimages(filename):
         db.create_all()
         with open(filename) as fh:
             reader = csv.DictReader(fh)
-            chunk_size = 1000
             _insert_image(grouper_it, reader, chunk_size)
 
 
-def import_images_tags_from_openimages(filename):
-    """Import tag/image relationships from the `open-images` dataset"""
-    with app.app_context():
-        db.create_all()
-        with open(filename) as fh:
-            reader = csv.DictReader(fh)
+def _insert_image_tag(iterator, reader, chunk_size):
+    for chunk in iterator(chunk_size, reader):
+        try:
             for row in reader:
                 image_id = row['ImageID']
                 tag_id = row['LabelName']
@@ -90,7 +89,20 @@ def import_images_tags_from_openimages(filename):
                 if tag and img:
                     log.debug("Adding tag %s to image %s ", tag.name, img.title)
                     img.tags.append(tag)
+                    # Also add it to the denormalized array
+                    img.tags_list.append(tag.name)
             db.session.commit()
+            log.debug("*** Commiting set of %d", chunk_size)
+        except IntegrityError as e:
+            db.session.rollback()
+            log.debug(e)
+
+def import_images_tags_from_openimages(filename, chunk_size=DEFAULT_CHUNK_SIZE):
+    """Import tag/image relationships from the `open-images` dataset"""
+    with app.app_context():
+        db.create_all()
+        with open(filename) as fh:
+            reader = csv.DictReader(fh)
 
 def import_tags_from_openimages(filename):
     """Import tag names from the `open-images` dataset"""
@@ -141,6 +153,11 @@ if __name__ == '__main__':
                         dest="filesystem",
                         default="local",
                         help="The name of the filesystem: local or s3")
+    parser.add_argument("--chunk-size",
+                        dest="chunk_size",
+                        default=DEFAULT_CHUNK_SIZE,
+                        type=int,
+                        help="The number of records to batch process at once")
     parser.add_argument("--verbose",
                         action="store_true",
                         default=False,
@@ -159,16 +176,16 @@ if __name__ == '__main__':
     else:
         filename = args.filepath
 
-    log.info("Starting loading job loading %s from %s...", args.filepath, args.source)
+    log.info("Starting loading job loading %s from %s with chunk size %s", args.filepath, args.source, args.chunk_size)
 
     try:
         # Process the filetype with the correct handler
         if args.source == 'openimages' and args.datatype == "images":
-            import_images_from_openimages(filename)
+            import_images_from_openimages(filename, chunk_size=args.chunk_size)
         elif args.source == 'openimages' and args.datatype == "tags":
             import_tags_from_openimages(filename)
         elif args.source == 'openimages' and args.datatype == "image-tags":
-            import_images_tags_from_openimages(filename)
+            import_images_tags_from_openimages(filename, chunk_size=args.chunk_size)
 
     except:
         raise
