@@ -33,10 +33,15 @@ AWS_SECRET_ACCESS_KEY = os.environ['OPEN_LEDGER_SECRET_ACCESS_KEY']
 EB_ENV_ENVIRONMENT_PROD = 'openledger'
 EB_ENV_ENVIRONMENT_DEV = 'openledger-dev'
 
+
 # Override from the command line as fab --set instance_type=r3.large
 # This default is here to try to use the free tier whenever possible
 if not env.get('instance_type'):
     env.instance_type = 't2.micro'
+
+# Override the database instance or use the default
+if not env.get('database_id'):
+    env.database_id = 'openledger-db-1'
 
 console = logging.StreamHandler()
 log = logging.getLogger(__name__)
@@ -54,8 +59,9 @@ def launchloader():
     resource, client = _init_ec2()
     try:
         instance = _get_running_instance(resource, client)
+        database = get_named_database()
         deploy_code(instance.public_ip_address)
-        load_data_from_instance(instance)
+        load_data_from_instance(instance, database)
     except LoaderException as e:
         log.exception(e)
         instance.terminate()
@@ -68,9 +74,8 @@ def launchloader():
         instance.stop()
         pass
 
-def load_data_from_instance(instance):
+def load_data_from_instance(instance, database):
     """Call a loading job from an instance"""
-    database = _get_running_database()
     image_data_large = 'openimages/images_2016_08/train/images.csv'
     with settings(host_string="ec2-user@" + instance.public_ip_address):
         with cd('open-ledger'):
@@ -114,8 +119,24 @@ def terminate_loaders():
     [resource.Instance(i).terminate() for i in instance_ids]
     log.info("Terminated instances %s", ", ".join(instance_ids)) if len(instance_ids) > 0 else None
 
-def _get_running_database(allow_ip=None):
-    """Get a single RDS instance we can connect to. If allow_ip is set, add that to the database's ACL """
+def get_named_database(identifier=env.database_id):
+    """Get a single RDS instance by DB Instance ID. Adds the VPC security groups as a side effect"""
+    client = _init_rds()
+    _, ec2 = _init_ec2()
+    group_id = ec2.describe_security_groups(GroupNames=['default'])['SecurityGroups'][0]['GroupId']
+    r = client.modify_db_instance(DBInstanceIdentifier=identifier,
+                                  VpcSecurityGroupIds=[group_id])['DBInstance']
+    database = {}
+    database['host'] = r['Endpoint']['Address']
+    database['port'] = r['Endpoint']['Port']
+    database['name'] = r['DBName']
+    database['user'] = r['MasterUsername']
+    database['password'] = DB_PASSWORD
+    log.info("Returning database at {}".format(database['host']))
+    return database
+
+def _get_running_database():
+    """Get a single RDS instance we can connect to from an Elastic Beanstalk cluster. """
     client = _init_rds()
     resp = client.describe_db_instances()
     database = {}
