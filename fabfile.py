@@ -29,6 +29,7 @@ ACCOUNT_NUMBER = os.environ['OPEN_LEDGER_ACCOUNT']
 DB_PASSWORD = os.environ['OPEN_LEDGER_DATABASE_PASSWORD']
 AWS_ACCESS_KEY_ID = os.environ['OPEN_LEDGER_ACCESS_KEY_ID']
 AWS_SECRET_ACCESS_KEY = os.environ['OPEN_LEDGER_SECRET_ACCESS_KEY']
+ELASTICSEARCH_URL = os.environ['OPEN_LEDGER_ELASTICSEARCH_URL']
 
 EB_ENV_ENVIRONMENT_PROD = 'openledger'
 EB_ENV_ENVIRONMENT_DEV = 'openledger-dev'
@@ -44,7 +45,7 @@ DATASOURCES = {
                         'datatype': 'images'},
     'openimages-tags': {'source': 'openimages',
                         'filesystem': 's3',
-                        'filepath': 'openimages/images_2016_08/dict.csv',
+                        'filepath': 'openimages/dict.csv',
                         'datatype': 'tags'},
     'openimages-human-image-tags': {'source': 'openimages',
                         'filesystem': 's3',
@@ -113,7 +114,8 @@ def load_data_from_instance(instance, database):
                            RDS_PORT=str(database['port']),
                            RDS_DB_NAME=str(database['name']),
                            AWS_SECRET_ACCESS_KEY=AWS_SECRET_ACCESS_KEY,
-                           AWS_ACCESS_KEY_ID=AWS_ACCESS_KEY_ID,):
+                           AWS_ACCESS_KEY_ID=AWS_ACCESS_KEY_ID,
+                           ELASTICSEARCH_URL=ELASTICSEARCH_URL):
                            run('./venv/bin/python database_import.py {filepath} {source} {datatype} --filesystem {filesystem}'.format(**env.datasource))
 
 def deploy_code(host_string):
