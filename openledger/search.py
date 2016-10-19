@@ -1,3 +1,4 @@
+import argparse
 from datetime import datetime
 import logging
 
@@ -7,10 +8,12 @@ from elasticsearch_dsl.connections import connections
 from elasticsearch_dsl import DocType, String, Date, Nested, Boolean, \
     analyzer, InnerObjectWrapper, Completion, Search
 
+CHUNK_SIZE = 1000
+
 console = logging.StreamHandler()
 log = logging.getLogger(__name__)
 log.addHandler(console)
-log.setLevel(logging.DEBUG)
+log.setLevel(logging.INFO)
 
 class Results(object):
     """A simple object prototype for collections of results"""
@@ -74,7 +77,15 @@ def db_image_to_index(db_image):
                   _id=db_image.identifier,
                   tags=[t.name for t in db_image.tags])
     created = image.save()
-    log.info("Indexed image with id %s (created=%s)", image._id, created)
+    log.debug("Indexed image with id %s (created=%s)", image._id, created)
+
+def index_all_images():
+    """Index every record in the database"""
+    # TODO Improve by sending batched HTTP requests
+    init()
+    for db_image in models.Image.query.yield_per(CHUNK_SIZE).enable_eagerloads(False):
+        log.debug("Indexing database record %s", db_image.identifier)
+        db_image_to_index(db_image)
 
 
 def init():
@@ -84,13 +95,14 @@ def init():
     Image.init()
 
 if __name__ == '__main__':
-    init()
+    # Run me as python -m openledger.search
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--verbose",
+                        action="store_true",
+                        default=False,
+                        help="Be very chatty and run logging at DEBUG")
+    args = parser.parse_args()
 
-    for db_image in models.Image.query.filter(models.Image.creator=='Liza'):
-        db_image_to_index(db_image)
-
-    s = Search()
-    s = s.query("match", title="greyhound")
-    response = s.execute()
-    for r in s:
-        print("Image {} with title '{}'".format(r.identifier, r.title))
+    if args.verbose:
+        log.setLevel(logging.DEBUG)
+    index_all_images()
