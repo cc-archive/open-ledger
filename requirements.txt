@@ -67,3 +67,4 @@ WTForms==2.1
 
 boto3
 git+git://github.com/lizadaly/fabtools.git#egg=fabtools
+elasticsearch_dsl
