@@ -3,10 +3,12 @@ from datetime import datetime
 import logging
 
 from openledger import app, models
-from elasticsearch import Elasticsearch
+from elasticsearch import Elasticsearch, helpers
 from elasticsearch_dsl.connections import connections
 from elasticsearch_dsl import DocType, String, Date, Nested, Boolean, \
     analyzer, InnerObjectWrapper, Completion, Search
+
+from sqlalchemy import orm
 
 CHUNK_SIZE = 1000
 
@@ -63,8 +65,9 @@ class Image(DocType):
     class Meta:
         index = "openledger"
 
-def db_image_to_index(db_image):
-    """Map an Image record to a record in the search index"""
+def db_image_to_index(db_image, defer_tags=False):
+    """Map an Image record to a record in the ESL DSL. If `defer_tags` is True, don't try to
+    load the tag data (as when doing a large batch operation)"""
     image = Image(title=db_image.title,
                   creator=db_image.creator,
                   creator_url=db_image.creator_url,
@@ -74,19 +77,27 @@ def db_image_to_index(db_image):
                   source=db_image.source,
                   license=db_image.license,
                   foreign_landing_url=db_image.foreign_landing_url,
-                  _id=db_image.identifier,
-                  tags=[t.name for t in db_image.tags])
-    created = image.save()
-    log.debug("Indexed image with id %s (created=%s)", image._id, created)
+                  _id=db_image.identifier)
+    if not defer_tags:
+        image.tags=[t.name for t in db_image.tags]
+    return image
 
 def index_all_images():
-    """Index every record in the database"""
-    # TODO Improve by sending batched HTTP requests
+    """Index every record in the database as efficiently as possible"""
     init()
-    for db_image in models.Image.query.yield_per(CHUNK_SIZE).enable_eagerloads(False):
-        log.debug("Indexing database record %s", db_image.identifier)
-        db_image_to_index(db_image)
+    es = Elasticsearch([{'host': app.config['ELASTICSEARCH_URL'], 'port': 80}])
+    batches = []
 
+    for db_image in models.Image.query.yield_per(CHUNK_SIZE):
+        log.debug("Indexing database record %s", db_image.identifier)
+        image = db_image_to_index(db_image, defer_tags=True)
+        if len(batches) > CHUNK_SIZE:
+            log.debug("Pushing batch of %d records to ES", len(batches))
+            resp = helpers.bulk(es, batches)
+            log.debug(resp)
+            batches = []  # Clear the batch size
+        else:
+            batches.append(image.to_dict(include_meta=True))
 
 def init():
     """Initialize all search objects"""
