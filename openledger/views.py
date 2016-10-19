@@ -2,8 +2,9 @@ import logging
 
 from flask import Flask, render_template, request
 from sqlalchemy import and_, or_, not_, distinct
+from elasticsearch_dsl import Search
 
-from openledger import app, forms, licenses
+from openledger import app, forms, licenses, search
 from openledger.handlers.handler_500px import photos as search_500
 from openledger.handlers.handler_rijks import photos as search_rijks
 from openledger.handlers.handler_flickr import photos as search_flickr
@@ -89,7 +90,25 @@ def detail(identifier):
 @app.route('/fulltext')
 def fulltext():
     """Search using the Elasticsearch interface"""
-    pass
+    s = Search()
+    form, search_data = init_search()
+
+    results = search.Results(page=search_data['page'])
+
+    if search_data['search']:
+        s = s.query("match", title=search_data['search'])
+        s.execute()
+        for search_result in s:
+            r = search.Result.from_elasticsearch(search_result)
+            results.items.append(r)
+
+    search_data_for_pagination = {i:search_data[i] for i in search_data if i != 'page'}
+    return render_template('results.html',
+                           results=results,
+                           form=form,
+                           search_data=search_data,
+                           search_data_for_pagination=search_data_for_pagination)
+
 
 @app.route("/source/openimages")
 def openimages():
@@ -97,9 +116,6 @@ def openimages():
     results = []
     form, search_data = init_search()
 
-    # Set default values (all)
-    form.search_fields.default=forms.FIELD_DEFAULT
-    form.process()
 
     # For each search term, check in both the image title field and linked Tags
     if search_data['search']:
@@ -143,7 +159,7 @@ def init_search(provider=None):
     search = search.lower().strip() if search else None
 
     user_licenses = request.args.getlist('licenses') or [licenses.DEFAULT_LICENSE]
-    search_fields = request.args.getlist('search_fields')
+    search_fields = request.args.getlist('search_fields') or forms.FIELD_DEFAULT
 
     # Ensure that all the licenses evaluate to something
     for i, l in enumerate(user_licenses):

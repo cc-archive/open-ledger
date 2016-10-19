@@ -1,0 +1,47 @@
+{% import "includes/pagination.html" as pagination %}
+{% import "includes/image-result.html" as image_result %}
+
+{% extends "base.html" %}
+
+{% block body %}
+
+<div class="row column" style="margin-top: 1rem">
+  <h3>Open Ledger</h3>
+  <p>
+    Images displayed here are sourced from a variety of organizations and individuals
+    supporting open content.
+  </p>
+</div>
+
+{% with %}
+  {% set endpoint = url_for('fulltext') %}
+  {% include "includes/search-form.html" %}
+{% endwith %}
+
+{% if results %}
+<div class="row column results">
+
+  <h5>Page {{ results.page }} of {{ results.pages }} page{{ results.pages|pluralize }} from Open Images</h5>
+
+   {{ pagination.paginate_openledger(results.page, results.pages, search_data_for_pagination) }}
+
+    <div class="row">
+      {% for result in results.items %}
+        {% set creator = result.creator %}
+        {% set license = result.license %}
+        {% set provider_url = result.foreign_landing_url %}
+        {% set title = result.title %}
+        {% set image_url = result.url %}
+        {% set thumbnail = result.url %}
+
+        {% set detail_url = url_for('detail', identifier=result.identifier) %}
+
+        {{ image_result.show(detail_url, thumbnail, creator, title, license) }}
+
+      {% endfor %}
+    </div>
+    {{ pagination.paginate_openledger(results.page, results.pages, search_data_for_pagination) }}
+  </div>
+  {% endif %}
+
+{% endblock %}

@@ -7,7 +7,7 @@ app.config.from_pyfile('default_settings.py')
 
 @application.before_first_request
 def connect_to_search():
-    connections.create_connection(hosts=[app.config['ELASTICSEARCH_URL']])
+    connections.create_connection(hosts=[{'host': app.config['ELASTICSEARCH_URL'], 'port': 80}])
 
 # Put these after the app code to avoid circular imports
 from openledger import views
