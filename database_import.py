@@ -17,7 +17,7 @@ console = logging.StreamHandler()
 
 log = logging.getLogger(__name__)
 log.addHandler(console)
-log.setLevel(logging.DEBUG)
+log.setLevel(logging.INFO)
 
 TAG_CONFIDENCE_THRESHOLD = 0.5  # Don't import tags with confidence levels lower than this
 
@@ -158,6 +158,8 @@ if __name__ == '__main__':
         filename = download_from_s3(args.filepath, args.bucket_name, args.source)
     else:
         filename = args.filepath
+
+    log.info("Starting loading job loading %s from %s...", args.filepath, args.source)
 
     try:
         # Process the filetype with the correct handler

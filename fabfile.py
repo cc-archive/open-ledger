@@ -33,6 +33,34 @@ AWS_SECRET_ACCESS_KEY = os.environ['OPEN_LEDGER_SECRET_ACCESS_KEY']
 EB_ENV_ENVIRONMENT_PROD = 'openledger'
 EB_ENV_ENVIRONMENT_DEV = 'openledger-dev'
 
+DATASOURCES = {
+    'openimages-full': {'source': 'openimages',
+                        'filesystem': 's3',
+                        'filepath': 'openimages/images_2016_08/train/images.csv',
+                        'datatype': 'images'},
+    'openimages-small': {'source': 'openimages',
+                        'filesystem': 's3',
+                        'filepath': 'openimages/images_2016_08/validation/images.csv',
+                        'datatype': 'images'},
+    'openimages-tags': {'source': 'openimages',
+                        'filesystem': 's3',
+                        'filepath': 'openimages/images_2016_08/dict.csv',
+                        'datatype': 'tags'},
+    'openimages-human-image-tags': {'source': 'openimages',
+                        'filesystem': 's3',
+                        'filepath': 'openimages/human_ann_2016_08/validation/labels.csv',
+                        'datatype': 'image-tags'},
+    'openimages-machine-image-tags': {'source': 'openimages',
+                        'filesystem': 's3',
+                        'filepath': 'openimages/machine_ann_2016_08/validation/labels.csv',
+                        'datatype': 'image-tags'},
+}
+
+# Load the "small" image datasource by default
+if env.get('datasource'):
+    env.datasource=DATASOURCES[env.datasource]
+else:
+    env.datasource=DATASOURCES['openimages-small']
 
 # Override from the command line as fab --set instance_type=r3.large
 # This default is here to try to use the free tier whenever possible
@@ -76,7 +104,7 @@ def launchloader():
 
 def load_data_from_instance(instance, database):
     """Call a loading job from an instance"""
-    image_data_large = 'openimages/images_2016_08/train/images.csv'
+
     with settings(host_string="ec2-user@" + instance.public_ip_address):
         with cd('open-ledger'):
             with shell_env(RDS_USERNAME=str(database['user']),
@@ -86,7 +114,7 @@ def load_data_from_instance(instance, database):
                            RDS_DB_NAME=str(database['name']),
                            AWS_SECRET_ACCESS_KEY=AWS_SECRET_ACCESS_KEY,
                            AWS_ACCESS_KEY_ID=AWS_ACCESS_KEY_ID,):
-                           run('./venv/bin/python database_import.py {image_data_large} openimages images --filesystem s3'.format(image_data_large=image_data_large))
+                           run('./venv/bin/python database_import.py {filepath} {source} {datatype} --filesystem {filesystem}'.format(**env.datasource))
 
 def deploy_code(host_string):
     max_retries = 20
