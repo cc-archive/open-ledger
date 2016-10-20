@@ -1,7 +1,11 @@
 import logging
 
 from elasticsearch_dsl import Search
+<<<<<<< HEAD
 from flask import Flask, render_template, request, abort, jsonify, make_response
+=======
+from flask import Flask, render_template, request, abort, jsonify
+>>>>>>> 43ee57b... [#21] JSON API endpoint for Lists and related tests
 from flask.views import MethodView
 from sqlalchemy import and_, or_, not_, distinct
 
@@ -18,13 +22,18 @@ class ListAPI(MethodView):
         lst = models.List.query.filter(models.List.slug==slug).first()
         if not lst:
             abort(404)
+<<<<<<< HEAD
         images = [serialize_image(img) for img in lst.images.order_by(models.Image.identifier).all()]
+=======
+        images = [serialize_image(img) for img in lst.images.all()]
+>>>>>>> 43ee57b... [#21] JSON API endpoint for Lists and related tests
         return jsonify(title=lst.title,
                        description=lst.description,
                        slug=lst.slug,
                        creator_displayname=lst.creator_displayname,
                        images=images,
                        )
+<<<<<<< HEAD
     def delete(self, slug):
         # FIXME will need to deal with auth here, we shouldn't allow deletion of
         # owned lists, and maybe should just harvest anon lists that have no activity?
@@ -63,6 +72,12 @@ class ListsAPI(MethodView):
 
 app.add_url_rule(API_BASE + 'lists', view_func=ListsAPI.as_view('lists'))
 
+=======
+
+
+app.add_url_rule(API_BASE + 'list/<slug>', view_func=ListAPI.as_view('list'))
+
+>>>>>>> 43ee57b... [#21] JSON API endpoint for Lists and related tests
 def serialize_image(img):
     """Return a serialization of an image database suitable for use in the API"""
     return {'identifier': img.identifier,

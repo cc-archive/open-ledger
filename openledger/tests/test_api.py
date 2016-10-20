@@ -52,6 +52,7 @@ class TestAPIViews(TestCase):
         assert title == obj['title']
         assert description == obj['description']
         assert creator_displayname == obj['creator_displayname']
+<<<<<<< HEAD
 
     def test_list_image_data(self):
         """The List endpoint should return a JSON rendition of all a List's Images"""
@@ -134,3 +135,5 @@ class TestAPIViews(TestCase):
         rv = self.client.post('/api/v1/lists', data={'title': title, 'image': ['1', '2']})
         assert 201 == rv.status_code
         assert 2 == models.List.query.filter(models.List.title==title).first().images.count()
+=======
+>>>>>>> 43ee57b... [#21] JSON API endpoint for Lists and related tests
