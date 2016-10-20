@@ -116,7 +116,7 @@ def load_data_from_instance(instance, database):
                            AWS_SECRET_ACCESS_KEY=AWS_SECRET_ACCESS_KEY,
                            AWS_ACCESS_KEY_ID=AWS_ACCESS_KEY_ID,
                            ELASTICSEARCH_URL=ELASTICSEARCH_URL):
-                           run('./venv/bin/python database_import.py {filepath} {source} {datatype} --filesystem {filesystem}'.format(**env.datasource))
+                           run('./venv/bin/python database_import.py {filepath} {source} {datatype} --filesystem {filesystem} --skip-checks'.format(**env.datasource))
 
 def deploy_code(host_string):
     max_retries = 20
