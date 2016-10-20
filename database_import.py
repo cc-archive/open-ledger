@@ -66,6 +66,7 @@ def _insert_image(iterator, reader, chunk_size, skip_existence_check=False):
             db.session.rollback()
             log.debug(e)
 
+
 def import_images_from_openimages(filename, chunk_size=DEFAULT_CHUNK_SIZE, skip_existence_check=False):
     """Import image records from the `open-images` dataset"""
     fields = ('ImageID', 'Subset', 'OriginalURL', 'OriginalLandingURL', 'License',
@@ -83,24 +84,36 @@ def import_images_from_openimages(filename, chunk_size=DEFAULT_CHUNK_SIZE, skip_
 def _insert_image_tag(iterator, reader, chunk_size):
     for chunk in iterator(chunk_size, reader):
         try:
-            for row in reader:
+            images = {}
+            tags = {}
+            for row in chunk:
                 image_id = row['ImageID']
                 tag_id = row['LabelName']
                 confidence = row['Confidence']
                 if float(confidence) < TAG_CONFIDENCE_THRESHOLD:
                     continue
-                img = Image.query.filter_by(foreign_identifier=image_id).first()
-                tag = Tag.query.filter_by(foreign_identifier=tag_id).first()
+                img = images.get(image_id) or \
+                    Image.query.filter_by(foreign_identifier=image_id).first()
+                tag = tags.get(tag_id) or \
+                    Tag.query.filter_by(foreign_identifier=tag_id).first()
                 if tag and img:
                     log.debug("Adding tag %s to image %s ", tag.name, img.title)
                     img.tags.append(tag)
                     # Also add it to the denormalized array
-                    img.tags_list.append(tag.name)
-            db.session.commit()
-            log.debug("*** Commiting set of %d", chunk_size)
+                    ext_tags = img.tags_list[:] if img.tags_list else []
+                    ext_tags.append(tag.name)
+                    img.tags_list = ext_tags
+                    images[image_id] = img
+                    tags[tag_id] = tag
+            if len(images) > 0:
+                db.session.bulk_save_objects(images.values())
+                db.session.commit()
+                log.debug("*** Committing set of %d images", len(images))
         except IntegrityError as e:
             db.session.rollback()
             log.debug(e)
+
+
 
 def import_images_tags_from_openimages(filename, chunk_size=DEFAULT_CHUNK_SIZE):
     """Import tag/image relationships from the `open-images` dataset"""
@@ -108,6 +121,7 @@ def import_images_tags_from_openimages(filename, chunk_size=DEFAULT_CHUNK_SIZE):
         db.create_all()
         with open(filename) as fh:
             reader = csv.DictReader(fh)
+            _insert_image_tag(grouper_it, reader, chunk_size)
 
 def import_tags_from_openimages(filename):
     """Import tag names from the `open-images` dataset"""

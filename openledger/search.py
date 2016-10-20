@@ -65,9 +65,8 @@ class Image(DocType):
     class Meta:
         index = "openledger"
 
-def db_image_to_index(db_image, defer_tags=False):
-    """Map an Image record to a record in the ESL DSL. If `defer_tags` is True, don't try to
-    load the tag data (as when doing a large batch operation)"""
+def db_image_to_index(db_image):
+    """Map an Image record to a record in the ESL DSL."""
     image = Image(title=db_image.title,
                   creator=db_image.creator,
                   creator_url=db_image.creator_url,
@@ -77,9 +76,10 @@ def db_image_to_index(db_image, defer_tags=False):
                   source=db_image.source,
                   license=db_image.license,
                   foreign_landing_url=db_image.foreign_landing_url,
-                  _id=db_image.identifier)
-    if not defer_tags:
-        image.tags=[t.name for t in db_image.tags]
+                  _id=db_image.identifier,
+                  tags=db_image.tags_list)
+    if db_image.tags_list:
+        log.debug("Tags for %s: %s", image.title, ", ".join(image.tags))
     return image
 
 def index_all_images():
@@ -89,8 +89,8 @@ def index_all_images():
     batches = []
 
     for db_image in models.Image.query.yield_per(CHUNK_SIZE):
-        log.debug("Indexing database record %s", db_image.identifier)
-        image = db_image_to_index(db_image, defer_tags=True)
+        #log.debug("Indexing database record %s", db_image.identifier)
+        image = db_image_to_index(db_image)
         if len(batches) > CHUNK_SIZE:
             log.debug("Pushing batch of %d records to ES", len(batches))
             helpers.bulk(es, batches)
