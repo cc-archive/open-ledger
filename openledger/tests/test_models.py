@@ -68,3 +68,16 @@ class TestModels(unittest.TestCase):
         image_obj.tags.append(tag)
         models.db.session.commit()
         assert image_obj.tags.count() == 1
+
+    def test_tags_list_image(self):
+        """The `tags_list` field on the `Image` table should contain an array of values"""
+        image = models.Image(url='http://example.com', license="CC0", identifier="1234")
+        tags_list = ['a', 'b']
+        image.tags_list = tags_list
+        models.db.session.add(image)
+        models.db.session.commit()
+
+        # Get it back out and assert that it's a list again
+        image = models.Image.query.first()
+        assert 2 == len(image.tags_list)
+        assert "a" == image.tags_list[0]

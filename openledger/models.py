@@ -88,6 +88,7 @@ class Image(db.Model):
     def __repr__(self):
         return '<Image %r found at %r by %r>' % (self.identifier, self.url, self.creator)
 
+
 class Tag(db.Model):
     """A word or phrase associated with this image"""
     id = db.Column(db.Integer, primary_key=True)
@@ -104,15 +105,36 @@ class Tag(db.Model):
     created_on = db.Column(db.DateTime, server_default=db.func.now())
     updated_on = db.Column(db.DateTime, server_default=db.func.now(), onupdate=db.func.now())
 
-#class List(db.Model):
-#    """A user-generated curation of items"""
-#    id = db.Column(db.Integer, primary_key=True)
-#    images = db.relationship('Image', secondary=list_images, lazy='dynamic',
-#                             backref=db.backref('lists', lazy='dynamic'))
 
+list_images = db.Table('list_images',
+    db.Column('list_id', db.Integer, db.ForeignKey('list.id')),
+    db.Column('image_id', db.Integer, db.ForeignKey('image.id')),
+    db.Column('created_on', db.DateTime, server_default=db.func.now()),
+    db.Column('updated_on', db.DateTime, server_default=db.func.now(), onupdate=db.func.now()),
+)
 
-#    created_on = db.Column(db.DateTime, server_default=db.func.now())
-#    updated_on = db.Column(db.DateTime, server_default=db.func.now(), onupdate=db.func.now())
+class List(db.Model):
+    """A user-generated curation of items"""
+    id = db.Column(db.Integer, primary_key=True)
+
+    images = db.relationship('Image', secondary=list_images, lazy='dynamic',
+                           backref=db.backref('lists', lazy='dynamic'))
+
+    # The title of the list. This is required, otherwise we have no way if identifying it
+    title = db.Column(db.String(2000), index=True, nullable=False)
+
+    # The displayable name of a creator, which can be anything
+    creator_displayname = db.Column(db.String(2000), index=True)
+
+    # The description of the list, which is optional
+    description = db.Column(db.Text())
+
+    # Whether this list is public/discoverable. May in the future be tied to a real
+    # user when we have login
+    is_public = db.Column(db.Boolean(), default=True)
+
+    created_on = db.Column(db.DateTime, server_default=db.func.now())
+    updated_on = db.Column(db.DateTime, server_default=db.func.now(), onupdate=db.func.now())
 
 if __name__ == '__main__':
     manager.run()
