@@ -1,9 +1,14 @@
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.dialects import postgresql
+from flask_migrate import Migrate, MigrateCommand
+from flask_script import Manager
 
 from openledger import app
 
 db = SQLAlchemy(app)
+migrate = Migrate(app, db)
+manager = Manager(app)
+manager.add_command('db', MigrateCommand)
 
 image_tags = db.Table('image_tags',
     db.Column('tag_id', db.Integer, db.ForeignKey('tag.id')),
@@ -61,7 +66,7 @@ class Image(db.Model):
     # should be a decimal like "2.0"
     license_version = db.Column(db.String(25))
 
-    # The author/creator/licensee, not that we'll know
+    # The author/creator/licensee, not that we'll know for sure
     creator = db.Column(db.String(2000), unique=False, index=True)
 
     # The URL to the creator's identity or profile, if known
@@ -98,3 +103,16 @@ class Tag(db.Model):
 
     created_on = db.Column(db.DateTime, server_default=db.func.now())
     updated_on = db.Column(db.DateTime, server_default=db.func.now(), onupdate=db.func.now())
+
+#class List(db.Model):
+#    """A user-generated curation of items"""
+#    id = db.Column(db.Integer, primary_key=True)
+#    images = db.relationship('Image', secondary=list_images, lazy='dynamic',
+#                             backref=db.backref('lists', lazy='dynamic'))
+
+
+#    created_on = db.Column(db.DateTime, server_default=db.func.now())
+#    updated_on = db.Column(db.DateTime, server_default=db.func.now(), onupdate=db.func.now())
+
+if __name__ == '__main__':
+    manager.run()
