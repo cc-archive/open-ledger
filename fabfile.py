@@ -109,15 +109,15 @@ def load_data_from_instance(instance, database):
 
     with settings(host_string="ec2-user@" + instance.public_ip_address):
         with cd('open-ledger'):
-            with shell_env(RDS_USERNAME=str(database['user']),
-                           RDS_PASSWORD=str(database['password']),
-                           RDS_HOSTNAME=str(database['host']),
-                           RDS_PORT=str(database['port']),
-                           RDS_DB_NAME=str(database['name']),
-                           AWS_SECRET_ACCESS_KEY=AWS_SECRET_ACCESS_KEY,
-                           AWS_ACCESS_KEY_ID=AWS_ACCESS_KEY_ID,
-                           ELASTICSEARCH_URL=ELASTICSEARCH_URL):
-                           run('./venv/bin/python database_import.py {filepath} {source} {datatype} --filesystem {filesystem} --skip-checks'.format(**env.datasource))
+            with shell_env(SQLALCHEMY_DATABASE_URI="postgresql://{user}:{password}@{host}/{name}".format(
+                **{'user': str(database['user']),
+                 'password': str(database['password']),
+                 'host': str(database['host']),
+                 'name': str(database['name']),}),
+                 AWS_SECRET_ACCESS_KEY=AWS_SECRET_ACCESS_KEY,
+                 AWS_ACCESS_KEY_ID=AWS_ACCESS_KEY_ID,
+                 ELASTICSEARCH_URL=ELASTICSEARCH_URL):
+                 run('./venv/bin/python database_import.py {filepath} {source} {datatype} --filesystem {filesystem} --skip-checks'.format(**env.datasource))
 
 def deploy_code(host_string):
     max_retries = 20
@@ -165,32 +165,6 @@ def get_named_database(identifier=env.database_id):
     database['password'] = DB_PASSWORD
     log.info("Returning database at {}".format(database['host']))
     return database
-
-def _get_running_database():
-    """Get a single RDS instance we can connect to from an Elastic Beanstalk cluster. """
-    client = _init_rds()
-    resp = client.describe_db_instances()
-    database = {}
-    for r in resp['DBInstances']:
-        identifier = r['DBInstanceIdentifier']
-        resource_identifier = "arn:aws:rds:{}:{}:db:{}".format(REGION, ACCOUNT_NUMBER, identifier)
-        tags = client.list_tags_for_resource(ResourceName=resource_identifier)['TagList']
-        for tag in tags:
-            if tag.get('Key') == 'elasticbeanstalk:environment-name':
-                environment_name = tag.get('Value')
-                if environment_name == EB_ENV_ENVIRONMENT_DEV:
-                    # This is the one we want, finally, geez who made this API
-                    database['host'] = r['Endpoint']['Address']
-                    database['port'] = r['Endpoint']['Port']
-                    database['name'] = r['DBName']
-                    database['user'] = r['MasterUsername']
-                    database['password'] = DB_PASSWORD
-                    _, ec2 = _init_ec2()
-                    group_id = ec2.describe_security_groups(GroupNames=['default'])['SecurityGroups'][0]['GroupId']
-                    client.modify_db_instance(DBInstanceIdentifier=identifier,
-                                              VpcSecurityGroupIds=[group_id])
-                    log.info("Returning database at {}".format(database['host']))
-                    return database
 
 def _get_running_instances():
     resource, client = _init_ec2()
