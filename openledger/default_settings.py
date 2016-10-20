@@ -16,12 +16,8 @@ except ImportError:
     FLICKR_SECRET = os.environ.get('FLICKR_SECRET')
 
     # Database-specific
-    SQLALCHEMY_DATABASE_URI = 'postgresql://{}:{}@{}:{}/{}'.format(os.environ['RDS_USERNAME'],
-                                                                   os.environ['RDS_PASSWORD'],
-                                                                   os.environ['RDS_HOSTNAME'],
-                                                                   os.environ['RDS_PORT'],
-                                                                   os.environ['RDS_DB_NAME'])
+    SQLALCHEMY_DATABASE_URI = os.environ.get('SQLALCHEMY_DATABASE_URI')
 
     SQLALCHEMY_TRACK_MODIFICATIONS = False
 
-    ELASTICSEARCH_URL = os.environ['ELASTICSEARCH_URL']
+    ELASTICSEARCH_URL = os.environ.get('ELASTICSEARCH_URL')

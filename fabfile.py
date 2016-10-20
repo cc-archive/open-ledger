@@ -58,6 +58,7 @@ DATASOURCES = {
 }
 
 # Load the "small" image datasource by default
+# fab --set datasource=openimages-full
 if env.get('datasource'):
     env.datasource=DATASOURCES[env.datasource]
 else:
