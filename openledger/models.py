@@ -1,7 +1,11 @@
+import uuid
+
 from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy.dialects import postgresql
 from flask_migrate import Migrate, MigrateCommand
 from flask_script import Manager
+from slugify import slugify
+from sqlalchemy.dialects import postgresql
+from sqlalchemy import event
 
 from openledger import app
 
@@ -133,8 +137,22 @@ class List(db.Model):
     # user when we have login
     is_public = db.Column(db.Boolean(), default=True)
 
+    # The unique, URL-safe identifier for this list
+    slug = db.Column(db.String(255), unique=True, index=True)
+
     created_on = db.Column(db.DateTime, server_default=db.func.now())
     updated_on = db.Column(db.DateTime, server_default=db.func.now(), onupdate=db.func.now())
 
+@event.listens_for(List, 'before_insert')
+def event_create_slug(mapper, connection, target):
+    uniquish = str(uuid.uuid4())[:8]
+    target.slug = create_slug([target.title, uniquish])
+
+def create_slug(el):
+    """For the list of items el, create a unique slug out of them"""
+    return '-'.join([slugify(str(i)) for i in el])
+
+
 if __name__ == '__main__':
+    # pass through to the database management commands
     manager.run()

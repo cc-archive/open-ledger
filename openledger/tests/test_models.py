@@ -85,8 +85,8 @@ class TestModels(unittest.TestCase):
     def test_list(self):
         """It should be possible to create an empty List"""
         assert 0 == models.List.query.count()
-        image_list = models.List(title='test')
-        models.db.session.add(image_list)
+        lst = models.List(title='test')
+        models.db.session.add(lst)
         models.db.session.commit()
 
         assert 1 == models.List.query.count()
@@ -95,11 +95,44 @@ class TestModels(unittest.TestCase):
         """It should be possible to create a List and add an image to it"""
 
         image = models.Image(url='http://example.com', license="CC0", identifier="1234")
-        image_list = models.List(title='test', images=[image])
-        models.db.session.add(image_list)
+        lst = models.List(title='test', images=[image])
+        models.db.session.add(lst)
         models.db.session.add(image)
         models.db.session.commit()
 
         assert 1 == models.List.query.count()
         assert 1 == models.List.query.first().images.count()
         assert image == models.List.query.first().images.first()
+
+    def test_slugify(self):
+        """It should be possible to generate a URL-safe identifier out of an arbitrary list of keywords"""
+        # A string, some crazy unicode, an integer
+        items = ['my list', '☃', 1]
+        assert 'my-list--1' == models.create_slug(items)
+
+    def test_slugify_list(self):
+        """When a List is created, a slug should be automatically generated"""
+        title = 'my list about unicode snowmen ☃'
+        lst = models.List(title=title)
+        models.db.session.add(lst)
+        models.db.session.commit()
+
+        lst = models.List.query.first()
+        assert lst.slug.startswith('my-list-about-unicode-snowmen-')
+
+    def test_slugify_unique(self):
+        """Creating two lists with the same title should not result in a duplicate slug"""
+        title = "Duplicate title"
+        expected_slugged_title = "duplicate-title"
+        lst1 = models.List(title=title)
+        lst2 = models.List(title=title)
+        models.db.session.add(lst1)
+        models.db.session.add(lst2)
+        models.db.session.commit()
+
+        lst1 = models.List.query[0]
+        lst2 = models.List.query[1]
+        # They should start the same, but not be identical
+        assert lst1.slug.startswith(expected_slugged_title)
+        assert lst2.slug.startswith(expected_slugged_title)
+        assert lst1.slug != lst2.slug
