@@ -5,6 +5,8 @@ import html5lib
 from lxml.html import tostring, html5parser
 import responses
 
+TESTING_CONFIG = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'settings.py')
+
 def activate_all_provider_mocks():
     """Mock all the responses we know about from all the providers"""
     activate_500px_mocks()

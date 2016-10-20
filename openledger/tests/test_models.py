@@ -6,8 +6,6 @@ from openledger.tests.utils import *
 
 import openledger.models as models
 
-TESTING_CONFIG = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'settings.py')
-
 class TestModels(unittest.TestCase):
 
     def setUp(self):

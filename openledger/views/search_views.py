@@ -1,8 +1,8 @@
 import logging
 
+from elasticsearch_dsl import Search
 from flask import Flask, render_template, request
 from sqlalchemy import and_, or_, not_, distinct
-from elasticsearch_dsl import Search
 
 from openledger import app, forms, licenses, search
 from openledger.handlers.handler_500px import photos as search_500
