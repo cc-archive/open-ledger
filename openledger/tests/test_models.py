@@ -81,3 +81,25 @@ class TestModels(unittest.TestCase):
         image = models.Image.query.first()
         assert 2 == len(image.tags_list)
         assert "a" == image.tags_list[0]
+
+    def test_list(self):
+        """It should be possible to create an empty List"""
+        assert 0 == models.List.query.count()
+        image_list = models.List(title='test')
+        models.db.session.add(image_list)
+        models.db.session.commit()
+
+        assert 1 == models.List.query.count()
+
+    def test_list(self):
+        """It should be possible to create a List and add an image to it"""
+
+        image = models.Image(url='http://example.com', license="CC0", identifier="1234")
+        image_list = models.List(title='test', images=[image])
+        models.db.session.add(image_list)
+        models.db.session.add(image)
+        models.db.session.commit()
+
+        assert 1 == models.List.query.count()
+        assert 1 == models.List.query.first().images.count()
+        assert image == models.List.query.first().images.first()
