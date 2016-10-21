@@ -21,3 +21,6 @@ except ImportError:
     SQLALCHEMY_TRACK_MODIFICATIONS = False
 
     ELASTICSEARCH_URL = os.environ.get('ELASTICSEARCH_URL')
+
+    AWS_ACCESS_KEY_ID = os.environ.get('AWS_ACCESS_KEY_ID')
+    AWS_SECRET_ACCESS_KEY = os.environ.get('AWS_SECRET_ACCESS_KEY')

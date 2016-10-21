@@ -1,9 +1,11 @@
 import argparse
 from datetime import datetime
 import logging
+import requests
 
 from openledger import app, models
-from elasticsearch import Elasticsearch, helpers
+from elasticsearch import Elasticsearch, helpers, RequestsHttpConnection
+from aws_requests_auth.aws_auth import AWSRequestsAuth
 from elasticsearch_dsl.connections import connections
 from elasticsearch_dsl import DocType, String, Date, Nested, Boolean, \
     analyzer, InnerObjectWrapper, Completion, Search
@@ -84,8 +86,7 @@ def db_image_to_index(db_image):
 
 def index_all_images():
     """Index every record in the database as efficiently as possible"""
-    init()
-    es = Elasticsearch([{'host': app.config['ELASTICSEARCH_URL'], 'port': 80}])
+    es = init()
     batches = []
 
     for db_image in models.Image.query.yield_per(CHUNK_SIZE):
@@ -100,11 +101,26 @@ def index_all_images():
 
     helpers.bulk(es, batches)
 
+def init_es():
+    auth = AWSRequestsAuth(aws_access_key=app.config['AWS_ACCESS_KEY_ID'],
+                           aws_secret_access_key=app.config['AWS_SECRET_ACCESS_KEY'],
+                           aws_host=app.config['ELASTICSEARCH_URL'],
+                           aws_region='us-west-1',
+                           aws_service='es')
+    auth.encode = lambda x: bytes(x.encode('utf-8'))
+    es = Elasticsearch(host=app.config['ELASTICSEARCH_URL'],
+                       port=80,
+                       connection_class=RequestsHttpConnection,
+                       http_auth=auth)
+    return es
+
 def init():
     """Initialize all search objects"""
-    connections.create_connection(hosts=[{'host': app.config['ELASTICSEARCH_URL'], 'port': 80}])
+    es = init_es()
+    connections.add_connection('default', es)
     log.info("Initializing search objects for connection %s", app.config['ELASTICSEARCH_URL'])
     Image.init()
+    return es
 
 if __name__ == '__main__':
     # Run me as python -m openledger.search

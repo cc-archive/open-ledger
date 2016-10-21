@@ -55,6 +55,7 @@ DATASOURCES = {
                         'filesystem': 's3',
                         'filepath': 'openimages/machine_ann_2016_08/validation/labels.csv',
                         'datatype': 'image-tags'},
+    'searchindex': 'searchindex',
 }
 
 # Load the "small" image datasource by default
@@ -84,7 +85,7 @@ class LoaderException(Exception):
     pass
 
 def launchloader():
-    """Launch an EC2 instance with the loader"""
+    """Launch an EC2 instance with the specified loader"""
     instance = None
     resource, client = _init_ec2()
     try:
@@ -117,7 +118,11 @@ def load_data_from_instance(instance, database):
                  AWS_SECRET_ACCESS_KEY=AWS_SECRET_ACCESS_KEY,
                  AWS_ACCESS_KEY_ID=AWS_ACCESS_KEY_ID,
                  ELASTICSEARCH_URL=ELASTICSEARCH_URL):
-                 run('./venv/bin/python database_import.py {filepath} {source} {datatype} --filesystem {filesystem} --skip-checks'.format(**env.datasource))
+
+                if env.datasource == 'searchindex':
+                    run('./venv/bin/python -m openledger.search --verbose')
+                else:
+                    run('./venv/bin/python database_import.py {filepath} {source} {datatype} --filesystem {filesystem} --skip-checks'.format(**env.datasource))
 
 def deploy_code(host_string):
     max_retries = 20
@@ -206,7 +211,6 @@ def _get_running_instance(resource, client):
 
         if not instance:
             log.debug("No stopped instances found; starting a brand new type %s instance...", env.instance_type)
-            database = _get_running_database()
             security_groups = SECURITY_GROUPS
             instance = resource.create_instances(MinCount=1, MaxCount=1,
                                                  SecurityGroups=security_groups,
