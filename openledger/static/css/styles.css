@@ -63,8 +63,14 @@ footer.callout {
 
 /* List features */
 .add-to-list {
-  width: 200px;
+  width: 400px;
   position: absolute;
   display: none;
-  padding:
+  z-index: 99;
+}
+.add-to-list input {
+  margin: 0;
+}
+.add-to-list-response {
+  display: none;
 }

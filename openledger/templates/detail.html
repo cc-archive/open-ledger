@@ -5,13 +5,7 @@
 
 <div class="callout hero">
     <div class="column text-center">
-      <div class="add-to-list-container">
-        <button onClick="openledger.list.addToListForm(event)">Create List</button>
-        <form class="add-to-list" action="#" method="GET">
-          <input type="text" name="title"  />
-          <input type="hidden" name="identifier" value="{{ image.identifier }}" />
-        </form>
-      </div>
+
 
     <figure>
       <img src="{{ url }}"  />
@@ -70,7 +64,21 @@
     <button class="attribution-button button clipboard-sel-html secondary">
       Copy attribution as HTML
     </button>
+
+    <div class="add-to-list-container">
+      <button onClick="openledger.list.addToListForm(event)" class="button success">Save to a List</button>
+      <form class="add-to-list animated" action="#" method="GET">
+        <input type="text" name="title" placeholder="Name your list" size="40"/>
+        <input type="hidden" name="identifier" value="{{ image.identifier }}" />
+      </form>
+      <div class="add-to-list-response">
+
+      </div>
+    </div>
+
   </div>
+
+
 
   </div>
 </div>
