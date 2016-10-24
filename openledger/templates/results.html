@@ -18,10 +18,15 @@
   {% include "includes/search-form.html" %}
 {% endwith %}
 
-{% if results %}
 <div class="row column results">
 
-  <h5>Page {{ results.page }} of {{ results.pages }} page{{ results.pages|pluralize }} from Open Images</h5>
+  {% if 'search' in search_data and search_data.search and results.pages == 0 %}
+  <h3>No results were found for '{{ search_data.search }}'</h3>
+  {% elif results.pages > 0 %}
+
+  {% if results.pages > 1 %}
+  <h5>Page {{ results.page }} of {{ results.pages }} page{{ results.pages|pluralize }}</h5>
+  {% endif %}
 
    {{ pagination.paginate_openledger(results.page, results.pages, search_data_for_pagination) }}
 
@@ -41,7 +46,9 @@
       {% endfor %}
     </div>
     {{ pagination.paginate_openledger(results.page, results.pages, search_data_for_pagination) }}
+
+    {% endif %}
   </div>
-  {% endif %}
+
 
 {% endblock %}

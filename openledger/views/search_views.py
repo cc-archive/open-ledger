@@ -112,12 +112,15 @@ def fulltext():
               should=queries,
               minimum_should_match=1)
         s = s.query(q)
-        s.execute()
-        for search_result in s:
+        response = s.execute()
+        results.pages = int(int(response.hits.total) / PER_PAGE)
+        start = results.page * PER_PAGE
+        end = start + PER_PAGE
+        for search_result in s[start:end]:
             r = search.Result.from_elasticsearch(search_result)
             results.items.append(r)
 
-    search_data_for_pagination = {i:search_data[i] for i in search_data if i != 'page'}
+    search_data_for_pagination = {i: search_data[i] for i in search_data if i != 'page'}
 
     return render_template('results.html',
                            results=results,
