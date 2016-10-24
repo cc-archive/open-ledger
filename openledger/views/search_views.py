@@ -1,6 +1,6 @@
 import logging
 
-from elasticsearch_dsl import Search
+from elasticsearch_dsl import Search, Q
 from flask import Flask, render_template, request
 from sqlalchemy import and_, or_, not_, distinct
 
@@ -96,7 +96,12 @@ def fulltext():
     results = search.Results(page=search_data['page'])
 
     if search_data['search']:
-        s = s.query("match", title=search_data['search'])
+        if 'title' in search_data.get('search_fields'):
+            s = s.query(Q("match", title=search_data['search']))
+        if 'tags' in search_data.get('search_fields'):
+            s = s.query(Q("match", tags=search_data['search']))
+        if 'creator' in search_data.get('search_fields'):
+            s = s.query(Q("match", creator=search_data['search']))
         s.execute()
         for search_result in s:
             r = search.Result.from_elasticsearch(search_result)
