@@ -90,7 +90,7 @@ def detail(identifier):
 @app.route('/fulltext')
 def fulltext():
     """Search using the Elasticsearch interface"""
-    s = Search()
+    s = Search(using=search.init())
     form, search_data = init_search()
 
     results = search.Results(page=search_data['page'])

@@ -118,8 +118,7 @@ def init():
     """Initialize all search objects"""
     es = init_es()
     connections.add_connection('default', es)
-    log.info("Initializing search objects for connection %s", app.config['ELASTICSEARCH_URL'])
-    Image.init()
+    log.debug("Initializing search objects for connection %s", app.config['ELASTICSEARCH_URL'])
     return es
 
 if __name__ == '__main__':
