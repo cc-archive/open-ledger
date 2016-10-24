@@ -239,18 +239,6 @@ def _init_rds():
     client = session.client('rds', region_name='us-west-1')
     return client
 
-# Legacy deployment mechanism for Digital Ocean hosts
-def deploy():
-    with cd(CODE_DIR):
-        run('git pull origin ' + CURRENT_BRANCH)
-        run('./venv/bin/pip install -r requirements.txt -q')
-        run('npm install')
-        run('NODE_ENV=production node_modules/.bin/webpack')
-    restart_host()
-
-def restart_host():
-    sudo('service openledger restart', shell=False)
-
 # Configuration for EC2 startup
 user_data = """
 #cloud-config
