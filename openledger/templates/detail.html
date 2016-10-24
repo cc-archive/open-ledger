@@ -5,6 +5,14 @@
 
 <div class="callout hero">
     <div class="column text-center">
+      <div class="add-to-list-container">
+        <button onClick="openledger.list.addToListForm(event)">Create List</button>
+        <form class="add-to-list" action="#" method="GET">
+          <input type="text" name="title"  />
+          <input type="hidden" name="identifier" value="{{ image.identifier }}" />
+        </form>
+      </div>
+
     <figure>
       <img src="{{ url }}"  />
     </figure>
@@ -51,7 +59,7 @@
         {% else %}
           {{ creator }}
         {% endif %}
-      </i> 
+      </i>
 
       is licensed under
       <a href="{{ license_url }}">CC {{ license|upper }} {{ license_version }}</a>

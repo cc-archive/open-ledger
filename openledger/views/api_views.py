@@ -25,6 +25,7 @@ class ListAPI(MethodView):
                        creator_displayname=lst.creator_displayname,
                        images=images,
                        )
+
     def delete(self, slug):
         # FIXME will need to deal with auth here, we shouldn't allow deletion of
         # owned lists, and maybe should just harvest anon lists that have no activity?
@@ -49,6 +50,7 @@ class ListAPI(MethodView):
 app.add_url_rule(API_BASE + 'list/<slug>', view_func=ListAPI.as_view('list'))
 
 class ListsAPI(MethodView):
+
     def post(self):
         if not request.form.get('title'):
             return make_response(jsonify(message="'Title' is a required field"), 422)

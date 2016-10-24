@@ -60,3 +60,11 @@ footer.callout {
 .attribution-button {
   width: 200px;
 }
+
+/* List features */
+.add-to-list {
+  width: 200px;
+  position: absolute;
+  display: none;
+  padding:
+}

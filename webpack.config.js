@@ -6,7 +6,7 @@ var root = "/openledger/static"
 
 module.exports = [{
   context: __dirname + root + "/js",
-  entry: "./index",
+  entry: ['whatwg-fetch', "./index"],
   output: {
     path: __dirname + root + "/js/build",
     filename: 'openledger.js'

@@ -16,7 +16,8 @@
   },
   "homepage": "https://github.com/creativecommons/open-ledger#readme",
   "dependencies": {
-    "clipboard": "^1.5.12"
+    "clipboard": "^1.5.12",
+    "whatwg-fetch": "^1.0.0"
   },
   "devDependencies": {
     "babel": "^6.5.2",
