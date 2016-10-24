@@ -30,6 +30,7 @@
         {% for result in results.flickr.photos.photo %}
 
           {% set creator = result.ownername %}
+          {% set creator_url = "" %}
           {% set image_url = result.url %}
           {% set orig_license = result.license|int %}
           {% set license = license_map.flickr.get(orig_license, "").lower() %}
@@ -39,7 +40,7 @@
           {% set provider = "flickr" %}
           {% set detail_url = url_for('by_image', url=image_url, provider_url=provider_url, license=license, creator=creator, title=title, provider=provider) %}
 
-          {{ image_result.show(detail_url, thumbnail, creator, title, license) }}
+          {{ image_result.show(detail_url, thumbnail, creator, creator_url, title, license) }}
 
         {% endfor %}
 
@@ -58,6 +59,7 @@
       <div class="row">
         {% for result in results.fpx.photos %}
           {% set creator = result.user.username %}
+          {% set creator_url = "" %}
           {% set license = license_map.fpx.get(result.license_type, "").lower() %}
           {% set provider_url = "https://500px.com/" + result.url %}
           {% set title = result.name %}
@@ -66,7 +68,7 @@
           {% set provider = "fpx" %}
           {% set detail_url = url_for('by_image', url=url, provider_url=provider_url, license=license, creator=creator, title=title, provider=provider) %}
 
-          {{ image_result.show(detail_url, thumbnail, creator, title, license) }}
+          {{ image_result.show(detail_url, thumbnail, creator, creator_url, title, license) }}
         {% endfor %}
       </div>
 
@@ -84,6 +86,7 @@
         {% for result in results.rijks.artObjects %}
           {% set license = "cc0" %}
           {% set creator = result.principalOrFirstMaker %}
+          {% set creator_url = "" %}
           {% set url = result.webImage.url %}
           {% set title = result.title %}
           {% set provider_url = result.links.web %}
@@ -92,7 +95,7 @@
 
           {% set detail_url = url_for('by_image', url=url, provider_url=provider_url, license=license, creator=creator, title=title, provider=provider) %}
 
-          {{ image_result.show(detail_url, thumbnail, creator, title, license) }}
+          {{ image_result.show(detail_url, thumbnail, creator, creator_url, title, license) }}
         {% endfor %}
       </div>
 
@@ -110,6 +113,7 @@
       {% for result in results.wikimedia.results %}
         {% set license = "cc0" %}
         {% set creator = "" %}
+        {% set creator_url = "" %}
         {% set url = result.pic.value %}
         {% set title = result.itemLabel.value %}
         {% set provider_url = result.item.value %}
@@ -118,7 +122,7 @@
 
         {% set detail_url = url_for('by_image', url=url, provider_url=provider_url, license=license, creator=creator, title=title, provider=provider) %}
 
-        {{ image_result.show(detail_url, thumbnail, creator, title, license) }}
+        {{ image_result.show(detail_url, thumbnail, creator, creator_url, title, license) }}
 
       {% endfor %}
      </div>

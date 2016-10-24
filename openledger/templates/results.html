@@ -30,13 +30,13 @@
         {% set creator = result.creator %}
         {% set license = result.license %}
         {% set provider_url = result.foreign_landing_url %}
+        {% set creator_url = result.creator_url %}
         {% set title = result.title %}
         {% set image_url = result.url %}
         {% set thumbnail = result.url %}
-
         {% set detail_url = url_for('detail', identifier=result.identifier) %}
 
-        {{ image_result.show(detail_url, thumbnail, creator, title, license) }}
+        {{ image_result.show(detail_url, thumbnail, creator, creator_url, title, license) }}
 
       {% endfor %}
     </div>

@@ -21,6 +21,9 @@ search_funcs = {
 }
 
 log = logging.getLogger(__name__)
+console = logging.StreamHandler()
+log.addHandler(console)
+log.setLevel(logging.INFO)
 
 @app.route("/")
 def index(provider=None):
@@ -87,72 +90,39 @@ def detail(identifier):
                            creator=creator,
                            creator_url=creator_url)
 
-@app.route('/fulltext')
+@app.route('/search')
 def fulltext():
     """Search using the Elasticsearch interface"""
     s = Search(using=search.init())
     form, search_data = init_search()
 
     results = search.Results(page=search_data['page'])
+    queries = []
 
     if search_data['search']:
         if 'title' in search_data.get('search_fields'):
-            s = s.query(Q("match", title=search_data['search']))
+            queries.append(Q("match", title=search_data['search']))
         if 'tags' in search_data.get('search_fields'):
-            s = s.query(Q("match", tags=search_data['search']))
+            queries.append(Q("match", tags=search_data['search']))
         if 'creator' in search_data.get('search_fields'):
-            s = s.query(Q("match", creator=search_data['search']))
+            queries.append(Q("match", creator=search_data['search']))
+        q = Q('bool',
+              should=queries,
+              minimum_should_match=1)
+        s = s.query(q)
         s.execute()
         for search_result in s:
             r = search.Result.from_elasticsearch(search_result)
             results.items.append(r)
 
     search_data_for_pagination = {i:search_data[i] for i in search_data if i != 'page'}
+
     return render_template('results.html',
                            results=results,
                            form=form,
                            search_data=search_data,
                            search_data_for_pagination=search_data_for_pagination)
 
-
-@app.route("/source/openimages")
-def openimages():
-    """Search a local database of images sourced from Google's OpenImage project"""
-    results = []
-    form, search_data = init_search()
-
-
-    # For each search term, check in both the image title field and linked Tags
-    if search_data['search']:
-        terms = search_data['search'].split(' ')
-
-        # If we're searching tags, we need a join; otherwise nope
-        if 'tags' in search_data.get('search_fields'):
-            filter_query = Image.query.distinct().join('tags').filter
-        else:
-            filter_query = Image.query.distinct().filter
-
-        results = filter_query(
-            and_(
-                *[
-                    or_(
-                        Image.creator.ilike(s) if 'creator' in search_data.get('search_fields') else None,
-                        Image.title.contains(s) if 'title' in search_data.get('search_fields') else None,
-                        Tag.name == s if 'tags' in search_data.get('search_fields') else None,
-                    ) for s in terms
-                ]
-              )
-            ).paginate(page=search_data['page'],
-                       per_page=search_data['per_page'],
-                       error_out=False)
-
-    # Search data with fields we want to override in pagination removed
-    search_data_for_pagination = {i:search_data[i] for i in search_data if i != 'page'}
-    return render_template('openimages.html',
-                           results=results,
-                           form=form,
-                           search_data=search_data,
-                           search_data_for_pagination=search_data_for_pagination)
 
 def init_search(provider=None):
     """Set up common search initialization; returns a tuple of the initialized

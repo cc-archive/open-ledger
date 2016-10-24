@@ -71,8 +71,3 @@ class TestViews(TestCase):
         rv = self.client.get('/?search=' + query)
         assert rv.status_code == 200
         p = select_node(rv, 'body')
-
-    def test_openimages(self):
-        """The openimages endpoint should load without errors"""
-        rv = self.client.get('/source/openimages')
-        assert rv

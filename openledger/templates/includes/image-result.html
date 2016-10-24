@@ -1,6 +1,6 @@
 {% import "includes/license-logo.html" as license_logo %}
 
-{% macro show(detail_url, thumbnail, creator, title, license) -%}
+{% macro show(detail_url, thumbnail, creator, creator_url, title, license) -%}
 <div class="shrink columns t-image-result">
   <figure>
     <div class="figure-wrapper">
@@ -9,7 +9,14 @@
       </a>
     </div>
     <figcaption>
-      {{ title|truncate(20) }} {% if creator %} by {{ creator }} {% endif %}
+      {{ title|truncate(20) }}
+      {% if creator %} by
+        {% if creator_url %}
+          <a href="{{ creator_url }}">{{ creator }}</a>
+        {% else %}
+          {{ creator }}
+        {% endif %}
+      {% endif %}
       {{ license_logo.license(license) }}
     </figcaption>
   </figure>
