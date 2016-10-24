@@ -65,6 +65,7 @@ def by_image():
                            provider_url=provider_url,
                            license=license,
                            license_url=license_url,
+                           license_version=license_version,
                            creator=creator)
 
 @app.route ("/ledger/detail/<path:identifier>")
@@ -87,6 +88,7 @@ def detail(identifier):
                            provider_url=provider_url,
                            license=license,
                            license_url=license_url,
+                           license_version=license_version,
                            creator=creator,
                            creator_url=creator_url)
 

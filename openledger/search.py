@@ -48,7 +48,9 @@ class Result(object):
                    creator_url=sr.creator_url,
                    foreign_landing_url=sr.foreign_landing_url,
                    identifier=sr.identifier,
-                   license=sr.license)
+                   license=sr.license,
+                   #license_version=sr.license_version Add this when we've reindexed FIXME
+                   )
         return r
 
 class Image(DocType):
@@ -62,6 +64,7 @@ class Image(DocType):
     provider = String()
     source = String()
     license = String()
+    license_version = String()
     foreign_landing_url = String()
 
     class Meta:

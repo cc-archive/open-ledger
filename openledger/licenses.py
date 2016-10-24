@@ -16,10 +16,6 @@ LICENSES = (
     ("CC0", "Public Domain Dedication"),
 )
 
-LICENSE_LIST = set(l[0] for l in LICENSES)
-
-DEFAULT_LICENSE = "ALL"
-
 LICENSE_GROUPS = {
     # All open licenses
     "ALL": ('BY', 'BY-NC', 'BY-ND', 'BY-SA', 'BY-NC-ND', 'BY-NC-SA', 'PDM', 'CC0'),
@@ -30,6 +26,12 @@ LICENSE_GROUPS = {
     # All licenses allowing modifications
     "ALL-MOD": ('BY', 'BY-SA', 'BY-NC', 'BY-NC-SA', 'CC0', 'PDM'),
 }
+
+LICENSE_LIST = set(l[0] for l in LICENSES)
+
+DEFAULT_LICENSE = "ALL"
+
+LICENSE_LIST.update(set(l for l in LICENSE_GROUPS.keys()))
 
 def get_license_url(license, version):
     """For a given version and license string, return the canonical human-readable deed"""

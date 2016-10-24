@@ -19,11 +19,17 @@
       </li>
       <li>
         <h4>Creator</h4>
-        <span>{{ creator }}</span>
+        <span>
+          {% if creator_url %}
+            <a href="{{ creator_url }}">{{ creator }}</a>
+          {% else %}
+            {{ creator }}
+          {% endif %}
+        </span>
       </li>
       <li>
         <h4>License</h4>
-        {{ license_logo.license(license) }}
+        <a href="{{ license_url }}">{{ license_logo.license(license) }}</a>
       </li>
       <li>
         <a href="{{ provider_url }}">Original source</a>
@@ -38,8 +44,17 @@
   <div class="column">
     <h3>How to use this work</h3>
     <blockquote class="attribution">
-      <a href="{{ provider_url }}">“{{ title }}”</a> by <i>{{ creator }}</i> is licensed under
-      <a href="{{ license_url }}">CC {{ license|upper }}</a>
+      <a href="{{ provider_url }}">“{{ title }}”</a> by
+      <i>
+        {% if creator_url %}
+          <a href="{{ creator_url }}">{{ creator }}</a>
+        {% else %}
+          {{ creator }}
+        {% endif %}
+      </i> 
+
+      is licensed under
+      <a href="{{ license_url }}">CC {{ license|upper }} {{ license_version }}</a>
     </blockquote>
     <button class="attribution-button button clipboard-sel-text primary" data-clipboard-target=".attribution">
       Copy attribution as text
