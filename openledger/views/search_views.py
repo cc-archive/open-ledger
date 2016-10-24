@@ -67,7 +67,7 @@ def by_image():
                            license_url=license_url,
                            creator=creator)
 
-@app.route ("/ledger/detail/<identifier>")
+@app.route ("/ledger/detail/<path:identifier>")
 def detail(identifier):
     """Get a detailed representation of an item in the ledger"""
     image = Image.query.filter_by(identifier=identifier).first()
