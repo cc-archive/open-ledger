@@ -186,3 +186,58 @@ class TestAPIViews(TestCase):
         models.db.session.commit()
         rv = self.client.post('/api/v1/list/images', data={'slug': 'made up', 'identifier': '1'})
         assert 404 == rv.status_code
+
+    def test_get_lists_by_title(self):
+        """The Lists endpoint should allow lookup of lists by title"""
+        title1 = 'test'
+        title2 = 'yep'
+        lst1 = models.List(title=title1)
+        lst2 = models.List(title=title2)
+        img1 = models.Image(identifier='1', title='image title', url='http://example.com/1', license='CC0')
+        img2 = models.Image(identifier='2', title='image title', url='http://example.com/2', license='CC0')
+        lst2.images = [img1, img2]
+        models.db.session.add(img1)
+        models.db.session.add(img2)
+
+        models.db.session.add(lst1)
+        models.db.session.add(lst2)
+        models.db.session.commit()
+
+        rv = self.client.get('/api/v1/lists', data={'title': title1})
+        assert 200 == rv.status_code
+        assert 'lists' in rv.json
+        assert title1 == rv.json['lists'][0]['title']
+        assert lst1.slug == rv.json['lists'][0]['slug']
+        assert 0 == len(rv.json['lists'][0]['images'])
+
+        rv = self.client.get('/api/v1/lists', data={'title': title2})
+        assert 200 == rv.status_code
+        assert 'lists' in rv.json
+        assert title2 == rv.json['lists'][0]['title']
+        assert lst2.slug == rv.json['lists'][0]['slug']
+        assert 2 == len(rv.json['lists'][0]['images'])
+
+    def test_get_lists_by_title(self):
+        """The Lists endpoint should return 404 if no matching lists are found"""
+        rv = self.client.get('/api/v1/lists', data={'title': 'not foudn'})
+        assert 404 == rv.status_code
+
+    def test_get_all_lists_by_title(self):
+        """The Lists endpoint should allow lookup of lists by title and return all matches"""
+        title1 = 'test1'
+        title2 = 'test2'
+        match = 'test'  # A substring match
+        lst1 = models.List(title=title1)
+        lst2 = models.List(title=title2)
+        models.db.session.add(lst1)
+        models.db.session.add(lst2)
+        models.db.session.commit()
+
+        rv = self.client.get('/api/v1/lists', data={'title': match})
+        assert 200 == rv.status_code
+        assert 'lists' in rv.json
+        assert 2 == len(rv.json['lists'])
+
+        # But only one for the exact match
+        rv = self.client.get('/api/v1/lists', data={'title': match + '1'})
+        assert 1 == len(rv.json['lists'])

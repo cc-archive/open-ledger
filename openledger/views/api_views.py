@@ -29,6 +29,16 @@ app.add_url_rule(API_BASE + 'list/<slug>', view_func=ListAPI.as_view('list'))
 
 class ListsAPI(MethodView):
 
+    def get(self):
+        """Search for lists, optionally by title"""
+        lsts = api.get_lists(title=request.form.get('title'))
+        if lsts.count() == 0:
+            abort(404)
+        output = []
+        for lst in lsts:
+            output.append(serialize_list(lst))
+        return make_response(jsonify(lists=output))
+
     def post(self):
         if not request.form.get('title'):
             return make_response(jsonify(message="'Title' is a required field"), 422)
@@ -77,8 +87,14 @@ class ListImageAPI(MethodView):
 app.add_url_rule(API_BASE + 'list/images', view_func=ListImageAPI.as_view('list-images'))
 
 def serialize_image(img):
-    """Return a serialization of an image database suitable for use in the API"""
+    """Return a serialization of an Image db object suitable for use in the API"""
     return {'identifier': img.identifier,
             'title': img.title,
             'url': img.url,
             'creator': img.creator}
+
+def serialize_list(lst):
+    """Return a serialization of a List db object suitable for use in the API"""
+    return {'title': lst.title,
+            'slug': lst.slug,
+            'images': [serialize_image(img) for img in lst.images]}

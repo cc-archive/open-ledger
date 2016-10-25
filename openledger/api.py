@@ -10,6 +10,10 @@ def get_list(slug):
         return None
     return lst
 
+def get_lists(title=None):
+    lsts = models.List.query.filter(models.List.title.contains(title))
+    return lsts
+
 def delete_list(slug):
     lst = models.List.query.filter(models.List.slug==slug).first()
     if not lst:
