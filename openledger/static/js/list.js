@@ -9,6 +9,7 @@ const HOST_URL = `${window.location.protocol}//${window.location.hostname}${HOST
 export const addToListForm = (e) => {
   // Bring up a form to capture a list title from a user
   e.preventDefault()
+
   var form = e.target.nextElementSibling
   var input = form.querySelector('input[type=text]')
 
@@ -18,12 +19,11 @@ export const addToListForm = (e) => {
 
   form.style.display = 'block'
   form.classList.toggle('pulse')
-  form.addEventListener('submit', createList)
+  form.addEventListener('submit', addToList)
 
   input.focus()
   input.scrollIntoView()
 }
-
 
 // Create or modify a list, returning the list slug
 export const addToList = (e) => {

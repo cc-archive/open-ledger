@@ -70,3 +70,5 @@ git+git://github.com/lizadaly/fabtools.git#egg=fabtools
 elasticsearch_dsl
 python-slugify
 aws-requests-auth
+Flask-Assets
+jsmin
