@@ -1,0 +1,23 @@
+{% import "includes/image-result.html" as image_result %}
+
+{% extends "base.html" %}
+
+{% block body %}
+
+<div class="row column">
+
+  <h2>{{ lst.title }}</h2>
+
+  <div class="row">
+  {% for image in images %}
+    {% set detail_url = url_for('detail', identifier=image.identifier) %}
+    {{ image_result.show(detail_url, image.url, image.creator, image.creator_url, image.title, image.license) }}
+  {% endfor %}
+  </div>
+
+
+</div>
+
+
+
+{% endblock body %}

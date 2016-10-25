@@ -21,6 +21,7 @@ class TestAPIViews(TestCase):
     def tearDown(self):
         with app.app_context():
             models.db.session.close()
+            models.db.session.remove()
             models.db.drop_all()
 
     def test_list_not_found(self):
@@ -54,26 +55,35 @@ class TestAPIViews(TestCase):
         assert creator_displayname == obj['creator_displayname']
 
     def test_list_image_data(self):
-        """The List endpoint should return a JSON rendition of all a List's Images"""
+        """The List endpoint should return a JSON rendition of all a List's Images in reverse chronological order"""
         lst = models.List(title='test')
+
+        # Commit these in order so we're guaranteed which one is earlier
         img1 = models.Image(identifier='1', title='image title', url='http://example.com/1', license='CC0')
+        models.db.session.add(img1)
+        models.db.session.commit()
+
         img2 = models.Image(identifier='2', title='image title', url='http://example.com/2', license='CC0')
+        models.db.session.add(img2)
+        models.db.session.commit()
+
         lst.images.append(img1)
         lst.images.append(img2)
         models.db.session.add(lst)
-        models.db.session.add(img1)
-        models.db.session.add(img2)
         models.db.session.commit()
+
         slug = lst.slug
         rv = self.client.get('/api/v1/list/' + slug)
         images = rv.json['images']
         assert 2 == len(images)
-        assert '1' == images[0]['identifier']
-        assert '2' == images[1]['identifier']
+
+        # Should be in reverse chronological order
+        assert '1' == images[1]['identifier']
+        assert '2' == images[0]['identifier']
 
     def test_list_delete_nonexistent_image(self):
         """The List endpoint should return a 404 if an unknown List is requested to be deleted"""
-        rv = self.client.delete('/api/v1/list/unknown')
+        rv = self.client.delete('/api/v1/lists', data={'slug': 'unknown'})
         assert 404 == rv.status_code
 
     def test_list_delete(self):
@@ -83,14 +93,14 @@ class TestAPIViews(TestCase):
         models.db.session.add(lst)
         models.db.session.commit()
         assert 1 == models.List.query.filter(models.List.title==title).count()
-        rv = self.client.delete('/api/v1/list/' + lst.slug)
+        rv = self.client.delete('/api/v1/lists', data={'slug': lst.slug})
         assert 204 == rv.status_code
         assert 0 == models.List.query.filter(models.List.title==title).count()
 
     def test_lists_create_no_title(self):
         """The Lists endpoint should return a 422 Unprocessable Entity if the user tries to
         create a List with no title"""
-        rv = self.client.post('/api/v1/lists')
+        rv = self.client.post('/api/v1/lists', data={'title': None})
         assert 422 == rv.status_code
 
     def test_lists_create_list(self):
@@ -113,14 +123,21 @@ class TestAPIViews(TestCase):
         models.db.session.commit()
         assert 1 == models.List.query.filter(models.List.title==title).count()
         assert 0 == models.List.query.filter(models.List.title==title).first().images.count()
-        rv = self.client.put('/api/v1/list/' + lst.slug, data={'image': ['1', '2']})
+        rv = self.client.put('/api/v1/lists', data={'slug': lst.slug, 'identifiers': ['1', '2']})
         assert 200 == rv.status_code
         assert 2 == models.List.query.filter(models.List.title==title).first().images.count()
 
         # Now "delete" one image
-        rv = self.client.put('/api/v1/list/' + lst.slug, data={'image': ['2']})
+        rv = self.client.put('/api/v1/lists', data={'slug': lst.slug, 'identifiers': ['2']})
         assert 200 == rv.status_code
         assert 1 == models.List.query.filter(models.List.title==title).first().images.count()
+
+    def test_lists_create_while_modifying(self):
+        """The modify-List endpoint should create a list if it doesn't already exist and return a 201"""
+        title = 'my list title'
+        rv = self.client.put('/api/v1/lists', data={'title': title, 'identifiers': []})
+        assert 201 == rv.status_code
+        assert 1 == models.List.query.filter(models.List.title==title).count()
 
     def test_lists_create_list_with_images(self):
         """The Lists endpoint should create a List with all of the image identifiers added"""
@@ -131,6 +148,41 @@ class TestAPIViews(TestCase):
         models.db.session.add(img2)
         models.db.session.commit()
 
-        rv = self.client.post('/api/v1/lists', data={'title': title, 'image': ['1', '2']})
+        rv = self.client.post('/api/v1/lists', data={'title': title, 'identifiers': ['1', '2']})
         assert 201 == rv.status_code
         assert 2 == models.List.query.filter(models.List.title==title).first().images.count()
+
+    def test_add_to_list(self):
+        """The Lists/Image endpoint should allow adding an Image to a List without modifying existing images"""
+        lst = models.List(title='test')
+        img1 = models.Image(identifier='1', title='image title', url='http://example.com/1', license='CC0')
+        img2 = models.Image(identifier='2', title='image title', url='http://example.com/2', license='CC0')
+        lst.images = [img1]
+        models.db.session.add(lst)
+        models.db.session.add(img1)
+        models.db.session.add(img2)
+        models.db.session.commit()
+
+        assert 1 == models.List.query.filter(models.List.title=='test').first().images.count()
+        rv = self.client.post('/api/v1/list/images', data={'slug': lst.slug, 'identifier': '2'})
+
+        assert 201 == rv.status_code
+        assert 2 == models.List.query.filter(models.List.title=='test').first().images.count()
+
+    def test_add_to_list_no_image(self):
+        """The List/Image endpoint should return 404 if the user tries to add a nonexistent image"""
+        lst = models.List(title='test')
+        models.db.session.add(lst)
+        models.db.session.commit()
+        rv = self.client.post('/api/v1/list/images', data={'slug': lst.slug, 'identifier': '2'})
+        assert 404 == rv.status_code
+
+    def test_add_to_list_no_image(self):
+        """The List/Image endpoint should return 404 if the user tries to add a nonexistent list"""
+        lst = models.List(title='test')
+        img1 = models.Image(identifier='1', title='image title', url='http://example.com/1', license='CC0')
+        models.db.session.add(lst)
+        models.db.session.add(img1)
+        models.db.session.commit()
+        rv = self.client.post('/api/v1/list/images', data={'slug': 'made up', 'identifier': '1'})
+        assert 404 == rv.status_code

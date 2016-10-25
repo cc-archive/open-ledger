@@ -2,10 +2,9 @@ import 'whatwg-fetch'
 
 const API_BASE = '/api/v1/'
 
-// Add an item by identifier to a list. If the list doesn't exist, create it
-export const addToList = (identifier, list) => {
-  // TODO
-}
+const HOST_PORT = window.location.port === 80 ? '' : `:${window.location.port}`
+const HOST_URL = `${window.location.protocol}//${window.location.hostname}${HOST_PORT}`
+
 
 export const addToListForm = (e) => {
   // Bring up a form to capture a list title from a user
@@ -26,8 +25,8 @@ export const addToListForm = (e) => {
 }
 
 
-// Create a list, returning the list slug
-export const createList = (e) => {
+// Create or modify a list, returning the list slug
+export const addToList = (e) => {
   const url = API_BASE + 'lists'
 
   e.preventDefault()
@@ -47,17 +46,19 @@ export const createList = (e) => {
   msg.style.display = 'block'
   msg.innerHTML = "Saving..."
 
+  var status_code
+
   fetch(url, {
-    method: 'POST',
+    method: 'PUT',
     body: data
   })
   .then((response) => {
+    status_code = response.status_code
     return response.json()
   })
   .then((json) => {
     if (json.hasOwnProperty('slug')) {
-      console.log(`Created list "${data.get('title')}" with slug ${json.slug} and image ${data.get('identifier')}`)
-      msg.innerHTML = `Your image was saved to <a href="/lists/${json.slug}">${data.get('title')}</a>`
+      msg.innerHTML = `Your image was saved to <a href="${HOST_URL}/list/${json.slug}">${HOST_URL}/list/${json.slug}</a>`
     }
     else {
       console.log(json)
