@@ -1,7 +1,7 @@
 import logging
 
 from elasticsearch_dsl import Search, Q
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, abort
 from sqlalchemy import and_, or_, not_, distinct
 
 from openledger import app, forms, licenses, search
@@ -72,6 +72,8 @@ def by_image():
 def detail(identifier):
     """Get a detailed representation of an item in the ledger"""
     image = Image.query.filter_by(identifier=identifier).first()
+    if not image:
+        abort(404)
     url = image.url
     provider_url = image.foreign_landing_url
     title = image.title
