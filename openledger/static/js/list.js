@@ -1,4 +1,5 @@
 import 'whatwg-fetch'
+var _ = require('underscore')
 
 const API_BASE = '/api/v1/'
 
@@ -21,7 +22,7 @@ export const addToListForm = function (e) {
 
   input.focus()
   input.scrollIntoView()
-  input.addEventListener('keyup', completeListTitle.bind(form), false)
+  input.addEventListener('keyup', _.throttle(completeListTitle.bind(form), 1000), false)
 }
 
 // Return autocomplete results for lists by title
@@ -30,8 +31,10 @@ export const completeListTitle = function () {
   const input = form.elements["title"]
   const identifier = form.elements["identifier"]
 
-  // Don't do anything if we haven't typed anything
+  // Don't do anything if we haven't typed anything except clear the autocomplete list
   if (!input.value) {
+    var autocomplete = input.nextElementSibling
+    autocomplete.innerHTML = ''
     return
   }
   const url = API_BASE + 'lists?title=' + encodeURIComponent(input.value)
