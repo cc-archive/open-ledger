@@ -1,9 +1,12 @@
 import json
 import os
 
+from flask_testing import TestCase
 import html5lib
 from lxml.html import tostring, html5parser
 import responses
+
+from openledger import app, models
 
 TESTING_CONFIG = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'settings.py')
 
@@ -51,3 +54,26 @@ def select_node(rv, selector):
     if r and len(r) > 0:
         return r[0]
     return {}
+
+class TestOpenLedgerApp(TestCase):
+    """Setup/teardown for app test cases"""
+    def create_app(self):
+        app.config['TESTING'] = True
+        app.config.from_pyfile(TESTING_CONFIG)
+        return app
+
+    def setUp(self):
+        with app.app_context():
+            models.db.create_all()
+
+    def tearDown(self):
+        with app.app_context():
+            models.db.session.close()
+            models.db.session.remove()
+            models.db.drop_all()
+
+    def add_to_db(self, *items):
+        """Add the list of ORM objects to the database and commit"""
+        for item in items:
+            models.db.session.add(item)
+        models.db.session.commit()
