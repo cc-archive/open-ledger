@@ -23,6 +23,33 @@ export const addToListForm = (e) => {
 
   input.focus()
   input.scrollIntoView()
+  input.addEventListener('keypress', completeListTitle)
+
+}
+// Return autocomplete results for lists by title
+export const completeListTitle = (e) => {
+  const input = e.target
+  const url = API_BASE + 'lists?title=' + encodeURIComponent(input.value)
+
+  fetch(url, {
+    method: 'GET'
+  })
+  .then((response) => {
+    return response.json()
+  })
+  .then((json) => {
+    // Create an autocomplete field beneath the input
+    var autocomplete = document.createElement('div')
+    autocomplete.classList.add('autocomplete')
+    for (var list of json.lists) {
+      var item = document.createElement('li')
+      var a = document.createElement('a')
+      a.innerHTML = list.title
+      item.appendChild(a)
+      autocomplete.appendChild(item)
+    }
+    input.parentNode.appendChild(autocomplete)
+  })
 }
 
 // Create or modify a list, returning the list slug

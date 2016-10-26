@@ -29,9 +29,10 @@ app.add_url_rule(API_BASE + 'list/<slug>', view_func=ListAPI.as_view('list'))
 
 class ListsAPI(MethodView):
 
-    def get(self):
+    def get(self, match_method='startswith'):
         """Search for lists, optionally by title"""
-        lsts = api.get_lists(title=request.form.get('title'))
+        lsts = api.get_lists(title=request.args.get('title'),
+                             match_method=match_method)
         if lsts.count() == 0:
             abort(404)
         output = []

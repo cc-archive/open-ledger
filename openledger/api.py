@@ -10,8 +10,14 @@ def get_list(slug):
         return None
     return lst
 
-def get_lists(title=None):
-    lsts = models.List.query.filter(models.List.title.contains(title))
+def get_lists(title=None, match_method='contains'):
+    """Get a list matching title. If `match_method` is 'contains', finds
+    matches anywhere in the title. If 'startswith', will match only
+    when starting with that string (as in autocomplete)"""
+    lsts = models.List.query.filter(
+        models.List.title.startswith(title) if match_method == 'startswith' else \
+        models.List.title.contains(title)
+    )
     return lsts
 
 def delete_list(slug):

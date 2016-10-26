@@ -2,27 +2,13 @@ import json
 
 import responses
 import jinja2
-from flask_testing import TestCase
+
 from flask import request, url_for
 
-from openledger import app, models
+from openledger import app, models, api
 from openledger.tests.utils import *
 
-class TestAPIViews(TestCase):
-    def create_app(self):
-        app.config['TESTING'] = True
-        app.config.from_pyfile(TESTING_CONFIG)
-        return app
-
-    def setUp(self):
-        with app.app_context():
-            models.db.create_all()
-
-    def tearDown(self):
-        with app.app_context():
-            models.db.session.close()
-            models.db.session.remove()
-            models.db.drop_all()
+class TestAPIViews(TestOpenLedgerApp):
 
     def test_list_not_found(self):
         """The List endpoint should return a 404 if a slug is not found"""
@@ -117,10 +103,8 @@ class TestAPIViews(TestCase):
         lst = models.List(title=title)
         img1 = models.Image(identifier='1', title='image title', url='http://example.com/1', license='CC0')
         img2 = models.Image(identifier='2', title='image title', url='http://example.com/2', license='CC0')
-        models.db.session.add(lst)
-        models.db.session.add(img1)
-        models.db.session.add(img2)
-        models.db.session.commit()
+        self.add_to_db(lst, img1, img2)
+
         assert 1 == models.List.query.filter(models.List.title==title).count()
         assert 0 == models.List.query.filter(models.List.title==title).first().images.count()
         rv = self.client.put('/api/v1/lists', data={'slug': lst.slug, 'identifiers': ['1', '2']})
@@ -144,9 +128,7 @@ class TestAPIViews(TestCase):
         title = 'my list title'
         img1 = models.Image(identifier='1', title='image title', url='http://example.com/1', license='CC0')
         img2 = models.Image(identifier='2', title='image title', url='http://example.com/2', license='CC0')
-        models.db.session.add(img1)
-        models.db.session.add(img2)
-        models.db.session.commit()
+        self.add_to_db(img1, img2)
 
         rv = self.client.post('/api/v1/lists', data={'title': title, 'identifiers': ['1', '2']})
         assert 201 == rv.status_code
@@ -158,10 +140,7 @@ class TestAPIViews(TestCase):
         img1 = models.Image(identifier='1', title='image title', url='http://example.com/1', license='CC0')
         img2 = models.Image(identifier='2', title='image title', url='http://example.com/2', license='CC0')
         lst.images = [img1]
-        models.db.session.add(lst)
-        models.db.session.add(img1)
-        models.db.session.add(img2)
-        models.db.session.commit()
+        self.add_to_db(lst, img1, img2)
 
         assert 1 == models.List.query.filter(models.List.title=='test').first().images.count()
         rv = self.client.post('/api/v1/list/images', data={'slug': lst.slug, 'identifier': '2'})
@@ -181,9 +160,8 @@ class TestAPIViews(TestCase):
         """The List/Image endpoint should return 404 if the user tries to add a nonexistent list"""
         lst = models.List(title='test')
         img1 = models.Image(identifier='1', title='image title', url='http://example.com/1', license='CC0')
-        models.db.session.add(lst)
-        models.db.session.add(img1)
-        models.db.session.commit()
+        self.add_to_db(lst, img1)
+
         rv = self.client.post('/api/v1/list/images', data={'slug': 'made up', 'identifier': '1'})
         assert 404 == rv.status_code
 
@@ -196,21 +174,16 @@ class TestAPIViews(TestCase):
         img1 = models.Image(identifier='1', title='image title', url='http://example.com/1', license='CC0')
         img2 = models.Image(identifier='2', title='image title', url='http://example.com/2', license='CC0')
         lst2.images = [img1, img2]
-        models.db.session.add(img1)
-        models.db.session.add(img2)
+        self.add_to_db(lst1, lst2, img1, img2)
 
-        models.db.session.add(lst1)
-        models.db.session.add(lst2)
-        models.db.session.commit()
-
-        rv = self.client.get('/api/v1/lists', data={'title': title1})
+        rv = self.client.get('/api/v1/lists?title=' + title1)
         assert 200 == rv.status_code
         assert 'lists' in rv.json
         assert title1 == rv.json['lists'][0]['title']
         assert lst1.slug == rv.json['lists'][0]['slug']
         assert 0 == len(rv.json['lists'][0]['images'])
 
-        rv = self.client.get('/api/v1/lists', data={'title': title2})
+        rv = self.client.get('/api/v1/lists?title='  + title2)
         assert 200 == rv.status_code
         assert 'lists' in rv.json
         assert title2 == rv.json['lists'][0]['title']
@@ -219,25 +192,34 @@ class TestAPIViews(TestCase):
 
     def test_get_lists_by_title(self):
         """The Lists endpoint should return 404 if no matching lists are found"""
-        rv = self.client.get('/api/v1/lists', data={'title': 'not foudn'})
+        rv = self.client.get('/api/v1/lists?title=not+found')
         assert 404 == rv.status_code
 
     def test_get_all_lists_by_title(self):
-        """The Lists endpoint should allow lookup of lists by title and return all matches"""
+        """The Lists endpoint should allow lookup starting with a title and return all matches"""
         title1 = 'test1'
-        title2 = 'test2'
-        match = 'test'  # A substring match
+        title2 = '1test'
+        match = 'test'  # A startswith match
         lst1 = models.List(title=title1)
         lst2 = models.List(title=title2)
-        models.db.session.add(lst1)
-        models.db.session.add(lst2)
-        models.db.session.commit()
+        self.add_to_db(lst1, lst2)
 
-        rv = self.client.get('/api/v1/lists', data={'title': match})
+        rv = self.client.get('/api/v1/lists?title='  + match)
         assert 200 == rv.status_code
         assert 'lists' in rv.json
-        assert 2 == len(rv.json['lists'])
-
-        # But only one for the exact match
-        rv = self.client.get('/api/v1/lists', data={'title': match + '1'})
         assert 1 == len(rv.json['lists'])
+
+class TestAPI(TestOpenLedgerApp):
+    """Methods that test the API calls directly"""
+
+    def test_get_all_lists_startswith_title(self):
+        """The get_lists function should allow lookup of lists starting with title and return all matches"""
+        title1 = 'test1'
+        title2 = '1test'
+        match = 'test'  # A startswith match
+        lst1 = models.List(title=title1)
+        lst2 = models.List(title=title2)
+        self.add_to_db(lst1, lst2)
+
+        assert 1 == api.get_lists(title='test', match_method='startswith').count()
+        assert 2 == api.get_lists(title='test', match_method='contains').count()

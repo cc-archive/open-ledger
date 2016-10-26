@@ -7,8 +7,9 @@ app = application  # Workaround for AWS-specific configuration
 app.config.from_pyfile('default_settings.py')
 
 assets = Environment(app)
-assets.manifest = 'file'
-assets.manifest = 'file:/tmp/openledger.assets'  # explict filename
+if not app.debug:
+    assets.manifest = 'file'
+    assets.manifest = 'file:/tmp/openledger.assets'  # explict filename
 
 js = Bundle('js/build/openledger.js',
             filters='jsmin', output='js/build/openledger.min.js')
