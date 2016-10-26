@@ -29,21 +29,20 @@ app.add_url_rule(API_BASE + 'list/<slug>', view_func=ListAPI.as_view('list'))
 
 class ListsAPI(MethodView):
 
-    def get(self, match_method='startswith'):
+    # Might want to specifically label this as for autocomplete since it's limited by design
+    def get(self, match_method='startswith', limit=5):
         """Search for lists, optionally by title"""
         lsts = api.get_lists(title=request.args.get('title'),
                              match_method=match_method)
-        if lsts.count() == 0:
-            abort(404)
         output = []
-        for lst in lsts:
+        for lst in lsts[0:limit]:
             output.append(serialize_list(lst))
         return make_response(jsonify(lists=output))
 
     def post(self):
         if not request.form.get('title'):
             return make_response(jsonify(message="'Title' is a required field"), 422)
-        lst = api.create_list(request.form.get('title'), request.form.getlist('identifiers'))
+        lst = api.create_list(request.form.get('title'), request.form.getlist('identifier'))
         return make_response(jsonify(slug=lst.slug), 201) # FIXME this should probably be a complete URL
 
     def delete(self):
@@ -61,11 +60,11 @@ class ListsAPI(MethodView):
         # If 'title' and not 'slug' is supplied, this will be a CREATE as well
         status_code = 422
         if request.form.get('slug'):
-            lst = api.update_list(request.form.get('slug'), image_identifiers=request.form.getlist('identifiers'))
+            lst = api.update_list(request.form.get('slug'), image_identifiers=request.form.getlist('identifier'))
             status_code = 200
         else:
             if request.form.get('title'):
-                lst = api.create_list(request.form.get('title'), request.form.getlist('identifiers'))
+                lst = api.create_list(request.form.get('title'), request.form.getlist('identifier'))
                 status_code = 201
             else:
                 return make_response(jsonify(message="One of 'slug' or 'title' is required"), 422)
@@ -80,10 +79,11 @@ class ListImageAPI(MethodView):
     def post(self):
         if not request.form.get('slug'):
             return make_response(jsonify(message="'Slug' is a required field"), 422)
-        image = api.add_image_to_list(request.form.get('slug'), image_identifier=request.form.get('identifier'))
-        if not image:
+        resp = api.add_image_to_list(request.form.get('slug'), image_identifier=request.form.get('identifier'))
+        if not resp:
             abort(404)
-        return make_response(jsonify(serialize_image(image)), 201)
+        image, lst = resp
+        return make_response(jsonify(serialize_list(lst)), 201)
 
 app.add_url_rule(API_BASE + 'list/images', view_func=ListImageAPI.as_view('list-images'))
 
@@ -98,4 +98,7 @@ def serialize_list(lst):
     """Return a serialization of a List db object suitable for use in the API"""
     return {'title': lst.title,
             'slug': lst.slug,
+            'created_on': lst.created_on,
+            'updated_on': lst.updated_on,
+            'creator_displayname': lst.creator_displayname,
             'images': [serialize_image(img) for img in lst.images]}

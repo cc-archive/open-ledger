@@ -55,7 +55,8 @@ def create_list(title, image_identifiers=[]):
     return lst
 
 def add_image_to_list(slug, image_identifier=None):
-    """Add an image to an existing List, without modifying other images already supplied. Returns the image added."""
+    """Add an image to an existing List, without modifying other images already supplied.
+    Returns the image added and the modified list."""
     lst = models.List.query.filter(models.List.slug==slug).first()
     if not lst:
         return None
@@ -64,4 +65,4 @@ def add_image_to_list(slug, image_identifier=None):
         lst.images.append(image)
         models.db.session.add(lst)
         models.db.session.commit()
-    return image
+    return image, lst
