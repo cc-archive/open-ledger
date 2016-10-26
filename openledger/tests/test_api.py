@@ -107,30 +107,30 @@ class TestAPIViews(TestOpenLedgerApp):
 
         assert 1 == models.List.query.filter(models.List.title==title).count()
         assert 0 == models.List.query.filter(models.List.title==title).first().images.count()
-        rv = self.client.put('/api/v1/lists', data={'slug': lst.slug, 'identifiers': ['1', '2']})
+        rv = self.client.put('/api/v1/lists', data={'slug': lst.slug, 'identifier': ['1', '2']})
         assert 200 == rv.status_code
         assert 2 == models.List.query.filter(models.List.title==title).first().images.count()
 
         # Now "delete" one image
-        rv = self.client.put('/api/v1/lists', data={'slug': lst.slug, 'identifiers': ['2']})
+        rv = self.client.put('/api/v1/lists', data={'slug': lst.slug, 'identifier': ['2']})
         assert 200 == rv.status_code
         assert 1 == models.List.query.filter(models.List.title==title).first().images.count()
 
     def test_lists_create_while_modifying(self):
         """The modify-List endpoint should create a list if it doesn't already exist and return a 201"""
         title = 'my list title'
-        rv = self.client.put('/api/v1/lists', data={'title': title, 'identifiers': []})
+        rv = self.client.put('/api/v1/lists', data={'title': title, 'identifier': []})
         assert 201 == rv.status_code
         assert 1 == models.List.query.filter(models.List.title==title).count()
 
     def test_lists_create_list_with_images(self):
-        """The Lists endpoint should create a List with all of the image identifiers added"""
+        """The Lists endpoint should create a List with all of the image identifier added"""
         title = 'my list title'
         img1 = models.Image(identifier='1', title='image title', url='http://example.com/1', license='CC0')
         img2 = models.Image(identifier='2', title='image title', url='http://example.com/2', license='CC0')
         self.add_to_db(img1, img2)
 
-        rv = self.client.post('/api/v1/lists', data={'title': title, 'identifiers': ['1', '2']})
+        rv = self.client.post('/api/v1/lists', data={'title': title, 'identifier': ['1', '2']})
         assert 201 == rv.status_code
         assert 2 == models.List.query.filter(models.List.title==title).first().images.count()
 
@@ -191,9 +191,11 @@ class TestAPIViews(TestOpenLedgerApp):
         assert 2 == len(rv.json['lists'][0]['images'])
 
     def test_get_lists_by_title(self):
-        """The Lists endpoint should return 404 if no matching lists are found"""
+        """The Lists endpoint should return an empty list if no matching lists are found"""
         rv = self.client.get('/api/v1/lists?title=not+found')
-        assert 404 == rv.status_code
+        assert 200 == rv.status_code  # Because Chrome; should be 404
+        assert 'lists' in rv.json
+        assert 0 == len(rv.json['lists'])
 
     def test_get_all_lists_by_title(self):
         """The Lists endpoint should allow lookup starting with a title and return all matches"""
