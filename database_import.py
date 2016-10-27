@@ -11,7 +11,7 @@ import boto3
 import botocore
 from sqlalchemy.exc import IntegrityError
 
-from openledger.models import db, Image, Tag
+from openledger.models import db, Image, Tag, create_identifier
 from openledger import app
 
 console = logging.StreamHandler()
@@ -41,6 +41,7 @@ def _insert_image(iterator, reader, chunk_size, skip_existence_check=False):
             for row in chunk:
                 if skip_existence_check or Image.query.filter_by(foreign_identifier=row['ImageID']).count() == 0:
                     image = Image()
+                    image.identifier = create_identifier(row['OriginalURL'])
                     image.foreign_identifier = row['ImageID']
                     image.url = row['OriginalURL']
                     image.foreign_landing_url = row['OriginalLandingURL']

@@ -101,7 +101,7 @@ def create_identifier(url):
     """Create a unique, stable identifier for a URL"""
     m = hashlib.md5()
     m.update(bytes(url.encode('utf-8')))
-    return base64.urlsafe_b64encode(m.digest())
+    return base64.urlsafe_b64encode(m.digest()).decode('utf-8')
 
 class Tag(db.Model):
     """A word or phrase associated with this image"""
