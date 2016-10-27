@@ -41,7 +41,6 @@ def _insert_image(iterator, reader, chunk_size, skip_existence_check=False):
             for row in chunk:
                 if skip_existence_check or Image.query.filter_by(foreign_identifier=row['ImageID']).count() == 0:
                     image = Image()
-                    image.identifier = row['OriginalMD5']  # We get a nice unique, stable value, let's use it
                     image.foreign_identifier = row['ImageID']
                     image.url = row['OriginalURL']
                     image.foreign_landing_url = row['OriginalLandingURL']
