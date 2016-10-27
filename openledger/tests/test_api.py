@@ -45,11 +45,11 @@ class TestAPIViews(TestOpenLedgerApp):
         lst = models.List(title='test')
 
         # Commit these in order so we're guaranteed which one is earlier
-        img1 = models.Image(identifier='1', title='image title', url='http://example.com/1', license='CC0')
+        img1 = models.Image(title='image title', url='http://example.com/1', license='CC0')
         models.db.session.add(img1)
         models.db.session.commit()
 
-        img2 = models.Image(identifier='2', title='image title', url='http://example.com/2', license='CC0')
+        img2 = models.Image(title='image title', url='http://example.com/2', license='CC0')
         models.db.session.add(img2)
         models.db.session.commit()
 
@@ -64,8 +64,8 @@ class TestAPIViews(TestOpenLedgerApp):
         assert 2 == len(images)
 
         # Should be in reverse chronological order
-        assert '1' == images[1]['identifier']
-        assert '2' == images[0]['identifier']
+        assert img1.identifier == images[1]['identifier']
+        assert img2.identifier == images[0]['identifier']
 
     def test_list_delete_nonexistent_image(self):
         """The List endpoint should return a 404 if an unknown List is requested to be deleted"""
@@ -101,18 +101,18 @@ class TestAPIViews(TestOpenLedgerApp):
         """The Lists endpoint should modify a List if the user sends a PUT request"""
         title = 'my list title'
         lst = models.List(title=title)
-        img1 = models.Image(identifier='1', title='image title', url='http://example.com/1', license='CC0')
-        img2 = models.Image(identifier='2', title='image title', url='http://example.com/2', license='CC0')
+        img1 = models.Image(title='image title', url='http://example.com/1', license='CC0')
+        img2 = models.Image(title='image title', url='http://example.com/2', license='CC0')
         self.add_to_db(lst, img1, img2)
 
         assert 1 == models.List.query.filter(models.List.title==title).count()
         assert 0 == models.List.query.filter(models.List.title==title).first().images.count()
-        rv = self.client.put('/api/v1/lists', data={'slug': lst.slug, 'identifier': ['1', '2']})
+        rv = self.client.put('/api/v1/lists', data={'slug': lst.slug, 'identifier': [img1.identifier, img2.identifier]})
         assert 200 == rv.status_code
         assert 2 == models.List.query.filter(models.List.title==title).first().images.count()
 
         # Now "delete" one image
-        rv = self.client.put('/api/v1/lists', data={'slug': lst.slug, 'identifier': ['2']})
+        rv = self.client.put('/api/v1/lists', data={'slug': lst.slug, 'identifier': [img1.identifier]})
         assert 200 == rv.status_code
         assert 1 == models.List.query.filter(models.List.title==title).first().images.count()
 
@@ -126,24 +126,24 @@ class TestAPIViews(TestOpenLedgerApp):
     def test_lists_create_list_with_images(self):
         """The Lists endpoint should create a List with all of the image identifier added"""
         title = 'my list title'
-        img1 = models.Image(identifier='1', title='image title', url='http://example.com/1', license='CC0')
-        img2 = models.Image(identifier='2', title='image title', url='http://example.com/2', license='CC0')
+        img1 = models.Image(title='image title', url='http://example.com/1', license='CC0')
+        img2 = models.Image(title='image title', url='http://example.com/2', license='CC0')
         self.add_to_db(img1, img2)
 
-        rv = self.client.post('/api/v1/lists', data={'title': title, 'identifier': ['1', '2']})
+        rv = self.client.post('/api/v1/lists', data={'title': title, 'identifier': [img1.identifier, img2.identifier]})
         assert 201 == rv.status_code
         assert 2 == models.List.query.filter(models.List.title==title).first().images.count()
 
     def test_add_to_list(self):
         """The Lists/Image endpoint should allow adding an Image to a List without modifying existing images"""
         lst = models.List(title='test')
-        img1 = models.Image(identifier='1', title='image title', url='http://example.com/1', license='CC0')
-        img2 = models.Image(identifier='2', title='image title', url='http://example.com/2', license='CC0')
+        img1 = models.Image(title='image title', url='http://example.com/1', license='CC0')
+        img2 = models.Image(title='image title', url='http://example.com/2', license='CC0')
         lst.images = [img1]
         self.add_to_db(lst, img1, img2)
 
         assert 1 == models.List.query.filter(models.List.title=='test').first().images.count()
-        rv = self.client.post('/api/v1/list/images', data={'slug': lst.slug, 'identifier': '2'})
+        rv = self.client.post('/api/v1/list/images', data={'slug': lst.slug, 'identifier': img2.identifier})
 
         assert 201 == rv.status_code
         assert 2 == models.List.query.filter(models.List.title=='test').first().images.count()
@@ -153,16 +153,16 @@ class TestAPIViews(TestOpenLedgerApp):
         lst = models.List(title='test')
         models.db.session.add(lst)
         models.db.session.commit()
-        rv = self.client.post('/api/v1/list/images', data={'slug': lst.slug, 'identifier': '2'})
+        rv = self.client.post('/api/v1/list/images', data={'slug': lst.slug, 'identifier': img2.identifier})
         assert 404 == rv.status_code
 
     def test_add_to_list_no_image(self):
         """The List/Image endpoint should return 404 if the user tries to add a nonexistent list"""
         lst = models.List(title='test')
-        img1 = models.Image(identifier='1', title='image title', url='http://example.com/1', license='CC0')
+        img1 = models.Image(title='image title', url='http://example.com/1', license='CC0')
         self.add_to_db(lst, img1)
 
-        rv = self.client.post('/api/v1/list/images', data={'slug': 'made up', 'identifier': '1'})
+        rv = self.client.post('/api/v1/list/images', data={'slug': 'made up', 'identifier': img1.identifier})
         assert 404 == rv.status_code
 
     def test_get_lists_by_title(self):
@@ -171,8 +171,8 @@ class TestAPIViews(TestOpenLedgerApp):
         title2 = 'yep'
         lst1 = models.List(title=title1)
         lst2 = models.List(title=title2)
-        img1 = models.Image(identifier='1', title='image title', url='http://example.com/1', license='CC0')
-        img2 = models.Image(identifier='2', title='image title', url='http://example.com/2', license='CC0')
+        img1 = models.Image(title='image title', url='http://example.com/1', license='CC0')
+        img2 = models.Image(identifier=img2.identifier, title='image title', url='http://example.com/2', license='CC0')
         lst2.images = [img1, img2]
         self.add_to_db(lst1, lst2, img1, img2)
 

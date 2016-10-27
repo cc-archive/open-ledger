@@ -5,6 +5,7 @@ import logging
 import os
 import tempfile
 import uuid
+import base64
 
 import boto3
 import botocore

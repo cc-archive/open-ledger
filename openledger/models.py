@@ -1,3 +1,5 @@
+import base64
+import hashlib
 import uuid
 
 from flask_sqlalchemy import SQLAlchemy
@@ -25,9 +27,7 @@ class Image(db.Model):
     id = db.Column(db.Integer, primary_key=True)
 
     # A unique identifier that we assign on ingestion. This is "our" identifier.
-    # It's a UUID, typically
-    # FIXME future improvement could mean making it idempotent, maybe based on
-    # the source URL?
+    # See the event handler below for the algorithm to generate this value
     identifier = db.Column(db.String(255), index=True, unique=True)
 
     # The perceptual hash we generate from the source image TODO
@@ -92,6 +92,16 @@ class Image(db.Model):
     def __repr__(self):
         return '<Image %r found at %r by %r>' % (self.identifier, self.url, self.creator)
 
+@event.listens_for(Image, 'before_insert')
+def event_create_identifier(mapper, connection, target):
+    # This is a stable identifier that is derived from the URL
+    target.identifier = create_identifier(target.url)
+
+def create_identifier(url):
+    """Create a unique, stable identifier for a URL"""
+    m = hashlib.md5()
+    m.update(bytes(url.encode('utf-8')))
+    return base64.urlsafe_b64encode(m.digest())
 
 class Tag(db.Model):
     """A word or phrase associated with this image"""

@@ -29,7 +29,6 @@ class TestModels(unittest.TestCase):
         image = models.Image()
         image.url = 'http://example.com'
         image.license = 'CC0'
-        image.identifier='1234'
         models.db.session.add(image)
         models.db.session.commit()
         assert models.Image.query.count() == 1
@@ -38,11 +37,21 @@ class TestModels(unittest.TestCase):
         """An image model representation should include its identifer, url, and creator"""
         url = "http://example.com"
         creator = "jane doe"
-        identifier = "1234"
-        image = models.Image(url=url, license="CC0", identifier=identifier, creator=creator)
+        image = models.Image(url=url, license="CC0", creator=creator)
         assert url in image.__repr__()
         assert creator in image.__repr__()
-        assert identifier in image.__repr__()
+
+
+    def test_image_model_identifier(self):
+        """The identifier-creation function should return the same value for each iteration"""
+        url = 'http://example.com'
+        last_identifier = None
+        for i in range(0, 100):
+            identifier = models.create_identifier(url)
+            if last_identifier:
+                assert last_identifier == identifier
+            else:
+                last_identifier = identifier
 
     def test_tag_model(self):
         """It should be possible to create a Tag with a few basic fields"""
@@ -56,7 +65,7 @@ class TestModels(unittest.TestCase):
 
     def test_tag_image(self):
         """It should be possible to associate a tag with an image"""
-        image = models.Image(url='http://example.com', license="CC0", identifier="1234")
+        image = models.Image(url='http://example.com', license="CC0")
         tag = models.Tag(name='tagname', foreign_identifier='tagid')
         models.db.session.add(tag)
         models.db.session.add(image)
@@ -69,7 +78,7 @@ class TestModels(unittest.TestCase):
 
     def test_tags_list_image(self):
         """The `tags_list` field on the `Image` table should contain an array of values"""
-        image = models.Image(url='http://example.com', license="CC0", identifier="1234")
+        image = models.Image(url='http://example.com', license="CC0")
         tags_list = ['a', 'b']
         image.tags_list = tags_list
         models.db.session.add(image)
@@ -92,7 +101,7 @@ class TestModels(unittest.TestCase):
     def test_list(self):
         """It should be possible to create a List and add an image to it"""
 
-        image = models.Image(url='http://example.com', license="CC0", identifier="1234")
+        image = models.Image(url='http://example.com', license="CC0")
         lst = models.List(title='test', images=[image])
         models.db.session.add(lst)
         models.db.session.add(image)
