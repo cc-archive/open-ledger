@@ -18,25 +18,80 @@ export const addToListForm = function (e) {
 
   form.style.display = 'block'
   form.classList.toggle('pulse')
-  form.addEventListener('submit', _.once(addToList.bind(form), false))
+  form.addEventListener('submit', addToList, false)
 
   input.focus()
   input.scrollIntoView()
-  input.addEventListener('keyup', _.throttle(_.once(completeListTitle.bind(form), 1000), false))
+
+  // Index into the autocomplete selection value
+  input.dataset.sel = -1
+
+  // Move through autocomplete
+  input.addEventListener('keydown', navigateAutocomplete, false)
+
+  // Typeahead
+  input.addEventListener('keyup', _.throttle(completeListTitle, 1000), false)
 }
 
-// Return autocomplete results for lists by title
-export const completeListTitle = function () {
-  const form = this
-  const input = form.elements["title"]
-  const identifier = form.elements["identifier"]
+export const navigateAutocomplete = function (e) {
+  // Is the autocomplete open?
+  const autocomplete = this.nextElementSibling
 
-  // Don't do anything if we haven't typed anything except clear the autocomplete list
-  if (!input.value) {
-    var autocomplete = input.nextElementSibling
+  if (autocomplete.children.length === 0)
+    return
+
+  var offset // The offset we'll apply to the index
+  var index = parseInt(this.dataset.sel)
+
+  if (e.keyCode == 38) { // Up
+    offset = index > 0 ? -1 : 0
+  }
+  else if (e.keyCode === 40) { // Down
+    offset = index < autocomplete.children.length - 1 ? 1 : 0
+  }
+  else if (e.keyCode === 27) { // ESC
     autocomplete.innerHTML = ''
     return
   }
+  else {
+    return
+  }
+  e.preventDefault()
+
+  // Clear earlier values, if any
+  var selected = autocomplete.querySelectorAll('.hover')
+  for (var s of selected) {
+    s.classList.remove('hover')
+  }
+
+  index += offset
+
+  selected = autocomplete.children[index]
+  if (selected)
+    selected.classList.add('hover')
+
+  this.dataset.sel = index
+}
+
+// Return autocomplete results for lists by title
+export const completeListTitle = function (e) {
+  const form = this.parentNode
+  const input = form.elements["title"]
+  const identifier = form.elements["identifier"]
+  const autocomplete = input.nextElementSibling
+
+  // Don't do anything if we haven't typed anything except clear the autocomplete list
+  if (!input.value) {
+    autocomplete.innerHTML = ''
+    return
+  }
+
+  // Don't go further if the user typed arrow keys or ESC
+  if (e.keyCode === 37 || e.keyCode === 38 || e.keyCode === 39 || e.keyCode === 40 ||
+      e.keyCode === 27) {
+    return
+  }
+
   const url = API_BASE + 'lists?title=' + encodeURIComponent(input.value)
 
   fetch(url, {
@@ -59,6 +114,11 @@ export const completeListTitle = function () {
       var meta = document.createElement('span')
       meta.innerHTML = ` with ${list.images.length} image${list.images.length != 1 ? 's' : ''}`
       item.appendChild(meta)
+
+      // Add select events so we can call these with keyboard controls too
+      item.addEventListener('mouseover', selectItemAutocomplete)
+      item.addEventListener('mouseleave', function() { this.classList.remove('hover')})
+      item.dataset.slug = list.slug
       autocomplete.appendChild(item)
 
       item.addEventListener('click', selectAndAddToList.bind(form, list.slug))
@@ -70,6 +130,12 @@ export const completeListTitle = function () {
     }
   })
 }
+
+const selectItemAutocomplete = function() {
+  const item = this
+  item.classList.add('hover')
+}
+
 
 // Select a node from the autocomplete list and send that
 export const selectAndAddToList = function(slug) {
@@ -105,7 +171,22 @@ export const addToList = function(e) {
   e.preventDefault()
 
   var form = this
+
+  // Was the autocomplete open with a selection when this happened?
+  // If so, use that selection rather than whatever was typed in the box
+  let selected = form.querySelector('.autocomplete .hover')
+  if (selected) {
+    let send = selectAndAddToList.bind(form)
+    send(selected.dataset.slug)
+    return
+  }
+
   var data = new FormData(form)
+
+  // Don't allow submitting without a title if that snuck by the browser
+  if (!data.get('title')) {
+    return
+  }
   var msg = form.nextElementSibling
 
   showUpdateMessage(msg)
