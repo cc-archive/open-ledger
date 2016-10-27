@@ -18,11 +18,11 @@ export const addToListForm = function (e) {
 
   form.style.display = 'block'
   form.classList.toggle('pulse')
-  form.addEventListener('submit', addToList.bind(form), false)
+  form.addEventListener('submit', _.once(addToList.bind(form), false))
 
   input.focus()
   input.scrollIntoView()
-  input.addEventListener('keyup', _.throttle(completeListTitle.bind(form), 1000), false)
+  input.addEventListener('keyup', _.throttle(_.once(completeListTitle.bind(form), 1000), false))
 }
 
 // Return autocomplete results for lists by title
