@@ -15,7 +15,6 @@ import database_import
 timestamp="release-%s" % int(time.time() * 1000)
 
 CODE_DIR = '/home/liza/open-ledger'
-CURRENT_BRANCH = 'master'
 
 DEBUG = False
 
@@ -74,6 +73,10 @@ if not env.get('instance_type'):
 if not env.get('database_id'):
     env.database_id = 'openledger-db-1'
 
+# Which branch should we check out on the loader?
+if not env.get('branch'):
+    env.branch = 'master'
+
 console = logging.StreamHandler()
 log = logging.getLogger(__name__)
 log.addHandler(console)
@@ -122,7 +125,7 @@ def load_data_from_instance(instance, database):
                 if env.datasource == 'searchindex':
                     run('./venv/bin/python -m openledger.search --verbose')
                 else:
-                    run('./venv/bin/python database_import.py {filepath} {source} {datatype} --filesystem {filesystem} --skip-checks'.format(**env.datasource))
+                    run('nohup ./venv/bin/python database_import.py {filepath} {source} {datatype} --filesystem {filesystem} --skip-checks  >& /dev/null < /dev/null &'.format(**env.datasource))
 
 def deploy_code(host_string):
     max_retries = 20
@@ -131,7 +134,7 @@ def deploy_code(host_string):
     with settings(host_string="ec2-user@" + host_string):
         while True:
             try:
-                fabtools.require.git.working_copy('https://github.com/creativecommons/open-ledger.git')
+                fabtools.require.git.working_copy('https://github.com/creativecommons/open-ledger.git', branch=env.branch)
                 with cd('open-ledger'):
                     run('virtualenv venv --python=python3 -q')
                     run('./venv/bin/pip install -r requirements.txt -q')
