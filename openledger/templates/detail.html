@@ -65,6 +65,7 @@
       Copy attribution as HTML
     </button>
 
+    {% if image %} {# Local objects only for now #}
     <div class="add-to-list-container">
       <button onClick="openledger.list.addToListForm(event)" class="button success">Save to a List</button>
       <form class="add-to-list animated" action="#" method="GET">
@@ -74,7 +75,7 @@
       </form>
       <div class="add-to-list-response"></div>
     </div>
-
+    {% endif %}
   </div>
 
 

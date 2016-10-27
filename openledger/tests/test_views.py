@@ -71,3 +71,14 @@ class TestViews(TestCase):
         rv = self.client.get('/?search=' + query)
         assert rv.status_code == 200
         p = select_node(rv, 'body')
+
+    @responses.activate
+    def test_detail_page_from_provider(self):
+        """[#54] It should be possible to follow a link to a detail page from a provider search result"""
+        query = 'test'
+        rv = self.client.get('/?search=' + query)
+        p = select_node(rv, '.t-detail-link')
+        link = p.attrib['href']
+        print(link)
+        rv = self.client.get(link)
+        assert 200 == rv.status_code

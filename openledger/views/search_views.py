@@ -57,16 +57,19 @@ def by_image():
     license = request.args.get('license')
     creator = request.args.get('creator')
     provider = request.args.get('provider')
+    creator_url = request.args.get('creator_url')
     license_version = licenses.license_map_from_partners()[provider]['version']
     license_url = licenses.get_license_url(license, license_version)
     return render_template('detail.html',
+                           image=None,
                            url=url,
                            title=title,
                            provider_url=provider_url,
                            license=license,
                            license_url=license_url,
                            license_version=license_version,
-                           creator=creator)
+                           creator=creator,
+                           creator_url=creator_url)
 
 @app.route ("/ledger/detail/<path:identifier>")
 def detail(identifier):
