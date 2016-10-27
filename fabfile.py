@@ -77,12 +77,18 @@ if not env.get('database_id'):
 if not env.get('branch'):
     env.branch = 'master'
 
+# Run with nohup for long-running jobs we know will work?
+if env.get('with_nohup'):
+    env.with_nohup = True
+else:
+    env.with_nohup = False
+
 console = logging.StreamHandler()
 log = logging.getLogger(__name__)
 log.addHandler(console)
 log.setLevel(logging.DEBUG)
 
-log.debug("Starting up with ami=%s, key=%s", AMI, KEY_NAME)
+log.debug("Starting up with ami=%s, key=%s, db=%s", AMI, KEY_NAME, env.database_id)
 
 class LoaderException(Exception):
     pass
@@ -104,8 +110,9 @@ def launchloader():
         instance.terminate()
         raise
     finally:
-        # Stop it if it's running
-        instance.stop()
+        # Stop it if it's running, unless we set nohup
+        if not env.with_nohup:
+            instance.stop()
         pass
 
 def load_data_from_instance(instance, database):
@@ -125,7 +132,11 @@ def load_data_from_instance(instance, database):
                 if env.datasource == 'searchindex':
                     run('./venv/bin/python -m openledger.search --verbose')
                 else:
-                    run('nohup ./venv/bin/python database_import.py {filepath} {source} {datatype} --filesystem {filesystem} --skip-checks  >& /dev/null < /dev/null &'.format(**env.datasource))
+                    if env.with_nohup:
+                        run('screen -d -m ./venv/bin/python database_import.py {filepath} {source} {datatype} --filesystem {filesystem} --skip-checks; sleep 1 '.format(**env.datasource))
+                    else:
+                        run('./venv/bin/python database_import.py {filepath} {source} {datatype} --filesystem {filesystem} --skip-checks'.format(**env.datasource))
+
 
 def deploy_code(host_string):
     max_retries = 20
@@ -163,6 +174,7 @@ def get_named_database(identifier=env.database_id):
     client = _init_rds()
     _, ec2 = _init_ec2()
     group_id = ec2.describe_security_groups(GroupNames=['default'])['SecurityGroups'][0]['GroupId']
+    log.info("DB instance identifier: %s", identifier)
     r = client.modify_db_instance(DBInstanceIdentifier=identifier,
                                   VpcSecurityGroupIds=[group_id])['DBInstance']
     database = {}
