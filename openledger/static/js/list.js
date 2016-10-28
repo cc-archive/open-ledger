@@ -12,50 +12,75 @@ export const addToListForm = function (e) {
   var form = e.target.nextElementSibling
   var input = form.querySelector('input[type=text]')
 
-  // Clear the old message if it's still there
-  var msg = form.nextElementSibling
-  msg.style.display = 'none'
+  // Clear any old messages
+  for (var msg of document.querySelectorAll('.add-to-list-response')) {
+    clearResponse(msg)
+  }
 
   form.style.display = 'block'
   form.classList.toggle('pulse')
   form.addEventListener('submit', addToList, false)
-
   input.focus()
-  input.scrollIntoView()
 
   // Index into the autocomplete selection value
   input.dataset.sel = -1
 
-  // Move through autocomplete
+  // Move through autocomplete, as event capturing
   input.addEventListener('keydown', navigateAutocomplete, false)
 
-  // Typeahead
+  // Typeahead, as event capturing
   input.addEventListener('keyup', _.throttle(completeListTitle, 1000), false)
+
+  // Add cancel handler last, as bubbling
+  document.body.addEventListener('keydown', cancelListModals, false)
+
+}
+
+const cancelListModals = function (e) {
+  if (e.keyCode === 27) {
+    for (var form of document.querySelectorAll('.add-to-list')) {
+      clearForm(form)
+      clearResponse(form.nextElementSibling)
+    }
+  }
 }
 
 export const navigateAutocomplete = function (e) {
   // Is the autocomplete open?
   const autocomplete = this.nextElementSibling
 
-  if (autocomplete.children.length === 0)
+  // Is autocomplete empty?
+  if (autocomplete.children.length === 0) {
+    // If so, did the user hit ESC? They were probably trying to close the
+    // whole modal, if so
+    if (e.keyCode === 27) {
+      clearForm(this.parentNode)
+      clearResponse(this.parentNode.nextElementSibling)
+      e.stopPropagation()
+    }
     return
+  }
 
   var offset // The offset we'll apply to the index
   var index = parseInt(this.dataset.sel)
 
-  if (e.keyCode == 38) { // Up
+  if (e.keyCode === 38) { // Up
     offset = index > 0 ? -1 : 0
+    e.stopPropagation()
   }
   else if (e.keyCode === 40) { // Down
     offset = index < autocomplete.children.length - 1 ? 1 : 0
+    e.stopPropagation()
   }
   else if (e.keyCode === 27) { // ESC
     autocomplete.innerHTML = ''
+    e.stopPropagation()
     return
   }
   else {
-    return
+    return // We're not interested in their typing
   }
+
   e.preventDefault()
 
   // Clear earlier values, if any
@@ -200,8 +225,10 @@ export const addToList = function(e) {
     return response.json()
   })
   .then((json) => {
-    msg.innerHTML = `Your image was saved to <a href="${HOST_URL}/list/${json.slug}">${HOST_URL}/list/${json.slug}</a>`
-    form.reset()
+    msg.innerHTML = `<span class="badge success">✓</span>
+    Your image was saved to <a href="${HOST_URL}/list/${json.slug}">${data.get('title')}</a>`
+    msg.classList.add('animated')
+    msg.classList.add('pulse')
   })
 }
 
@@ -215,6 +242,11 @@ const clearForm = (form) => {
 
   form.style.display = 'none'
   form.classList.remove('pulse')
+}
+
+const clearResponse = (response) => {
+  response.style.display = 'none'
+  response.innerHTML = ''
 }
 
 function checkStatus(response) {

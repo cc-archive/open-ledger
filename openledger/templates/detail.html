@@ -67,7 +67,7 @@
     </button>
 
     {% if image %} {# Local objects only for now #}
-      {{ lists.add(image) }}
+      {{ lists.add(image.identifier, size="large") }}
     {% endif %}
   </div>
 

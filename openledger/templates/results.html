@@ -41,7 +41,7 @@
         {% set thumbnail = result.url %}
         {% set detail_url = url_for('detail', identifier=result.identifier) %}
 
-        {{ image_result.show(detail_url, thumbnail, creator, creator_url, title, license) }}
+        {{ image_result.show(detail_url, thumbnail, creator, creator_url, title, license, result.identifier) }}
 
       {% endfor %}
     </div>

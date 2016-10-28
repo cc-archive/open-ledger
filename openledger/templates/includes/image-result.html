@@ -1,7 +1,8 @@
 {% import "includes/license-logo.html" as license_logo %}
+{% import "includes/lists.html" as lists %}
 
-{% macro show(detail_url, thumbnail, creator, creator_url, title, license) -%}
-<div class="shrink columns t-image-result">
+{% macro show(detail_url, thumbnail, creator, creator_url, title, license, identifier) -%}
+<div class="shrink columns t-image-result image-result">
   <figure>
     <div class="figure-wrapper">
       <a href="{{ detail_url }}" class="t-detail-link">
@@ -17,8 +18,14 @@
           {{ creator }}
         {% endif %}
       {% endif %}
-      {{ license_logo.license(license) }}
     </figcaption>
   </figure>
+  <div class="figure-metadata">
+    {{ license_logo.license(license) }}
+    {% if identifier %}
+      {{ lists.add(identifier, size="small") }}
+    {% endif %}
+  </div>
+
 </div>
 {%- endmacro %}
