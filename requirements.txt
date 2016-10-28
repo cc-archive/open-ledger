@@ -72,3 +72,4 @@ python-slugify
 aws-requests-auth
 Flask-Assets
 jsmin
+cssmin

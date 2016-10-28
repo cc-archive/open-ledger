@@ -2,7 +2,10 @@
 <title>Open Ledger prototype</title>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/foundation/6.2.3/foundation-flex.min.css">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.5.2/animate.min.css">
-<link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+
+{% assets "css_all" %}
+  <link rel="stylesheet" href="{{ ASSET_URL }}">
+{% endassets %}
 
 {% assets "js_all" %}
     <script src="{{ ASSET_URL }}"></script>

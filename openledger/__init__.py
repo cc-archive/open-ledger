@@ -15,6 +15,13 @@ js = Bundle('js/build/openledger.js',
             filters='jsmin', output='js/build/openledger.min.js')
 assets.register('js_all', js)
 
+css = Bundle('css/styles.css',
+             filters='cssmin',
+             output='css/openledger.css')
+
+assets.register('js_all', js)
+assets.register('css_all', css)
+
 @application.before_first_request
 def connect_to_search():
     from openledger import search
