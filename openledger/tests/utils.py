@@ -48,17 +48,23 @@ def load_json_data(datafile):
     return json.loads(open(os.path.join(dir_path, datafile)).read())
 
 def select_node(rv, selector):
-    """Give a response from Flask, return just the HTML fragment defined by `selector`"""
-    h = html5lib.parse(rv.data.decode('utf-8'), treebuilder='lxml', namespaceHTMLElements=False)
-    r = h.getroot().cssselect(selector)
+    """Give a response from Flask, return just the HTML fragment defined by `selector`.
+    Guaranteed to return one node or an empty set."""
+    r = select_nodes(rv, selector)
     if r and len(r) > 0:
         return r[0]
-    return {}
+    return ()
+
+def select_nodes(rv, selector):
+    """Give a response from Flask, return just the HTML fragment defined by `selector`"""
+    h = html5lib.parse(rv.data.decode('utf-8'), treebuilder='lxml', namespaceHTMLElements=False)
+    return h.getroot().cssselect(selector)
 
 class TestOpenLedgerApp(TestCase):
     """Setup/teardown for app test cases"""
     def create_app(self):
         app.config['TESTING'] = True
+        app.config['WTF_CSRF_ENABLED'] = False
         app.config.from_pyfile(TESTING_CONFIG)
         return app
 

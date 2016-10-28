@@ -1,6 +1,5 @@
 from flask_wtf import Form
-from wtforms import StringField, SelectMultipleField
-from wtforms.validators import DataRequired
+from wtforms import StringField, SelectMultipleField, TextAreaField, BooleanField, validators
 from wtforms import widgets
 
 LICENSE_CHOICES = (
@@ -26,6 +25,11 @@ class MultiCheckboxField(SelectMultipleField):
     option_widget = widgets.CheckboxInput()
 
 class SearchForm(Form):
-    search = StringField('Search', validators=[DataRequired()])
+    search = StringField('Search', validators=[validators.DataRequired()])
     licenses = MultiCheckboxField('License', choices=LICENSE_CHOICES)
     search_fields = MultiCheckboxField('Fields', choices=FIELD_CHOICES)
+
+class ListForm(Form):
+    title = StringField('Title', validators=[validators.DataRequired()])
+    description = TextAreaField('Description', [validators.optional(), validators.length(max=2000)])
+    is_public = BooleanField('Is public?', [validators.optional()])

@@ -28,6 +28,10 @@ footer.callout {
 .attribution-button {
   width: 200px; }
 
+.form-field-hidden {
+  visibility: hidden;
+  position: absolute; }
+
 legend, ul#licenses, ul#licenses li, ul#search_fields, ul#search_fields li {
   display: inline-block;
   margin: 0;
@@ -38,6 +42,10 @@ ul#licenses li, ul#search_fields li {
 
 ul#licenses input, ul#search_fields input {
   margin: 0; }
+
+/* List detail page */
+.list-detail {
+  margin-top: 2rem; }
 
 /* List features */
 .add-to-list {

@@ -6,22 +6,35 @@
 
 <div class="row column list-detail">
 
-  <h2>{{ lst.title }}</h2>
-
-  {% if lst.description %}
-  <div class="list-description">
-    {{ lst.description }}
-  </div>
-  {% else %}
-  <h3>Add a description</h3>
-
   <form action="{{ url_for('list-view', slug=lst.slug) }}" method="POST">
-    <textarea name="description">
-    </textarea>
-    <input type="submit" class="button" />
-  </form>
-  {% endif %}
+     {{ form.csrf_token }}
 
+    <h2 class="t-list-title">{{ lst.title }}
+      <div class="form-field-hidden">
+        {{ form.title }}
+      </div>
+    </h2>
+
+    {% if lst.description %}
+    <div class="list-description">
+      {{ lst.description }}
+      <div class="form-field-hidden">
+        {{ form.description }}
+      </div>
+    </div>
+    {% else %}
+    <h4>Add a description</h4>
+      {{ form.description }}
+    {% endif %}
+
+    <div class="list-is-public">
+      List is visible to the public? {{ form.is_public }}
+    </div>
+
+
+    <input type="submit" value="Update" class="button">
+
+  </form>
 
   <div class="row">
   {% for image in images %}

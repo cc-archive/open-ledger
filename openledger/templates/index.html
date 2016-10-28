@@ -38,9 +38,10 @@
           {% set thumbnail = result.thumbnail %}
           {% set title = result.title %}
           {% set provider = "flickr" %}
+          {% set identifier = None %}
           {% set detail_url = url_for('by_image', url=image_url, provider_url=provider_url, license=license, creator=creator, title=title, provider=provider, creator_url=creator_url) %}
 
-          {{ image_result.show(detail_url, thumbnail, creator, creator_url, title, license) }}
+          {{ image_result.show(detail_url, thumbnail, creator, creator_url, title, license, identifier) }}
 
         {% endfor %}
 
@@ -66,9 +67,11 @@
           {% set url = result.images.1.https_url %}
           {% set thumbnail = result.images.0.https_url %}
           {% set provider = "fpx" %}
+          {% set identifier = None %}
+
           {% set detail_url = url_for('by_image', url=url, provider_url=provider_url, license=license, creator=creator, title=title, provider=provider, creator_url=creator_url) %}
 
-          {{ image_result.show(detail_url, thumbnail, creator, creator_url, title, license) }}
+          {{ image_result.show(detail_url, thumbnail, creator, creator_url, title, license, identifier) }}
         {% endfor %}
       </div>
 
@@ -92,10 +95,11 @@
           {% set provider_url = result.links.web %}
           {% set thumbnail = result.webImage.url %}
           {% set provider = "rijks" %}
+          {% set identifier = None %}
 
           {% set detail_url = url_for('by_image', url=url, provider_url=provider_url, license=license, creator=creator, title=title, provider=provider, creator_url=creator_url) %}
 
-          {{ image_result.show(detail_url, thumbnail, creator, creator_url, title, license) }}
+          {{ image_result.show(detail_url, thumbnail, creator, creator_url, title, license, identifier) }}
         {% endfor %}
       </div>
 
@@ -119,10 +123,11 @@
         {% set provider_url = result.item.value %}
         {% set thumbnail = result.pic.value %}
         {% set provider = "wikimedia" %}
+        {% set identifier = None %}
 
         {% set detail_url = url_for('by_image', url=url, provider_url=provider_url, license=license, creator=creator, title=title, provider=provider, creator_url=creator_url) %}
 
-        {{ image_result.show(detail_url, thumbnail, creator, creator_url, title, license) }}
+        {{ image_result.show(detail_url, thumbnail, creator, creator_url, title, license, identifier) }}
 
       {% endfor %}
      </div>
