@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "A prototype repository for reuse of freely licensed imagery",
   "scripts": {
-    "test": "test"
+    "test": "_mocha --require openledger/static/js/test/global --compilers js:babel-core/register --recursive 'openledger/static/js/test/*.js'"
   },
   "repository": {
     "type": "git",
@@ -28,6 +28,12 @@
     "babel-plugin-transform-object-rest-spread": "^6.16.0",
     "babel-preset-es2015": "^6.16.0",
     "babel-preset-es2015-webpack": "^6.4.3",
+    "chai": "^3.5.0",
+    "jsdom": "9.8.3",
+    "jsdom-global": "2.1.0",
+    "mocha": "^3.1.2",
+    "sinon": "^1.17.6",
     "webpack": "^1.13.2"
-  }
+  },
+  "main": "openledger/static/js/index.js"
 }

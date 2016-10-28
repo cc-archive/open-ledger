@@ -232,25 +232,30 @@ export const addToList = function(e) {
   })
 }
 
-const showUpdateMessage = (msg) => {
+export const showUpdateMessage = (msg) => {
   msg.style.display = 'block'
   msg.innerHTML = "Saving..."
 }
-const clearForm = (form) => {
-  var autocomplete = form.querySelector('.autocomplete')
-  autocomplete.innerHTML = ''
 
+export const clearForm = (form) => {
+  var autocomplete = form.querySelector('.autocomplete')
+  clearAutocomplete(autocomplete)
+
+  form.reset()
   form.style.display = 'none'
   form.classList.remove('pulse')
 }
 
-const clearResponse = (response) => {
+export const clearAutocomplete = (autocomplete) => {
+  autocomplete.innerHTML = ''
+}
+
+export const clearResponse = (response) => {
   response.style.display = 'none'
   response.innerHTML = ''
 }
 
-function checkStatus(response) {
-
+export const checkStatus = (response) => {
   if (response.status >= 200 && response.status < 300) {
     return response
   } else {
