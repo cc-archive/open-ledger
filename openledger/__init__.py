@@ -15,9 +15,9 @@ js = Bundle('js/build/openledger.js',
             filters='jsmin', output='js/build/openledger.min.js')
 assets.register('js_all', js)
 
-css = Bundle('css/styles.css',
+css = Bundle('css/app.css',
              filters='cssmin',
-             output='css/openledger.css')
+             output='css/openledger.min.css')
 
 assets.register('js_all', js)
 assets.register('css_all', css)

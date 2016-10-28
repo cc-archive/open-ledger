@@ -1,0 +1,11 @@
+legend, ul#licenses, ul#licenses li, ul#search_fields, ul#search_fields li {
+  display: inline-block;
+  margin: 0;
+  line-height: 1rem;
+}
+ul#licenses li, ul#search_fields li {
+  font-size: 0.5rem;
+}
+ul#licenses input, ul#search_fields input {
+  margin: 0
+}

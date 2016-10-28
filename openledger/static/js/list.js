@@ -234,13 +234,12 @@ export const addToList = function(e) {
 
 export const showUpdateMessage = (msg) => {
   msg.style.display = 'block'
-  msg.innerHTML = "Saving..."
+  msg.innerHTML = "Saving..." 
 }
 
 export const clearForm = (form) => {
   var autocomplete = form.querySelector('.autocomplete')
   clearAutocomplete(autocomplete)
-
   form.reset()
   form.style.display = 'none'
   form.classList.remove('pulse')

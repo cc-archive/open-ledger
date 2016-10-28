@@ -21,4 +21,15 @@ class ListViews(MethodView):
                                lst=lst,
                                images=images)
 
+    def post(self, slug):
+        """Edit a list's metadata"""
+        # This is for editing properties of the list itself only; adding/removing
+        # images is best done using the JS API because of the inherent clunkiness
+        # TODO this should be restricted to the owner of the list when that's possible
+        lst = api.get_list(slug)
+        if not lst:
+            abort(404)
+
+
+
 app.add_url_rule('/list/<slug>', view_func=ListViews.as_view('list-view'))

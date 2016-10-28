@@ -1,0 +1,114 @@
+h5 {
+  margin-top: 4rem; }
+
+.hero {
+  background: linear-gradient(to bottom, white 80%, #e9e9e9 100%);
+  border: none;
+  border-bottom: 1px solid #c8c8c8;
+  padding: 2rem 0 2rem 0; }
+
+footer.callout {
+  margin: 20rem 0 0 0;
+  width: 100%; }
+
+.metadata h4 {
+  font-size: 1rem;
+  font-weight: bold;
+  line-height: 1rem;
+  margin: 0;
+  padding: 0; }
+
+.metadata ul {
+  list-style-type: none;
+  margin: 0; }
+
+.metadata li {
+  line-height: 2rem; }
+
+.attribution-button {
+  width: 200px; }
+
+legend, ul#licenses, ul#licenses li, ul#search_fields, ul#search_fields li {
+  display: inline-block;
+  margin: 0;
+  line-height: 1rem; }
+
+ul#licenses li, ul#search_fields li {
+  font-size: 0.5rem; }
+
+ul#licenses input, ul#search_fields input {
+  margin: 0; }
+
+/* List features */
+.add-to-list {
+  position: absolute;
+  width: 400px;
+  display: none;
+  z-index: 99; }
+
+.add-to-list input {
+  margin: 0; }
+
+.add-to-list-response {
+  display: none;
+  position: absolute;
+  background: white;
+  box-shadow: 0px 10px 36px -9px rgba(0, 0, 0, 0.58);
+  padding: 20px;
+  min-width: 400px;
+  z-index: 1; }
+
+/* Add-to-list from results page */
+.image-result .add-to-list-container {
+  display: inline-block;
+  vertical-align: middle; }
+
+.image-result .add-to-list-container button.secondary {
+  background: #e6e6e6;
+  color: #0a0a0a;
+  margin: 0; }
+
+.image-result .add-to-list-container button.secondary:hover {
+  background: #3adb76;
+  color: white; }
+
+.image-result .add-to-list-container {
+  position: relative; }
+
+.image-result .add-to-list {
+  position: absolute;
+  left: -10px;
+  padding: 10px;
+  background: white;
+  box-shadow: 0px 10px 36px -9px rgba(0, 0, 0, 0.58); }
+
+/* Autocomplete */
+.autocomplete {
+  position: relative;
+  width: 100%; }
+
+.autocomplete li {
+  list-style-type: none;
+  border-bottom: 1px solid #e6e6e6;
+  padding: .5rem;
+  color: #969696; }
+
+.autocomplete li.hover {
+  background-color: #e6e6e6; }
+
+figure {
+  margin: 0; }
+
+figcaption {
+  text-align: center;
+  max-width: 200px;
+  font-size: .75rem; }
+
+.figure-wrapper {
+  max-height: 200px;
+  overflow: hidden; }
+
+.figure-metadata {
+  margin-top: .25rem; }
+
+/*# sourceMappingURL=app.css.map */
