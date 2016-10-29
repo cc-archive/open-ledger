@@ -30,7 +30,7 @@ class Results(object):
 class Result(object):
     """A simple object prototype for individual result items"""
     fields = ('title', 'url', 'creator', 'creator_url', 'foreign_landing_url',
-              'license', 'identifier')
+              'license', 'identifier', 'tags')
     def __init__(self, **kwargs):
         for f in self.fields:
             self.__setattr__(f, None)
@@ -59,7 +59,7 @@ class Image(DocType):
     creator = String()
     creator_url = String()
     tags = String(multi=True)
-    created_at = Date()
+    created_on = Date()
     url = String()
     provider = String()
     source = String()
@@ -74,6 +74,7 @@ def db_image_to_index(db_image):
     """Map an Image record to a record in the ESL DSL."""
     image = Image(title=db_image.title,
                   creator=db_image.creator,
+                  created_on=db_image.created_on,
                   creator_url=db_image.creator_url,
                   identifier=db_image.identifier,
                   url=db_image.url,
@@ -91,6 +92,7 @@ def index_all_images():
     """Index every record in the database as efficiently as possible"""
     es = init()
     batches = []
+    Image.init()
 
     for db_image in models.Image.query.yield_per(CHUNK_SIZE):
         #log.debug("Indexing database record %s", db_image.identifier)
@@ -132,7 +134,6 @@ if __name__ == '__main__':
                         default=False,
                         help="Be very chatty and run logging at DEBUG")
     args = parser.parse_args()
-
     if args.verbose:
         log.setLevel(logging.DEBUG)
     index_all_images()
