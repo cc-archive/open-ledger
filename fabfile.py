@@ -130,7 +130,10 @@ def load_data_from_instance(instance, database):
                  ELASTICSEARCH_URL=ELASTICSEARCH_URL):
 
                 if env.datasource == 'searchindex':
-                    run('./venv/bin/python -m openledger.search --verbose')
+                    if env.with_nohup:
+                        run('screen -d -m ./venv/bin/python -m openledger.search; sleep 1')
+                    else:
+                        run('./venv/bin/python -m openledger.search --verbose')
                 else:
                     if env.with_nohup:
                         run('screen -d -m ./venv/bin/python database_import.py {filepath} {source} {datatype} --filesystem {filesystem} --skip-checks; sleep 1 '.format(**env.datasource))
