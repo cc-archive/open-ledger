@@ -41,7 +41,7 @@
                               'url': result.url,
                               'thumbnail': result.url,}) %}
         {% set detail_url = url_for('detail', identifier=result.identifier) %}
-        {{ image_result.show(detail_url, "fulltext", image) }}
+        {% call image_result.show(detail_url, image) %}{% endcall %}
 
         {% endwith %}
       {% endfor %}

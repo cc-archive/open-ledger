@@ -6,8 +6,9 @@ const API_BASE = '/api/v1/'
 const HOST_PORT = window.location.port === 80 ? '' : `:${window.location.port}`
 const HOST_URL = `${window.location.protocol}//${window.location.hostname}${HOST_PORT}`
 
+/* Bring up a form to capture a list title from a user */
 export const addToListForm = function (e) {
-  // Bring up a form to capture a list title from a user
+
   var form = e.target.nextElementSibling
   var input = form.querySelector('input[type=text]')
 
@@ -35,15 +36,27 @@ export const addToListForm = function (e) {
 
 }
 
-const cancelListModals = function (e) {
-  if (e.keyCode === 27) {
-    for (var form of document.querySelectorAll('.add-to-list')) {
-      clearForm(form)
-      clearResponse(form.nextElementSibling)
-    }
-  }
+/* DELETE an image from a List */
+export const deleteImageFromList = function (e) {
+  const url = API_BASE + 'list/images'
+
+  e.preventDefault()
+  var form = e.target.parentNode
+  var data = new FormData(form)
+  fetch(url, {
+    method: 'DELETE',
+    body: data
+  })
+  .then(checkStatus)
+  .then((response) => {
+    return response.json()
+  })
+  .then((json) => {
+    console.log(json)
+  })
 }
 
+/* Use keyboard controls to move through an autocomplete list */
 export const navigateAutocomplete = function (e) {
   // Is the autocomplete open?
   const autocomplete = this.nextElementSibling
@@ -97,7 +110,7 @@ export const navigateAutocomplete = function (e) {
   this.dataset.sel = index
 }
 
-// Return autocomplete results for lists by title
+/* Return autocomplete results for lists by title */
 export const completeListTitle = function (e) {
   const form = this.parentNode
   const input = form.elements["title"]
@@ -155,11 +168,12 @@ export const completeListTitle = function (e) {
   })
 }
 
+/* Visually indicate which item has been selected either via keyboard or mouse/hover */
 export const selectItemAutocomplete = function() {
   this.classList.add('hover')
 }
 
-// Select a node from the autocomplete list and send that
+/* On Submit of the form, create a new List and add any images in the form to it */
 export const selectAndAddToList = function(slug) {
   const url = API_BASE + 'list/images'
   const form = this
@@ -181,11 +195,11 @@ export const selectAndAddToList = function(slug) {
     return response.json()
   })
   .then((json) => {
-    successMessage(msg, json.slug, data.get('title'))
+    successMessage(msg, json.slug, json.title)
   })
 }
 
-// Create or modify a list, returning the list slug
+/* Update (PUT) a new image into an existing List */
 export const addToList = function(e) {
   const url = API_BASE + 'lists'
 
@@ -221,7 +235,7 @@ export const addToList = function(e) {
     return response.json()
   })
   .then((json) => {
-    successMessage(msg, json.slug, data.get('title'))
+    successMessage(msg, json.slug, json.title)
   })
 }
 
@@ -259,9 +273,21 @@ export const checkStatus = (response) => {
     throw error
   }
 }
+
+/* Show a message when the user has successfully added an image to a list */
 export const successMessage = (msg, slug, title) => {
   msg.innerHTML = `<span class="badge success">✓</span>
   Your image was saved to <a href="${HOST_URL}/list/${slug}">${title}</a>`
   msg.classList.add('animated')
   msg.classList.add('pulse')
+}
+
+/* Close any open models -- this is called last in the event bubbling chain if no autocomplete actions are in-progress */
+const cancelListModals = function (e) {
+  if (e.keyCode === 27) {
+    for (var form of document.querySelectorAll('.add-to-list')) {
+      clearForm(form)
+      clearResponse(form.nextElementSibling)
+    }
+  }
 }

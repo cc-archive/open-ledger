@@ -43,7 +43,7 @@ class ListsAPI(MethodView):
         if not request.form.get('title'):
             return make_response(jsonify(message="'Title' is a required field"), 422)
         lst = api.create_list(request.form.get('title'), request.form.getlist('identifier'))
-        return make_response(jsonify(slug=lst.slug), 201) # FIXME this should probably be a complete URL
+        return make_response(jsonify(serialize_list(lst)), 201)
 
     def delete(self):
         # FIXME will need to deal with auth here, we shouldn't allow deletion of
@@ -70,7 +70,7 @@ class ListsAPI(MethodView):
                 return make_response(jsonify(message="One of 'slug' or 'title' is required"), 422)
         if not lst:
             abort(status_code)
-        return make_response(jsonify(slug=lst.slug), status_code)
+        return make_response(jsonify(serialize_list(lst)), status_code)
 
 app.add_url_rule(API_BASE + 'lists', view_func=ListsAPI.as_view('lists'))
 
@@ -83,7 +83,21 @@ class ListImageAPI(MethodView):
         if not resp:
             abort(404)
         image, lst = resp
+        if not image:
+            abort(404)
         return make_response(jsonify(serialize_list(lst)), 201)
+
+    def delete(self):
+        if not request.form.get('slug'):
+            return make_response(jsonify(message="'Slug' is a required field"), 422)
+        resp = api.delete_image_from_list(request.form.get('slug'), image_identifier=request.form.get('identifier'))
+        if not resp:
+            abort(404)
+        image, lst = resp
+        if not image:
+            abort(404)
+        return make_response(jsonify(serialize_list(lst)), 204)
+
 
 app.add_url_rule(API_BASE + 'list/images', view_func=ListImageAPI.as_view('list-images'))
 

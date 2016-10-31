@@ -66,3 +66,16 @@ def add_image_to_list(slug, image_identifier=None):
         models.db.session.add(lst)
         models.db.session.commit()
     return image, lst
+
+def delete_image_from_list(slug, image_identifier=None):
+    """Add an image to an existing List, without modifying other images already supplied.
+    Returns the image added and the modified list."""
+    lst = models.List.query.filter(models.List.slug==slug).first()
+    if not lst:
+        return None
+    image = models.Image.query.filter(models.Image.identifier==image_identifier).first()
+    if image:
+        lst.images.remove(image)
+        models.db.session.add(lst)
+        models.db.session.commit()
+    return image, lst

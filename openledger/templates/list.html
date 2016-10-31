@@ -42,7 +42,13 @@
   <div class="row">
   {% for image in images %}
     {% set detail_url = url_for('detail', identifier=image.identifier) %}
-    {{ image_result.show(detail_url, "list-detail", image) }}
+    {% call image_result.show(detail_url, image) %}
+      <form method="POST">
+        <input type="hidden" name="identifier" value="{{ image.identifier }}" />
+        <input type="hidden" name="slug" value="{{ lst.slug }}" />
+        <button class="button alert tiny fi-page-delete" title="Remove from List" alt="Remove from List" onClick="openledger.list.deleteImageFromList(event)"  />
+      </form>
+    {% endcall %}
   {% endfor %}
   </div>
 

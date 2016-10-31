@@ -153,10 +153,10 @@ class TestAPIViews(TestOpenLedgerApp):
         lst = models.List(title='test')
         models.db.session.add(lst)
         models.db.session.commit()
-        rv = self.client.post('/api/v1/list/images', data={'slug': lst.slug, 'identifier': img2.identifier})
+        rv = self.client.post('/api/v1/list/images', data={'slug': lst.slug, 'identifier': 'unknown'})
         assert 404 == rv.status_code
 
-    def test_add_to_list_no_image(self):
+    def test_add_to_list_no_list(self):
         """The List/Image endpoint should return 404 if the user tries to add a nonexistent list"""
         lst = models.List(title='test')
         img1 = models.Image(title='image title', url='http://example.com/1', license='CC0')
@@ -210,6 +210,34 @@ class TestAPIViews(TestOpenLedgerApp):
         assert 200 == rv.status_code
         assert 'lists' in rv.json
         assert 1 == len(rv.json['lists'])
+
+    def test_delete_from_list(self):
+        """The Lists/Image endpoint should allow removing an Image from a List without modifying other images"""
+        lst = models.List(title='test')
+        img1 = models.Image(title='image title', url='http://example.com/1', license='CC0')
+        img2 = models.Image(title='image title', url='http://example.com/2', license='CC0')
+        lst.images = [img1, img2]
+        self.add_to_db(lst, img1, img2)
+
+        assert 2 == models.List.query.filter(models.List.title=='test').first().images.count()
+        rv = self.client.delete('/api/v1/list/images', data={'slug': lst.slug, 'identifier': img2.identifier})
+
+        assert 204 == rv.status_code
+        assert 1 == models.List.query.filter(models.List.title=='test').first().images.count()
+
+    def test_delete_from_list_no_list(self):
+        """The Lists/Image endpoint should 404 if a List does not exist"""
+        img1 = models.Image(title='image title', url='http://example.com/1', license='CC0')
+        self.add_to_db(img1)
+        rv = self.client.delete('/api/v1/list/images', data={'slug': 'unknown', 'identifier': img1.identifier})
+        assert 404 == rv.status_code
+
+    def test_delete_from_list_no_image(self):
+        """The Lists/Image endpoint should 404 if the image requested to be removed does not exist"""
+        lst = models.List(title='test')
+        self.add_to_db(lst)
+        rv = self.client.delete('/api/v1/list/images', data={'slug': lst.slug, 'identifier': 'unknown'})
+        assert 404 == rv.status_code
 
 class TestAPI(TestOpenLedgerApp):
     """Methods that test the API calls directly"""

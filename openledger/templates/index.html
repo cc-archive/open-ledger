@@ -42,7 +42,7 @@
                                 'provider': "flickr"}) %}
             {% set detail_url = url_for('by_image', url=image.url, provider_url=image.provider_url, license=image.license, creator=image.creator, title=image.title, provider=image.provider, creator_url=image.creator_url) %}
 
-            {{ image_result.show(detail_url, caller, image) }}
+            {% call image_result.show(detail_url, image) %}{% endcall %}
           {% endwith %}
         {% endfor %}
 
@@ -71,7 +71,7 @@
                                 'thumbnail': result.images.0.https_url,
                                 'provider': "fpx"}) %}
             {% set detail_url = url_for('by_image', url=image.url, provider_url=image.provider_url, license=image.license, creator=image.creator, title=image.title, provider=image.provider, creator_url=image.creator_url) %}
-            {{ image_result.show(detail_url, caller, image) }}
+            {% call image_result.show(detail_url, image) %}{% endcall %}
           {% endwith %}
 
         {% endfor %}
@@ -100,7 +100,7 @@
                                 'provider': "rijks",
                                 'identifier': None,}) %}
             {% set detail_url = url_for('by_image', url=image.url, provider_url=image.provider_url, license=image.license, creator=image.creator, title=image.title, provider=image.provider, creator_url=image.creator_url) %}
-            {{ image_result.show(detail_url, caller, image) }}
+            {% call image_result.show(detail_url, image) %}{% endcall %}
           {% endwith %}
         {% endfor %}
       </div>
@@ -129,7 +129,7 @@
                               'identifier': None}) %}
 
           {% set detail_url = url_for('by_image', url=image.url, provider_url=image.provider_url, license=image.license, creator=image.creator, title=image.title, provider=image.provider, creator_url=image.creator_url) %}
-          {{ image_result.show(detail_url, caller, image) }}
+          {% call image_result.show(detail_url, image) %}{% endcall %}
         {% endwith %}
       {% endfor %}
      </div>
