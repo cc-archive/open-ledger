@@ -104,7 +104,7 @@ ul#licenses input, ul#search_fields input {
     border-bottom: 1px solid #e6e6e6;
     padding: .5rem;
     color: #969696; }
-    .autocomplete li:hover {
+    .autocomplete li.hover {
       background-color: #e6e6e6; }
 
 figure {

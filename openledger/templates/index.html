@@ -34,13 +34,13 @@
             {% do image.update({'identifier': None,
                                 'creator': result.ownername,
                                 'creator_url': "",
-                                'image_url':  result.url,
+                                'url':  result.url,
                                 'license': license_map.flickr.get(result.license|int, "").lower(),
                                 'provider_url': "https://www.flickr.com/photos/" + result.owner + "/" + result.id,
                                 'thumbnail': result.thumbnail,
                                 'title': result.title,
                                 'provider': "flickr"}) %}
-            {% set detail_url = url_for('by_image', url=image.image_url, provider_url=image.provider_url, license=image.license, creator=image.creator, title=image.title, provider=image.provider, creator_url=image.creator_url) %}
+            {% set detail_url = url_for('by_image', url=image.url, provider_url=image.provider_url, license=image.license, creator=image.creator, title=image.title, provider=image.provider, creator_url=image.creator_url) %}
 
             {{ image_result.show(detail_url, caller, image) }}
           {% endwith %}

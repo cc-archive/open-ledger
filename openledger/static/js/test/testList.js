@@ -2,7 +2,11 @@ import 'jsdom-global/register'
 import sinon from 'sinon'
 import { assert } from 'chai'
 
+
 import * as list from '../list'
+
+require( "./util" )
+
 
 describe('checkStatus', () => {
   it('returns the response if a 200 status code is returned', () => {

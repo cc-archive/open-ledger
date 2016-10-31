@@ -91,9 +91,9 @@ export const navigateAutocomplete = function (e) {
   index += offset
 
   selected = autocomplete.children[index]
-  if (selected)
+  if (selected) {
     selected.classList.add('hover')
-
+  }
   this.dataset.sel = index
 }
 
@@ -155,11 +155,9 @@ export const completeListTitle = function (e) {
   })
 }
 
-const selectItemAutocomplete = function() {
-  const item = this
-  item.classList.add('hover')
+export const selectItemAutocomplete = function() {
+  this.classList.add('hover')
 }
-
 
 // Select a node from the autocomplete list and send that
 export const selectAndAddToList = function(slug) {
@@ -242,6 +240,9 @@ export const clearForm = (form) => {
   form.reset()
   form.style.display = 'none'
   form.classList.remove('pulse')
+  var input = form.querySelector('input[type=text]')
+  input.dataset.sel = -1  // Reset the autocomplete pointer
+
 }
 
 export const clearAutocomplete = (autocomplete) => {
