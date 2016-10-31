@@ -60,15 +60,17 @@
         {% endif %}
       </i>
       {% endif %}
-      
+
       is licensed under
       <a href="{{ license_url }}">CC {{ license|upper }} {{ license_version }}</a>
     </blockquote>
     <button class="attribution-button button clipboard-sel-text primary" data-clipboard-target=".attribution">
-      Copy attribution as text
+      <span class="fi-page-copy"></span>
+      Copy credit as text
     </button>
     <button class="attribution-button button clipboard-sel-html secondary">
-      Copy attribution as HTML
+      <span class="fi-page-copy"></span>
+      Copy credit as HTML
     </button>
 
     {% if image %} {# Local objects only for now #}
