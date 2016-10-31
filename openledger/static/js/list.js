@@ -6,7 +6,6 @@ const API_BASE = '/api/v1/'
 const HOST_PORT = window.location.port === 80 ? '' : `:${window.location.port}`
 const HOST_URL = `${window.location.protocol}//${window.location.hostname}${HOST_PORT}`
 
-
 export const addToListForm = function (e) {
   // Bring up a form to capture a list title from a user
   var form = e.target.nextElementSibling
@@ -234,7 +233,7 @@ export const addToList = function(e) {
 
 export const showUpdateMessage = (msg) => {
   msg.style.display = 'block'
-  msg.innerHTML = "Saving..." 
+  msg.innerHTML = "Saving..."
 }
 
 export const clearForm = (form) => {

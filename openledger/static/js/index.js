@@ -2,6 +2,7 @@ import Clipboard from 'clipboard'
 import attributions from './attributions'
 
 import * as list from './list'
+import * as form from './form'
 
 const init = () => {
   var clipboardText = new Clipboard('.clipboard-sel-text')
@@ -21,3 +22,4 @@ document.addEventListener('DOMContentLoaded', () => {
 
 window.openledger = {}
 window.openledger.list = list
+window.openledger.form = form

@@ -1,5 +1,11 @@
-.form-field-hidden {
-  visibility: hidden;
-  position: absolute;
+.list-detail {
+  input {
+    display: none;
+  }
+  textarea {
+    display: none;
+  }
+  label {
+    display: none;
+  }
 }
- 

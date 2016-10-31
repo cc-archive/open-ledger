@@ -15,7 +15,7 @@ js = Bundle('js/build/openledger.js',
             filters='jsmin', output='js/build/openledger.min.js')
 assets.register('js_all', js)
 
-css = Bundle('css/app.css',
+css = Bundle('css/app.css', 'css/foundation-icons.css',
              filters='cssmin',
              output='css/openledger.min.css')
 

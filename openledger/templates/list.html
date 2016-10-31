@@ -7,30 +7,34 @@
 <div class="row column list-detail">
 
   <form action="{{ url_for('list-view', slug=lst.slug) }}" method="POST">
-     {{ form.csrf_token }}
+   {{ form.csrf_token }}
 
-    <h2 class="t-list-title">{{ lst.title }}
-      <div class="form-field-hidden">
-        {{ form.title }}
+    <h2 class="t-list-title">
+      <div class="form-readonly">
+        {{ lst.title }}
+        <a onClick="openledger.form.showForm(event)" class="fi-page-edit" title="Edit this List" alt="Edit this list"></a>
       </div>
+      {{ form.title.label }}
+      {{ form.title }}
     </h2>
 
-    {% if lst.description %}
     <div class="list-description">
-      {{ lst.description }}
-      <div class="form-field-hidden">
-        {{ form.description }}
+      <div class="form-readonly">
+        {{ lst.description or "No description provided" }}
       </div>
-    </div>
-    {% else %}
-    <h4>Add a description</h4>
-      {{ form.description }}
-    {% endif %}
+      {{ form.description.label }}
+      {{ form.description(rows='10',cols='50') }}
 
-    <div class="list-is-public">
-      List is visible to the public? {{ form.is_public }}
     </div>
 
+    <div class="list-public">
+
+      List is visible to the public?
+      {{ form.is_public }}
+      <span class="form-readonly">
+        {{ "Yes" if form.is_public else "No"}}
+      </span>
+    </div>
 
     <input type="submit" value="Update" class="button">
 
