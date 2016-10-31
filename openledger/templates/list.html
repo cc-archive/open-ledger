@@ -9,8 +9,8 @@
   <form action="{{ url_for('list-view', slug=lst.slug) }}" method="POST">
    {{ form.csrf_token }}
 
-    <h2 class="t-list-title">
-      <div class="form-readonly">
+    <h2>
+      <div class="form-readonly t-list-title">
         {{ lst.title }}
         <a onClick="openledger.form.showForm(event)" class="fi-page-edit" title="Edit this List" alt="Edit this list"></a>
       </div>
@@ -28,7 +28,6 @@
     </div>
 
     <div class="list-public">
-
       List is visible to the public?
       {{ form.is_public }}
       <span class="form-readonly">
@@ -43,7 +42,7 @@
   <div class="row">
   {% for image in images %}
     {% set detail_url = url_for('detail', identifier=image.identifier) %}
-    {{ image_result.show(detail_url, image.url, image.creator, image.creator_url, image.title, image.license, image.identifier) }}
+    {{ image_result.show(detail_url, "list-detail", image) }}
   {% endfor %}
   </div>
 

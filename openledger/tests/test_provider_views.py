@@ -9,17 +9,7 @@ from flask import request, url_for
 from openledger import app as ol
 from openledger.tests.utils import *
 
-class TestViews(TestCase):
-
-    def create_app(self):
-        app = ol
-        app.config['TESTING'] = True
-        # Be defensive in our tests about undefined variables
-        app.jinja_env.undefined = jinja2.StrictUndefined
-        return app
-
-    def setUp(self):
-        activate_all_provider_mocks()
+class TestProviderViews(TestOpenLedgerApp):
 
     @responses.activate
     def test_index(self):

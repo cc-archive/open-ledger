@@ -5,6 +5,7 @@ from flask_assets import Environment, Bundle
 application = Flask(__name__)
 app = application  # Workaround for AWS-specific configuration
 app.config.from_pyfile('default_settings.py')
+app.jinja_env.add_extension('jinja2.ext.do')
 
 assets = Environment(app)
 if not app.debug:

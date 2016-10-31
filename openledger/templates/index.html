@@ -18,6 +18,8 @@
 {% endwith %}
 
 {% if results %}
+  {% set caller = "partner_api" %}
+
   <div class="row column results">
 
     <!-- Flickr -->
@@ -28,21 +30,20 @@
 
       <div class="row">
         {% for result in results.flickr.photos.photo %}
+          {% with image = {} %}
+            {% do image.update({'identifier': None,
+                                'creator': result.ownername,
+                                'creator_url': "",
+                                'image_url':  result.url,
+                                'license': license_map.flickr.get(result.license|int, "").lower(),
+                                'provider_url': "https://www.flickr.com/photos/" + result.owner + "/" + result.id,
+                                'thumbnail': result.thumbnail,
+                                'title': result.title,
+                                'provider': "flickr"}) %}
+            {% set detail_url = url_for('by_image', url=image.image_url, provider_url=image.provider_url, license=image.license, creator=image.creator, title=image.title, provider=image.provider, creator_url=image.creator_url) %}
 
-          {% set creator = result.ownername %}
-          {% set creator_url = "" %}
-          {% set image_url = result.url %}
-          {% set orig_license = result.license|int %}
-          {% set license = license_map.flickr.get(orig_license, "").lower() %}
-          {% set provider_url = "https://www.flickr.com/photos/" + result.owner + "/" + result.id %}
-          {% set thumbnail = result.thumbnail %}
-          {% set title = result.title %}
-          {% set provider = "flickr" %}
-          {% set identifier = None %}
-          {% set detail_url = url_for('by_image', url=image_url, provider_url=provider_url, license=license, creator=creator, title=title, provider=provider, creator_url=creator_url) %}
-
-          {{ image_result.show(detail_url, thumbnail, creator, creator_url, title, license, identifier) }}
-
+            {{ image_result.show(detail_url, caller, image) }}
+          {% endwith %}
         {% endfor %}
 
       </div>
@@ -59,19 +60,20 @@
 
       <div class="row">
         {% for result in results.fpx.photos %}
-          {% set creator = result.user.username %}
-          {% set creator_url = "" %}
-          {% set license = license_map.fpx.get(result.license_type, "").lower() %}
-          {% set provider_url = "https://500px.com/" + result.url %}
-          {% set title = result.name %}
-          {% set url = result.images.1.https_url %}
-          {% set thumbnail = result.images.0.https_url %}
-          {% set provider = "fpx" %}
-          {% set identifier = None %}
+          {% with image = {} %}
+            {% do image.update({'identifier': None,
+                                'creator': result.user.username,
+                                'creator_url': "",
+                                'license': license_map.fpx.get(result.license_type, "").lower(),
+                                'provider_url': "https://500px.com/" + result.url,
+                                'title': result.name,
+                                'url': result.images.1.https_url,
+                                'thumbnail': result.images.0.https_url,
+                                'provider': "fpx"}) %}
+            {% set detail_url = url_for('by_image', url=image.url, provider_url=image.provider_url, license=image.license, creator=image.creator, title=image.title, provider=image.provider, creator_url=image.creator_url) %}
+            {{ image_result.show(detail_url, caller, image) }}
+          {% endwith %}
 
-          {% set detail_url = url_for('by_image', url=url, provider_url=provider_url, license=license, creator=creator, title=title, provider=provider, creator_url=creator_url) %}
-
-          {{ image_result.show(detail_url, thumbnail, creator, creator_url, title, license, identifier) }}
         {% endfor %}
       </div>
 
@@ -87,19 +89,19 @@
 
       <div class="row">
         {% for result in results.rijks.artObjects %}
-          {% set license = "cc0" %}
-          {% set creator = result.principalOrFirstMaker %}
-          {% set creator_url = "" %}
-          {% set url = result.webImage.url %}
-          {% set title = result.title %}
-          {% set provider_url = result.links.web %}
-          {% set thumbnail = result.webImage.url %}
-          {% set provider = "rijks" %}
-          {% set identifier = None %}
-
-          {% set detail_url = url_for('by_image', url=url, provider_url=provider_url, license=license, creator=creator, title=title, provider=provider, creator_url=creator_url) %}
-
-          {{ image_result.show(detail_url, thumbnail, creator, creator_url, title, license, identifier) }}
+          {% with image = {} %}
+            {% do image.update({'license': "cc0",
+                                'creator': result.principalOrFirstMaker,
+                                'creator_url': "",
+                                'url': result.webImage.url,
+                                'title': result.title,
+                                'provider_url': result.links.web,
+                                'thumbnail': result.webImage.url,
+                                'provider': "rijks",
+                                'identifier': None,}) %}
+            {% set detail_url = url_for('by_image', url=image.url, provider_url=image.provider_url, license=image.license, creator=image.creator, title=image.title, provider=image.provider, creator_url=image.creator_url) %}
+            {{ image_result.show(detail_url, caller, image) }}
+          {% endwith %}
         {% endfor %}
       </div>
 
@@ -115,20 +117,20 @@
 
      <div class="row">
       {% for result in results.wikimedia.results %}
-        {% set license = "cc0" %}
-        {% set creator = "" %}
-        {% set creator_url = "" %}
-        {% set url = result.pic.value %}
-        {% set title = result.itemLabel.value %}
-        {% set provider_url = result.item.value %}
-        {% set thumbnail = result.pic.value %}
-        {% set provider = "wikimedia" %}
-        {% set identifier = None %}
+        {% with image = {} %}
+          {% do image.update({'license': "cc0",
+                              'creator': "",
+                              'creator_url': "",
+                              'url': result.pic.value,
+                              'title': result.itemLabel.value,
+                              'provider_url': result.item.value,
+                              'thumbnail': result.pic.value,
+                              'provider': "wikimedia",
+                              'identifier': None}) %}
 
-        {% set detail_url = url_for('by_image', url=url, provider_url=provider_url, license=license, creator=creator, title=title, provider=provider, creator_url=creator_url) %}
-
-        {{ image_result.show(detail_url, thumbnail, creator, creator_url, title, license, identifier) }}
-
+          {% set detail_url = url_for('by_image', url=image.url, provider_url=image.provider_url, license=image.license, creator=image.creator, title=image.title, provider=image.provider, creator_url=image.creator_url) %}
+          {{ image_result.show(detail_url, caller, image) }}
+        {% endwith %}
       {% endfor %}
      </div>
 
