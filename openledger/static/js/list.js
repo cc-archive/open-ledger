@@ -51,8 +51,9 @@ export const deleteImageFromList = function (e) {
     .then(checkStatus)
     .then((response) => {
       // If we were successful, delete this item out of the DOM
-      var result = form.parent.parent
-      result.parentNode.removeChild(result)
+      var result = form.parentNode.parentNode
+      result.classList.add('animated')
+      result.classList.add('zoomOut')
     })
   }
 }
