@@ -54,7 +54,7 @@ class Image(db.Model):
     url = db.Column(db.String(1000), unique=True, nullable=False)
 
     # The primary thumbnail URL for this image
-#    thumbnail = db.Column(db.String(1000), nullable=True)
+    thumbnail = db.Column(db.String(1000), nullable=True)
 
     # Image dimensions, if available
     width = db.Column(db.Integer)
