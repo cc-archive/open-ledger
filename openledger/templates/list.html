@@ -20,7 +20,7 @@
 
     <div class="list-description">
       <div class="form-readonly">
-        {{ lst.description or "No description provided" }}
+        {{ lst.description or "No description provided"}}
       </div>
       {{ form.description.label }}
       {{ form.description(rows='10',cols='50') }}
@@ -43,7 +43,7 @@
   <div class="row">
   {% for image in images %}
     {% set detail_url = url_for('detail', identifier=image.identifier) %}
-    {{ image_result.show(detail_url, image.url, image.creator, image.creator_url, image.title, image.license) }}
+    {{ image_result.show(detail_url, image.url, image.creator, image.creator_url, image.title, image.license, image.identifier) }}
   {% endfor %}
   </div>
 

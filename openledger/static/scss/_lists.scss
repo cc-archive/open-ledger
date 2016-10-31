@@ -16,16 +16,18 @@
 }
 
 /* List creation features */
-.add-to-list {
-  position: absolute;
-  width: 400px;
-  display: none;
-  z-index: 99;
+.add-to-list-container {
 
-  input {
-    margin: 0;
+  .add-to-list {
+    position: absolute;
+    width: 400px;
+    display: none;
+    z-index: 99;
+
+    input {
+      margin: 0;
+    }
   }
-
   .add-to-list-response {
     display: none;
     position: absolute;

@@ -28,11 +28,11 @@ footer.callout {
 .attribution-button {
   width: 200px; }
 
-.list-detail input {
+.list-detail > form input {
   display: none; }
-.list-detail textarea {
+.list-detail > form textarea {
   display: none; }
-.list-detail label {
+.list-detail > form label {
   display: none; }
 
 legend, ul#licenses, ul#licenses li, ul#search_fields, ul#search_fields li {
@@ -59,21 +59,21 @@ ul#licenses input, ul#search_fields input {
     font-style: italic; }
 
 /* List creation features */
-.add-to-list {
+.add-to-list-container .add-to-list {
   position: absolute;
   width: 400px;
   display: none;
   z-index: 99; }
-  .add-to-list input {
+  .add-to-list-container .add-to-list input {
     margin: 0; }
-  .add-to-list .add-to-list-response {
-    display: none;
-    position: absolute;
-    background: white;
-    box-shadow: 0px 10px 36px -9px rgba(0, 0, 0, 0.58);
-    padding: 20px;
-    min-width: 400px;
-    z-index: 1; }
+.add-to-list-container .add-to-list-response {
+  display: none;
+  position: absolute;
+  background: white;
+  box-shadow: 0px 10px 36px -9px rgba(0, 0, 0, 0.58);
+  padding: 20px;
+  min-width: 400px;
+  z-index: 1; }
 
 /* Add-to-list from results page */
 .image-result .add-to-list-container {

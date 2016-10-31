@@ -1,11 +1,13 @@
 .list-detail {
-  input {
-    display: none;
-  }
-  textarea {
-    display: none;
-  }
-  label {
-    display: none;
+  & > form {
+    input {
+      display: none;
+    }
+    textarea {
+      display: none;
+    }
+    label {
+      display: none;
+    }
   }
 }
