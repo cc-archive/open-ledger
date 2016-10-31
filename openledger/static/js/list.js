@@ -181,8 +181,7 @@ export const selectAndAddToList = function(slug) {
     return response.json()
   })
   .then((json) => {
-    msg.innerHTML = `Your image was added to <a href="${HOST_URL}/list/${json.slug}">${HOST_URL}/list/${json.slug}</a>`
-    form.reset()
+    successMessage(msg, json.slug, data.get('title'))
   })
 }
 
@@ -222,10 +221,7 @@ export const addToList = function(e) {
     return response.json()
   })
   .then((json) => {
-    msg.innerHTML = `<span class="badge success">✓</span>
-    Your image was saved to <a href="${HOST_URL}/list/${json.slug}">${data.get('title')}</a>`
-    msg.classList.add('animated')
-    msg.classList.add('pulse')
+    successMessage(msg, json.slug, data.get('title'))
   })
 }
 
@@ -262,4 +258,10 @@ export const checkStatus = (response) => {
     error.response = response
     throw error
   }
+}
+export const successMessage = (msg, slug, title) => {
+  msg.innerHTML = `<span class="badge success">✓</span>
+  Your image was saved to <a href="${HOST_URL}/list/${slug}">${title}</a>`
+  msg.classList.add('animated')
+  msg.classList.add('pulse')
 }
