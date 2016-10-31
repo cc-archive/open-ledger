@@ -1,11 +1,10 @@
 import logging
 
-from elasticsearch_dsl import Search
 from flask import Flask, render_template, request, abort, jsonify, make_response
 from flask.views import MethodView
-from sqlalchemy import and_, or_, not_, distinct
+from sqlalchemy.exc import IntegrityError
 
-from openledger import app, forms, licenses, search
+from openledger import app
 from openledger import models, api
 
 log = logging.getLogger(__name__)
@@ -79,7 +78,16 @@ class ListImageAPI(MethodView):
     def post(self):
         if not request.form.get('slug'):
             return make_response(jsonify(message="'Slug' is a required field"), 422)
-        resp = api.add_image_to_list(request.form.get('slug'), image_identifier=request.form.get('identifier'))
+        try:
+            resp = api.add_image_to_list(request.form.get('slug'), image_identifier=request.form.get('identifier'))
+        except IntegrityError as e:
+            # Check whether this was due to a duplicate, and if so, return a 304 Not Modified
+            models.db.session.rollback()
+            lst = api.get_list(request.form.get('slug'))
+            if request.form.get('identifier') in [img.identifier for img in lst.images]:
+                return make_response(jsonify(serialize_list(lst)), 200)
+            # Otherwise, keep raising the exception, as something else was wrong
+            raise e
         if not resp:
             abort(404)
         image, lst = resp

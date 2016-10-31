@@ -148,6 +148,23 @@ class TestAPIViews(TestOpenLedgerApp):
         assert 201 == rv.status_code
         assert 2 == models.List.query.filter(models.List.title=='test').first().images.count()
 
+    def test_add_to_list_twice(self):
+        """The Lists/Image endpoint should gracefully ignore attempts to add the same image twice and return a 200"""
+        lst = models.List(title='test')
+        img1 = models.Image(title='image title', url='http://example.com/1', license='CC0')
+        self.add_to_db(lst, img1)
+        assert 0 == models.List.query.filter(models.List.title=='test').first().images.count()
+
+        rv = self.client.post('/api/v1/list/images', data={'slug': lst.slug, 'identifier': img1.identifier})
+        assert 1 == models.List.query.filter(models.List.title=='test').first().images.count()
+        assert 201 == rv.status_code
+
+        rv = self.client.post('/api/v1/list/images', data={'slug': lst.slug, 'identifier': img1.identifier})
+        assert 1 == models.List.query.filter(models.List.title=='test').first().images.count()
+        assert 200 == rv.status_code
+
+
+
     def test_add_to_list_no_image(self):
         """The List/Image endpoint should return 404 if the user tries to add a nonexistent image"""
         lst = models.List(title='test')

@@ -128,6 +128,7 @@ list_images = db.Table('list_images',
     db.Column('image_id', db.Integer, db.ForeignKey('image.id')),
     db.Column('created_on', db.DateTime, server_default=db.func.now()),
     db.Column('updated_on', db.DateTime, server_default=db.func.now(), onupdate=db.func.now()),
+    db.UniqueConstraint('list_id', 'image_id', name="_list_images_uc")
 )
 
 class List(db.Model):

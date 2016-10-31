@@ -38,22 +38,23 @@ export const addToListForm = function (e) {
 
 /* DELETE an image from a List */
 export const deleteImageFromList = function (e) {
-  const url = API_BASE + 'list/images'
+  if (confirm("Are you sure you want to delete this image from this list?")) {
+    const url = API_BASE + 'list/images'
 
-  e.preventDefault()
-  var form = e.target.parentNode
-  var data = new FormData(form)
-  fetch(url, {
-    method: 'DELETE',
-    body: data
-  })
-  .then(checkStatus)
-  .then((response) => {
-    return response.json()
-  })
-  .then((json) => {
-    console.log(json)
-  })
+    e.preventDefault()
+    var form = e.target.parentNode
+    var data = new FormData(form)
+    fetch(url, {
+      method: 'DELETE',
+      body: data
+    })
+    .then(checkStatus)
+    .then((response) => {
+      // If we were successful, delete this item out of the DOM
+      var result = form.parent.parent
+      result.parentNode.removeChild(result)
+    })
+  }
 }
 
 /* Use keyboard controls to move through an autocomplete list */
@@ -191,6 +192,7 @@ export const selectAndAddToList = function(slug) {
     method: 'POST',
     body: data
   })
+  .then(checkStatus)
   .then((response) => {
     return response.json()
   })
@@ -267,7 +269,8 @@ export const clearResponse = (response) => {
 export const checkStatus = (response) => {
   if (response.status >= 200 && response.status < 300) {
     return response
-  } else {
+  }
+  else {
     var error = new Error(response.statusText)
     error.response = response
     throw error
