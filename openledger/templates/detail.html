@@ -20,6 +20,7 @@
         <h4>Title</h4>
         <span>{{ title }}</span>
       </li>
+      {% if creator %}
       <li>
         <h4>Creator</h4>
         <span>
@@ -30,6 +31,7 @@
           {% endif %}
         </span>
       </li>
+      {% endif %}
       <li>
         <h4>License</h4>
         <a href="{{ license_url }}">{{ license_logo.license(license) }}</a>
@@ -47,7 +49,9 @@
   <div class="column">
     <h3>How to use this work</h3>
     <blockquote class="attribution">
-      <a href="{{ provider_url }}">“{{ title }}”</a> by
+      <a href="{{ provider_url }}">“{{ title }}”</a>
+      {% if creator %}
+      by
       <i>
         {% if creator_url %}
           <a href="{{ creator_url }}">{{ creator }}</a>
@@ -55,7 +59,8 @@
           {{ creator }}
         {% endif %}
       </i>
-
+      {% endif %}
+      
       is licensed under
       <a href="{{ license_url }}">CC {{ license|upper }} {{ license_version }}</a>
     </blockquote>
