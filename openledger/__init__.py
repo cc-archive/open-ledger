@@ -1,11 +1,14 @@
 from flask import Flask
 from elasticsearch_dsl.connections import connections
 from flask_assets import Environment, Bundle
+from flask.ext.cas import CAS
 
 application = Flask(__name__)
 app = application  # Workaround for AWS-specific configuration
 app.config.from_pyfile('default_settings.py')
 app.jinja_env.add_extension('jinja2.ext.do')
+
+CAS(app)
 
 assets = Environment(app)
 if not app.debug:

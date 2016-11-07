@@ -1,5 +1,10 @@
 import os
 
+# Auth
+CAS_SERVER = "https://login.creativecommons.org"
+CAS_AFTER_LOGIN = "fulltext"
+CAS_LOGIN_ROUTE = "/login"
+
 try:
     from instance.config import *
 

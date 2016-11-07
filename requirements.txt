@@ -73,3 +73,4 @@ aws-requests-auth
 Flask-Assets
 jsmin
 cssmin
+Flask-CAS
