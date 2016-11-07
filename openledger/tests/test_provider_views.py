@@ -1,7 +1,7 @@
 import os
 import unittest
 import responses
-import jinja2
+
 from flask_testing import TestCase
 
 from flask import request, url_for
@@ -14,7 +14,7 @@ class TestProviderViews(TestOpenLedgerApp):
     @responses.activate
     def test_index(self):
         """The home page should load without errors"""
-        rv = self.client.get('/')
+        rv = self.client.get('/provider-apis')
         assert rv
 
     @responses.activate
@@ -22,7 +22,7 @@ class TestProviderViews(TestOpenLedgerApp):
         """It should be possible to issue a search and get results lists from all the providers"""
         query = 'test'
         with self.client as c:
-            rv = self.client.get('/?search=' + query)
+            rv = self.client.get('/provider-apis?search=' + query)
             assert request.args['search'] == query
 
     @responses.activate
@@ -40,7 +40,7 @@ class TestProviderViews(TestOpenLedgerApp):
     def test_pagination_links_provider(self):
         """The links to paginate among providers should appear and resolve correctly"""
         query = 'test'
-        rv = self.client.get('/?search=' + query)
+        rv = self.client.get('/provider-apis?search=' + query)
         p = select_node(rv, '.pagination-next a')
         assert 'flickr' in p.attrib['href']
 
@@ -49,7 +49,7 @@ class TestProviderViews(TestOpenLedgerApp):
         """[#41] The links to paginate among providers with license filters should include the license"""
         license = 'CC0'
         query = 'test&licenses=' + license
-        rv = self.client.get('/?search=' + query)
+        rv = self.client.get('/provider-apis?search=' + query)
         p = select_node(rv, '.pagination-next a')
         assert license in p.attrib['href']
 
@@ -58,14 +58,14 @@ class TestProviderViews(TestOpenLedgerApp):
         """[#40] The links to paginate among providers with license filters should include the license"""
         license = 'unknown'
         query = 'test&licenses=' + license
-        rv = self.client.get('/?search=' + query)
+        rv = self.client.get('/provider-apis?search=' + query)
         assert rv.status_code == 200
 
     @responses.activate
     def test_detail_page_from_provider(self):
         """[#54] It should be possible to follow a link to a detail page from a provider search result"""
         query = 'test'
-        rv = self.client.get('/?search=' + query)
+        rv = self.client.get('/provider-apis?search=' + query)
         p = select_node(rv, '.t-detail-link')
         link = p.attrib['href']
         rv = self.client.get(link)

@@ -25,9 +25,45 @@ console = logging.StreamHandler()
 log.addHandler(console)
 log.setLevel(logging.INFO)
 
-@app.route("/")
-def index(provider=None):
-    """Primary entry point for the search page"""
+@app.route('/')
+def fulltext():
+    """Primary search interface of the Open Ledger collection"""
+    s = Search()
+    form, search_data = init_search()
+
+    results = search.Results(page=search_data['page'])
+    queries = []
+
+    if search_data['search']:
+        if 'title' in search_data.get('search_fields'):
+            queries.append(Q("match", title=search_data['search']))
+        if 'tags' in search_data.get('search_fields'):
+            queries.append(Q("match", tags=search_data['search']))
+        if 'creator' in search_data.get('search_fields'):
+            queries.append(Q("match", creator=search_data['search']))
+        q = Q('bool',
+              should=queries,
+              minimum_should_match=1)
+        s = s.query(q)
+        response = s.execute()
+        results.pages = int(int(response.hits.total) / PER_PAGE)
+        start = results.page * PER_PAGE
+        end = start + PER_PAGE
+        for search_result in s[start:end]:
+            r = search.Result.from_elasticsearch(search_result)
+            results.items.append(r)
+
+    search_data_for_pagination = {i: search_data[i] for i in search_data if i != 'page'}
+
+    return render_template('results.html',
+                           results=results,
+                           form=form,
+                           search_data=search_data,
+                           search_data_for_pagination=search_data_for_pagination)
+
+@app.route("/provider-apis")
+def provider_apis(provider=None):
+    """Search by passing queries through to provider apis"""
     results = {}
     form, search_data = init_search(provider)
 
@@ -37,7 +73,7 @@ def index(provider=None):
                                          licenses=search_data['licenses'],
                                          page=search_data['page'],
                                          per_page=search_data['per_page'])
-    return render_template('index.html',
+    return render_template('provider-results.html',
                            results=results,
                            form=form,
                            search_data=search_data,
@@ -45,7 +81,7 @@ def index(provider=None):
 
 @app.route("/provider/<provider>")
 def by_provider(provider):
-    return index(provider=provider)
+    return provider_apis(provider=provider)
 
 @app.route("/image/detail/")
 def by_image():
@@ -97,41 +133,7 @@ def detail(identifier):
                            creator=creator,
                            creator_url=creator_url)
 
-@app.route('/search')
-def fulltext():
-    """Search using the Elasticsearch interface"""
-    s = Search()
-    form, search_data = init_search()
 
-    results = search.Results(page=search_data['page'])
-    queries = []
-
-    if search_data['search']:
-        if 'title' in search_data.get('search_fields'):
-            queries.append(Q("match", title=search_data['search']))
-        if 'tags' in search_data.get('search_fields'):
-            queries.append(Q("match", tags=search_data['search']))
-        if 'creator' in search_data.get('search_fields'):
-            queries.append(Q("match", creator=search_data['search']))
-        q = Q('bool',
-              should=queries,
-              minimum_should_match=1)
-        s = s.query(q)
-        response = s.execute()
-        results.pages = int(int(response.hits.total) / PER_PAGE)
-        start = results.page * PER_PAGE
-        end = start + PER_PAGE
-        for search_result in s[start:end]:
-            r = search.Result.from_elasticsearch(search_result)
-            results.items.append(r)
-
-    search_data_for_pagination = {i: search_data[i] for i in search_data if i != 'page'}
-
-    return render_template('results.html',
-                           results=results,
-                           form=form,
-                           search_data=search_data,
-                           search_data_for_pagination=search_data_for_pagination)
 
 
 def init_search(provider=None):
