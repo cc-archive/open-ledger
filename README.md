@@ -205,7 +205,14 @@ It is run automatically on deploy.
 
 ## Testing
 
-### Webapp
+Install the testing dependencies:
+
+```
+pip install -r requirements-test.txt
+```
+
+Search tests require a local version of elasticsearch 5; install using your favorite
+package manager.
 
 Run pytest from the root of the project as:
 

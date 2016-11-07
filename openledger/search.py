@@ -49,7 +49,7 @@ class Result(object):
                    foreign_landing_url=sr.foreign_landing_url,
                    identifier=sr.identifier,
                    license=sr.license,
-                   #license_version=sr.license_version Add this when we've reindexed FIXME
+                   license_version=sr.license_version
                    )
         return r
 
