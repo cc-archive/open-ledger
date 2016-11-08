@@ -53,15 +53,16 @@ def fulltext():
             or_queries.append(Q("match", creator=search_data['search']))
 
         # Work types must match
-#        if 'photos' in search_data.get('work_types'):
-#            and_queries.append(Q("match", source=WORK_TYPES['photos'][0]))  # FIXME make this an OR
-#        if 'cultural' in search_data.get('work_types'):
-#            and_queries.append(Q("match", source=WORK_TYPES['cultural'][0]))
+        if 'photos' in search_data.get('work_types'):
+            and_queries.append(Q("match", source=WORK_TYPES['photos'][0]))  # FIXME make this an OR
+        if 'cultural' in search_data.get('work_types'):
+            and_queries.append(Q("match", source=WORK_TYPES['cultural'][0]))
 
         q = Q('bool',
               should=or_queries,
-#              must=and_queries,
+              must=Q('bool', should=and_queries, minimum_should_match=1),
               minimum_should_match=1)
+
         s = s.query(q)
         response = s.execute()
         results.pages = int(int(response.hits.total) / PER_PAGE)
@@ -69,6 +70,7 @@ def fulltext():
         end = start + PER_PAGE
         for r in s[start -1:end]:
             results.items.append(r)
+
     search_data_for_pagination = {i: search_data[i] for i in search_data if i != 'page'}
 
     return render_template('results.html',

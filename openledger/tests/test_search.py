@@ -146,15 +146,24 @@ class TestSearch(TestOpenLedgerApp):
         """It should be possible to filter search results by tags"""
         self._index_img(self.img1)
         self._index_img(self.img2)
-        rv = self.client.get(self.url, query_string={'search_fields': 'tags', 'search': 'dog'})
+        rv = self.client.get(self.url, query_string={'search_fields': 'tags', 'search': 'dog', 'work_types': ''})
         assert select_node(rv, '.t-no-results') is ()
         assert 1 == len(select_nodes(rv, '.t-image-result'))
 
         # Should not find it when searching the creator field
-        rv = self.client.get(self.url, query_string={'search_fields': 'creator', 'search': 'dog'})
+        rv = self.client.get(self.url, query_string={'search_fields': 'creator', 'search': 'dog', 'work_types': ''})
         assert select_node(rv, '.t-no-results') is not ()
 
         # Find both with the same tag
-        rv = self.client.get(self.url, query_string={'search_fields': 'tags', 'search': 'object'})
+        rv = self.client.get(self.url, query_string={'search_fields': 'tags', 'search': 'object', 'work_types': ''})
         assert select_node(rv, '.t-no-results') is ()
         assert 2 == len(select_nodes(rv, '.t-image-result'))
+
+
+    def test_works_filter(self):
+        """It should be possible to filter by work_type"""
+        self._index_img(self.img1)
+        self._index_img(self.img2)
+        rv = self.client.get(self.url, query_string={'search': 'object', 'work_types': 'photos'})
+        assert select_node(rv, '.t-no-results') is ()
+        assert 1 == len(select_nodes(rv, '.t-image-result'))
