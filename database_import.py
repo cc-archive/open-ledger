@@ -10,7 +10,7 @@ import base64
 import boto3
 import botocore
 from sqlalchemy.exc import IntegrityError
-
+from sqlalchemy.sql.expression import select
 from openledger.models import db, Image, Tag, create_identifier
 from openledger import app
 
@@ -34,6 +34,32 @@ def grouper_it(n, iterable):
             return
         yield itertools.chain((first_el,), chunk_it)
 
+def _update_image(iterator, reader, chunk_size):
+    """Update records in the database""" # Currently just thumbnail URL
+    for chunk in iterator(chunk_size, reader):
+        try:
+            images = []
+            row_map = {}
+            for row in chunk:
+                row_map[row['ImageID']] = row['Thumbnail300KURL']
+            imgs = db.session.execute(
+                select(
+                    [Image.__table__.c.id, Image.__table__.c.foreign_identifier],
+                    Image.__table__.c.foreign_identifier.in_(row_map.keys())
+                )
+            ).fetchall()
+            mappings = []
+            for img in imgs:
+                mappings.append({'id': img[0],
+                 'thumbnail': row_map[img[1]]
+                 })
+            db.session.bulk_update_mappings(Image, mappings)
+            db.session.commit()
+            log.debug("Updated chunk of %d records", len(mappings))
+        except IntegrityError as e:
+            db.session.rollback()
+            log.debug(e)
+
 def _insert_image(iterator, reader, chunk_size, skip_existence_check=False):
     for chunk in iterator(chunk_size, reader):
         try:
@@ -44,6 +70,7 @@ def _insert_image(iterator, reader, chunk_size, skip_existence_check=False):
                     image.identifier = create_identifier(row['OriginalURL'])
                     image.foreign_identifier = row['ImageID']
                     image.url = row['OriginalURL']
+                    image.thumbnail = row['Thumbnail300KURL']
                     image.foreign_landing_url = row['OriginalLandingURL']
                     image.license = 'BY'
                     image.provider = 'flickr'
@@ -71,7 +98,7 @@ def _insert_image(iterator, reader, chunk_size, skip_existence_check=False):
 def import_images_from_openimages(filename, chunk_size=DEFAULT_CHUNK_SIZE, skip_existence_check=False):
     """Import image records from the `open-images` dataset"""
     fields = ('ImageID', 'Subset', 'OriginalURL', 'OriginalLandingURL', 'License',
-              'AuthorProfileURL', 'Author', 'Title')
+              'AuthorProfileURL', 'Author', 'Title', 'Thumbnail300KURL')
     log.debug("Creating database schema if it doesn't exist (skip-checks is %s)", skip_existence_check)
     with app.app_context():
         db.create_all()
@@ -81,6 +108,15 @@ def import_images_from_openimages(filename, chunk_size=DEFAULT_CHUNK_SIZE, skip_
             _insert_image(grouper_it, reader, chunk_size, skip_existence_check=skip_existence_check)
         end_count = Image.query.count()
         log.info("Database now has %d images (+%d)", end_count, (end_count - start_count))
+
+def update_images_from_openimages(filename, chunk_size=DEFAULT_CHUNK_SIZE):
+    """Update the existing openimages records with the thumbnail URLs from the dataset"""
+    fields = ('Thumbnail300KURL',)
+    log.debug('Updating all images with thumbnail URL')
+    with app.app_context():
+        with open(filename) as fh:
+            reader = csv.DictReader(fh)
+            _update_image(grouper_it, reader, chunk_size)
 
 def _insert_image_tag(iterator, reader, chunk_size):
     for chunk in iterator(chunk_size, reader):
@@ -182,7 +218,12 @@ if __name__ == '__main__':
                         dest="skip_existence_check",
                         action="store_true",
                         default=False,
-                        help="Assume that records probably don't exist (faster but some batches may fail)")
+                        help="Assume that records probably don't exist (faster but some batches may fail)"),
+    parser.add_argument("--update",
+                        dest="update",
+                        action="store_true",
+                        default=False,
+                        help="Update records according to the current update routine; don't create new ones"),
     parser.add_argument("--verbose",
                         action="store_true",
                         default=False,
@@ -206,7 +247,10 @@ if __name__ == '__main__':
     try:
         # Process the filetype with the correct handler
         if args.source == 'openimages' and args.datatype == "images":
-            import_images_from_openimages(filename, chunk_size=args.chunk_size, skip_existence_check=args.skip_existence_check)
+            if args.update:
+                update_images_from_openimages(filename, chunk_size=args.chunk_size)
+            else:
+                import_images_from_openimages(filename, chunk_size=args.chunk_size, skip_existence_check=args.skip_existence_check)
         elif args.source == 'openimages' and args.datatype == "tags":
             import_tags_from_openimages(filename)
         elif args.source == 'openimages' and args.datatype == "image-tags":
