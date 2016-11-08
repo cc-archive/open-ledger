@@ -13,6 +13,12 @@ from openledger.models import db, Image, Tag
 
 PER_PAGE = 20
 
+# Search by source
+WORK_TYPES = {
+    'photos': ['flickr'],
+    'cultural': ['rijksmuseum']
+}
+
 search_funcs = {
     "fpx": search_500,
     "flickr": search_flickr,
@@ -29,30 +35,40 @@ log.setLevel(logging.INFO)
 def fulltext():
     """Primary search interface of the Open Ledger collection"""
     s = Search()
+
     form, search_data = init_search()
 
     results = search.Results(page=search_data['page'])
-    queries = []
 
     if search_data['search']:
+        and_queries = []
+        or_queries = []
+
+        # Search fields
         if 'title' in search_data.get('search_fields'):
-            queries.append(Q("match", title=search_data['search']))
+            or_queries.append(Q("match", title=search_data['search']))
         if 'tags' in search_data.get('search_fields'):
-            queries.append(Q("match", tags=search_data['search']))
+            or_queries.append(Q("match", tags=search_data['search']))
         if 'creator' in search_data.get('search_fields'):
-            queries.append(Q("match", creator=search_data['search']))
+            or_queries.append(Q("match", creator=search_data['search']))
+
+        # Work types must match
+#        if 'photos' in search_data.get('work_types'):
+#            and_queries.append(Q("match", source=WORK_TYPES['photos'][0]))  # FIXME make this an OR
+#        if 'cultural' in search_data.get('work_types'):
+#            and_queries.append(Q("match", source=WORK_TYPES['cultural'][0]))
+
         q = Q('bool',
-              should=queries,
+              should=or_queries,
+#              must=and_queries,
               minimum_should_match=1)
         s = s.query(q)
         response = s.execute()
         results.pages = int(int(response.hits.total) / PER_PAGE)
-        start = results.page * PER_PAGE
+        start = results.page
         end = start + PER_PAGE
-        for search_result in s[start:end]:
-            r = search.Result.from_elasticsearch(search_result)
+        for r in s[start -1:end]:
             results.items.append(r)
-
     search_data_for_pagination = {i: search_data[i] for i in search_data if i != 'page'}
 
     return render_template('results.html',

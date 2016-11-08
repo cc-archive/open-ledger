@@ -24,7 +24,7 @@ log = logging.getLogger(__name__)
 log.addHandler(console)
 log.setLevel(logging.INFO)
 
-def photos(search=None, page=1, per_page=200, **kwargs):
+def photos(search=None, page=1, per_page=20, **kwargs):
     # Rijks pages are zero-indexed, so always subtract one before the request
     p = int(page) - 1
     params = {

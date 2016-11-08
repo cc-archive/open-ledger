@@ -44,9 +44,29 @@ class TestSearch(TestOpenLedgerApp):
         connections.add_connection('default', es)
         self.es = es
         self.s = Search()
-        self.img1 = models.Image(title='greyhounds are fast', creator="Rashid", url='http://example.com/1', license='CC0')
-        self.img2 = models.Image(title='pumpkins are orange', creator='諸葛亮', url='http://example.com/2', license='CC-BY')
+        self.img1 = models.Image(title='greyhounds are fast',
+                                 creator="Rashid",
+                                 url='http://example.com/1',
+                                 license='CC0',
+                                 source="flickr",
+                                 provider="openimages",
+                                 tags_list=['greyhound', 'dog', 'object'])
+        self.img2 = models.Image(title='pumpkins are orange',
+                                 creator='諸葛亮',
+                                 url='http://example.com/2',
+                                 license='CC-BY',
+                                 source="rijksmuseum",
+                                 provider="rijksmuseum",
+                                 tags_list=['gourds', 'fruit', 'object'])
         self.add_to_db(self.img1, self.img2)
+        self.url = url_for('fulltext')
+
+    def _index_img(self, img):
+        """Index a single img and ensure that it's been propagated to the search engine"""
+        search.Image.init()
+        image = search.db_image_to_index(img)
+        image.save()
+        self.es.indices.refresh(force=True)
 
     def test_query(self):
         """It should be possible to query the search engine for results"""
@@ -72,10 +92,69 @@ class TestSearch(TestOpenLedgerApp):
 
     def test_search(self):
         """It should be possible to find an item by query"""
-        search.Image.init()
-        image = search.db_image_to_index(self.img1)
-        image.save()
-        self.es.indices.refresh(force=True)
+        self._index_img(self.img1)
         s = self.s.query(Q("match", title="greyhounds"))
         r = s.execute()
         assert 1 == r.hits.total
+
+    def test_search_view(self):
+        """It should be possible to load the search view"""
+        url = url_for('fulltext')
+        rv = self.client.get(url)
+        assert 200 == rv.status_code
+
+    def test_search_no_results(self):
+        """It should be possible to get a no-results page"""
+        rv = self.client.get(self.url, query_string={'search': 'nothing'})
+        p = select_node(rv, '.t-no-results')
+        assert p is not ()
+
+    def test_search_results(self):
+        """If indexed, a single result should be returned from the search engine"""
+        self._index_img(self.img1)
+        rv = self.client.get(self.url, query_string={'search': 'greyhounds'})
+        p = select_nodes(rv, '.t-image-result')
+        assert 1 == len(p)
+        assert select_node(rv, '.t-no-results') is ()
+
+
+    def test_search_filter_creator(self):
+        """It should be possible to filter search results by creator"""
+        self._index_img(self.img1)
+        self._index_img(self.img2)
+        rv = self.client.get(self.url, query_string={'search_fields': 'creator', 'search': '諸葛亮'})
+        assert select_node(rv, '.t-no-results') is ()
+        assert 1 == len(select_nodes(rv, '.t-image-result'))
+
+        # Should not find it when searching the title field
+        rv = self.client.get(self.url, query_string={'search_fields': 'title', 'search': '諸葛亮'})
+        assert select_node(rv, '.t-no-results') is not ()
+
+    def test_search_filter_title(self):
+        """It should be possible to filter search results by title"""
+        self._index_img(self.img1)
+        self._index_img(self.img2)
+        rv = self.client.get(self.url, query_string={'search_fields': 'title', 'search': 'orange'})
+        assert select_node(rv, '.t-no-results') is ()
+        assert 1 == len(select_nodes(rv, '.t-image-result'))
+
+        # Should not find it when searching the creator field
+        rv = self.client.get(self.url, query_string={'search_fields': 'creator', 'search': 'orange'})
+        assert select_node(rv, '.t-no-results') is not ()
+
+    def test_search_filter_tags(self):
+        """It should be possible to filter search results by tags"""
+        self._index_img(self.img1)
+        self._index_img(self.img2)
+        rv = self.client.get(self.url, query_string={'search_fields': 'tags', 'search': 'dog'})
+        assert select_node(rv, '.t-no-results') is ()
+        assert 1 == len(select_nodes(rv, '.t-image-result'))
+
+        # Should not find it when searching the creator field
+        rv = self.client.get(self.url, query_string={'search_fields': 'creator', 'search': 'dog'})
+        assert select_node(rv, '.t-no-results') is not ()
+
+        # Find both with the same tag
+        rv = self.client.get(self.url, query_string={'search_fields': 'tags', 'search': 'object'})
+        assert select_node(rv, '.t-no-results') is ()
+        assert 2 == len(select_nodes(rv, '.t-image-result'))

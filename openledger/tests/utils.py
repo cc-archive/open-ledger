@@ -18,7 +18,7 @@ class TestOpenLedgerApp(TestCase):
         app.config['WTF_CSRF_ENABLED'] = False
         app.config.from_pyfile(TESTING_CONFIG)
         # Be defensive in our tests about undefined variables
-        app.jinja_env.undefined = jinja2.StrictUndefined
+        # app.jinja_env.undefined = jinja2.StrictUndefined
         activate_all_provider_mocks()
         return app
 

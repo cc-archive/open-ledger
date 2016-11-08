@@ -27,33 +27,6 @@ class Results(object):
         self.pages = pages
         self.items = []
 
-class Result(object):
-    """A simple object prototype for individual result items"""
-    fields = ('title', 'url', 'creator', 'creator_url', 'foreign_landing_url',
-              'license', 'identifier', 'tags', 'thumbnail')
-    def __init__(self, **kwargs):
-        for f in self.fields:
-            self.__setattr__(f, None)
-
-        for k in kwargs:
-            if k in self.fields:
-                self.__setattr__(k, kwargs[k])
-
-
-    @classmethod
-    def from_elasticsearch(cls, sr):
-        r = Result(title=sr.title,
-                   url=sr.url,
-                   thumbnail=sr.thumbnail if hasattr(sr, 'thumbnail') else None,
-                   creator=sr.creator,
-                   creator_url=sr.creator_url,
-                   foreign_landing_url=sr.foreign_landing_url,
-                   identifier=sr.identifier,
-                   license=sr.license,
-                   license_version=sr.license_version if hasattr(sr, 'license_version') else None
-                   )
-        return r
-
 class Image(DocType):
     title = String()
     identifier = String()

@@ -16,7 +16,7 @@ FIELD_CHOICES = (
 # Types of work
 WORK_TYPES = (
     ('photos', 'Photographs'),
-    ('cultural works', 'Cultural works'),
+    ('cultural', 'Cultural works'),
 )
 WORK_TYPE_DEFAULT = [wt[0] for wt in WORK_TYPES]
 FIELD_DEFAULT = [field[0] for field in FIELD_CHOICES]
