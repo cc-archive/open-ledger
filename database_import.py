@@ -15,7 +15,6 @@ from openledger.models import db, Image, Tag, create_identifier
 from openledger import app
 
 console = logging.StreamHandler()
-
 log = logging.getLogger(__name__)
 log.addHandler(console)
 log.setLevel(logging.INFO)
