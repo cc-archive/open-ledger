@@ -30,7 +30,7 @@ class Results(object):
 class Result(object):
     """A simple object prototype for individual result items"""
     fields = ('title', 'url', 'creator', 'creator_url', 'foreign_landing_url',
-              'license', 'identifier', 'tags')
+              'license', 'identifier', 'tags', 'thumbnail')
     def __init__(self, **kwargs):
         for f in self.fields:
             self.__setattr__(f, None)
@@ -44,13 +44,13 @@ class Result(object):
     def from_elasticsearch(cls, sr):
         r = Result(title=sr.title,
                    url=sr.url,
-                   thumbnail=sr.thumbnail,
+                   thumbnail=sr.thumbnail if hasattr(sr, 'thumbnail') else None,
                    creator=sr.creator,
                    creator_url=sr.creator_url,
                    foreign_landing_url=sr.foreign_landing_url,
                    identifier=sr.identifier,
                    license=sr.license,
-                   license_version=sr.license_version
+                   license_version=sr.license_version if hasattr(sr, 'license_version') else None
                    )
         return r
 
@@ -96,6 +96,8 @@ def index_all_images():
     es = init()
     batches = []
     Image.init()
+    mapping = Image._doc_type.mapping
+    mapping.save('openledger')
 
     for db_image in models.Image.query.yield_per(CHUNK_SIZE):
         #log.debug("Indexing database record %s", db_image.identifier)
