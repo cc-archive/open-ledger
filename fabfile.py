@@ -57,7 +57,7 @@ DATASOURCES = {
     'searchindex': 'searchindex',
 }
 
-if not eng.get('flags'):
+if not env.get('flags'):
     env.flags = ""
 
 # Load the "small" image datasource by default
@@ -132,6 +132,8 @@ def load_data_from_instance(instance, database):
                  AWS_ACCESS_KEY_ID=AWS_ACCESS_KEY_ID,
                  ELASTICSEARCH_URL=ELASTICSEARCH_URL):
 
+                env.datasource['flags'] = env.flags
+                
                 if env.datasource == 'searchindex':
                     if env.with_nohup:
                         run('screen -d -m ./venv/bin/python -m openledger.search; sleep 1')
@@ -139,9 +141,9 @@ def load_data_from_instance(instance, database):
                         run('./venv/bin/python -m openledger.search --verbose')
                 else:
                     if env.with_nohup:
-                        run('screen -d -m ./venv/bin/python database_import.py {filepath} {source} {datatype} --filesystem {filesystem} --skip-checks {flags}; sleep 1 '.format({'flags': env.flags}, **env.datasource))
+                        run('screen -d -m ./venv/bin/python database_import.py {filepath} {source} {datatype} --filesystem {filesystem} --skip-checks {flags}; sleep 1 '.format(**env.datasource))
                     else:
-                        run('./venv/bin/python database_import.py {filepath} {source} {datatype} --filesystem {filesystem} --skip-checks {flags}'.format({'flags': env.flags}, **env.datasource))
+                        run('./venv/bin/python database_import.py {filepath} {source} {datatype} --filesystem {filesystem} --skip-checks {flags}'.format(**env.datasource))
 
 
 def deploy_code(host_string):
