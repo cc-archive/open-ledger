@@ -147,6 +147,7 @@ def init_search(provider=None):
 
     user_licenses = request.args.getlist('licenses') or [licenses.DEFAULT_LICENSE]
     search_fields = request.args.getlist('search_fields') or forms.FIELD_DEFAULT
+    work_types = request.args.getlist('work_types') or forms.WORK_TYPE_DEFAULT
 
     # Ensure that all the licenses evaluate to something
     for i, l in enumerate(user_licenses):
@@ -159,13 +160,15 @@ def init_search(provider=None):
     form.search.process_data(search)
     form.licenses.process_data(user_licenses)
     form.search_fields.process_data(search_fields)
+    form.work_types.process_data(work_types)
 
     search_data = {'search': search,
                    'page': request.args.get('page') or 1,
                    'per_page': request.args.get('per_page') or PER_PAGE,
                    'providers': search_funcs.keys() if not provider else [provider],
                    'licenses': user_licenses,
-                   'search_fields': search_fields}
+                   'search_fields': search_fields,
+                   'work_types': work_types}
 
     search_data['page'] = int(search_data['page'])
     search_data['per_page'] = int(search_data['per_page'])

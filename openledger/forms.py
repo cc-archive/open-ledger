@@ -12,6 +12,13 @@ FIELD_CHOICES = (
     ('creator', 'Creator'),
     ('tags', 'Tags')
 )
+
+# Types of work
+WORK_TYPES = (
+    ('photos', 'Photographs'),
+    ('cultural works', 'Cultural works'),
+)
+WORK_TYPE_DEFAULT = [wt[0] for wt in WORK_TYPES]
 FIELD_DEFAULT = [field[0] for field in FIELD_CHOICES]
 
 class MultiCheckboxField(SelectMultipleField):
@@ -28,6 +35,7 @@ class SearchForm(Form):
     search = StringField('Search', validators=[validators.DataRequired()])
     licenses = MultiCheckboxField('License', choices=LICENSE_CHOICES)
     search_fields = MultiCheckboxField('Fields', choices=FIELD_CHOICES)
+    work_types = MultiCheckboxField('Work type', choices=WORK_TYPES)
 
 class ListForm(Form):
     title = StringField('Title', validators=[validators.DataRequired()])

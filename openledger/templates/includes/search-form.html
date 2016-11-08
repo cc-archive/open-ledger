@@ -1,33 +1,52 @@
-<form method="GET" action="{{ endpoint }}">
-  <div class="callout primary">
-    <div class="row">
-      <div class="column medium-6">
-        {{ form.search.label }} {{ form.search }}
+<form method="GET" action="{{ endpoint }}" class="search-form">
+  <div class="row">
+    <div class="column medium-8">
+
+      {% if not endpoint.endswith('provider-apis') %}
+        <p>
+          Find images to use or remix from organizations and individuals
+          supporting open content:
+        </p>
+      {% endif %}
+      <div class="search-field-container">
+        <i class="fi-magnifying-glass"></i>
+        {{ form.search(placeholder="Search...") }}
+        <input type="submit" class="button" value="GO" />
       </div>
-      <div class="column medium-6">
-        <fieldset>
-          <legend>
-            I want something I can...
-          </legend>
-          {{ form.licenses }}
-          <input type="submit" class="button" value="GO" />
-        </fieldset>
-      </div>
+
+      <small>Searches to try: <a href="{{ endpoint }}?search=paris&search_fields=title&search_fields=tags">paris</a> | <a href="{{ endpoint }}?search=sunset&search_fields=title&search_fields=tags">sunset</a> | <a href="{{ endpoint }}?search=open&search_fields=title&search_fields=tags">open</a> </small>
     </div>
-    <div class="row">
-        <div class="column">
-          <p>Searches to try: <a href="{{ endpoint }}?search=paris&search_fields=title&search_fields=tags">paris</a> | <a href="{{ endpoint }}?search=sunset&search_fields=title&search_fields=tags">sunset</a> | <a href="{{ endpoint }}?search=open&search_fields=title&search_fields=tags">open</a> </p>
-        </div>
-        {% if not endpoint.endswith('provider-apis') %}
-        <div class="column">
+    <div class="column search-filters">
+
+      <div class="row">
+
+        <div class="column shrink search-filters-license">
           <fieldset>
-            <legend style="margin-right: 1rem">
-              Search within:
+            <legend>
+              Find images I can...
             </legend>
-            {{ form.search_fields }}
+            {{ form.licenses }}
           </fieldset>
         </div>
-        {% endif %}
+        <div class="column shrink">
+          {% if not endpoint.endswith('provider-apis') %}
+            <fieldset>
+              <legend style="margin-right: 1rem">
+                Search within:
+              </legend>
+              {{ form.search_fields }}
+            </fieldset>
+          </div>
+          <div class="column shrink">
+            <fieldset>
+              <legend style="margin-right: 1rem">
+                Find these types of works:
+              </legend>
+              {{ form.work_types }}
+            </fieldset>
+          {% endif %}
+        </div>
+      </div>
     </div>
-  </form>
-</div>
+  </div>
+</form>

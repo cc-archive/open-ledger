@@ -5,14 +5,6 @@
 
 {% block body %}
 
-<div class="row column" style="margin-top: 1rem">
-  <h3>Open Ledger</h3>
-  <p>
-    Images displayed here are sourced from a variety of organizations and individuals
-    supporting open content.
-  </p>
-</div>
-
 {% with %}
   {% set endpoint = url_for('fulltext') %}
   {% include "includes/search-form.html" %}
