@@ -10,7 +10,7 @@ import base64
 import boto3
 import botocore
 from sqlalchemy.exc import IntegrityError
-
+from sqlalchemy.sql.expression import select
 from openledger.models import db, Image, Tag, create_identifier
 from openledger import app
 
@@ -39,19 +39,23 @@ def _update_image(iterator, reader, chunk_size):
     for chunk in iterator(chunk_size, reader):
         try:
             images = []
+            row_map = {}
             for row in chunk:
-                image = Image.query.filter_by(foreign_identifier=row['ImageID'])
-                if image.count() != 0:
-                    image[0].thumbnail = row['Thumbnail300KURL']
-                    log.debug("Updating image %s", row['ImageID'])
-                    images.append(image[0])
-                else:
-                    log.debug("Skipping missing image %s", row['ImageID'])
-                    pass
-            if len(images) > 0:
-                db.session.bulk_save_objects(images)
-                db.session.commit()
-                log.debug("*** Committing set of %d images", len(images))
+                row_map[row['ImageID']] = row['Thumbnail300KURL']
+            imgs = db.session.execute(
+                select(
+                    [Image.__table__.c.id, Image.__table__.c.foreign_identifier],
+                    Image.__table__.c.foreign_identifier.in_(row_map.keys())
+                )
+            ).fetchall()
+            mappings = []
+            for img in imgs:
+                mappings.append({'id': img[0],
+                 'thumbnail': row_map[img[1]]
+                 })
+            db.session.bulk_update_mappings(Image, mappings)
+            db.session.commit()
+            log.debug("Updated chunk of %d records", len(mappings))
         except IntegrityError as e:
             db.session.rollback()
             log.debug(e)
