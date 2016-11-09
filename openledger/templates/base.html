@@ -24,7 +24,11 @@
     </div>
     <div class="top-bar-right">
       <div>
-        <a href="{{ url_for('cas.login')}}">Log in</a>
+        {% if request.cookies.get("ol-identifier") %}
+          <a href="{{ url_for('auth_logout')}}">Sign out</a>
+        {% else %}
+          <a href="{{ url_for('cas.login')}}">Sign in</a>
+        {% endif %}
       </div>
     </div>
   </nav>

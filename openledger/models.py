@@ -100,10 +100,10 @@ def event_create_identifier(mapper, connection, target):
     # This is a stable identifier that is derived from the URL
     target.identifier = create_identifier(target.url)
 
-def create_identifier(url):
-    """Create a unique, stable identifier for a URL"""
+def create_identifier(key):
+    """Create a unique, stable identifier for a key"""
     m = hashlib.md5()
-    m.update(bytes(url.encode('utf-8')))
+    m.update(bytes(key.encode('utf-8')))
     return base64.urlsafe_b64encode(m.digest()).decode('utf-8')
 
 class Tag(db.Model):
@@ -166,6 +166,31 @@ def create_slug(el):
     """For the list of items el, create a unique slug out of them"""
     return '-'.join([slugify(str(i)) for i in el])
 
+class User(db.Model):
+    """A local representation of a CAS user"""
+    id = db.Column(db.Integer, primary_key=True)
+
+    # Identifier for our cookie, derived from ccid
+    identifier = db.Column(db.String(2000), index=True)
+
+    # Comes from CAS as `cas:global`
+    ccid = db.Column(db.String(2000), index=True, nullable=False)
+
+    # The email address we received from CAS. This can be empty. Received as `CAS_USERNAME` key
+    # in the session
+    email = db.Column(db.String(2000), index=True, nullable=False)
+
+    # This will prepopulate the display_name in List and other UGC. It is not a
+    # foreign key in those relationships and can be overridden. Received as `cas:nickname`
+    nickname = db.Column(db.String(2000))
+
+    created_on = db.Column(db.DateTime, server_default=db.func.now())
+    updated_on = db.Column(db.DateTime, server_default=db.func.now(), onupdate=db.func.now())
+
+@event.listens_for(User, 'before_insert')
+def event_create_identifier(mapper, connection, target):
+    # This is a stable identifier that is derived from the CCID
+    target.identifier = create_identifier(target.ccid)
 
 if __name__ == '__main__':
     # pass through to the database management commands

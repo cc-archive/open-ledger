@@ -2,7 +2,7 @@ import os
 
 # Auth
 CAS_SERVER = "https://login.creativecommons.org"
-CAS_AFTER_LOGIN = "fulltext"
+CAS_AFTER_LOGIN = "auth_redirect"
 CAS_LOGIN_ROUTE = "/login"
 CAS_VALIDATE_ROUTE = '/proxyValidate'
 CAS_LOGOUT_ROUTE = "/logout"
