@@ -16,18 +16,16 @@
 
 <body>
   <nav class="top-bar">
+    <div class="top-bar-title">
+      <a href="{{ url_for('fulltext')}}">Open Ledger Search Prototype</a>
+    </div>
     <div class="top-bar-left">
-      <ul class="dropdown menu" data-dropdown-menu>
-        <li class="menu-text"><a href="{{ url_for('fulltext')}}">Open Ledger Search Prototype</a></li>
-        <li>
-          <a href="{{ url_for('fulltext')}}">Home</a></a>
-        </li>
-        <li><a href="{{ url_for('provider_apis')}}">Search Provider APIs</a></li>
-      </ul>
+      <a href="{{ url_for('provider_apis')}}">Search via Provider APIs</a>
     </div>
     <div class="top-bar-right">
-      <a href="{{ url_for('cas.login')}}">Log in</a>
-
+      <div>
+        <a href="{{ url_for('cas.login')}}">Log in</a>
+      </div>
     </div>
   </nav>
 

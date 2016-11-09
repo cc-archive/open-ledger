@@ -18,6 +18,7 @@ SOURCE_NAME = "rijksmuseum"
 
 DELAY_SECONDS = 2  # Time to wait between API requests
 
+THUMBNAIL_WIDTH = 200
 
 console = logging.StreamHandler()
 log = logging.getLogger(__name__)
@@ -51,11 +52,16 @@ def photos(search=None, page=1, per_page=20, **kwargs):
 
 def serialize(result):
     """For a given Rijks result, map that to our database"""
-    image = models.Image(url=result['webImage']['url'])
+    url = result['webImage']['url']
+
+    # Thumbnails from Rijks are dynamic; let's make them 200 wide
+    if url.endswith('=s0'):
+        thumbnail = url[:-3] + '=s' + str(THUMBNAIL_WIDTH)
+    image = models.Image(url=url)
     image.provider = PROVIDER_NAME
     image.source = SOURCE_NAME
     image.creator = result['principalOrFirstMaker']
-    image.thumbnail = result['webImage']['url']
+    image.thumbnail = thumbnail
     image.license = "CC0"
     image.license_version = '1.0'
     image.foreign_landing_url = result['links']['web']

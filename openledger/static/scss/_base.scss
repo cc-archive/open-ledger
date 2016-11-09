@@ -15,6 +15,18 @@ footer.callout {
   width: 100%;
 }
 
+/* Top nav */
+.top-bar {
+  padding: .5rem 2rem;
+  .top-bar-left {
+    font-size: smaller;
+  }
+  .top-bar-right {
+    text-align: right;
+  }
+}
+
+
 /* Faster animation than the default animate.css */
 @keyframes zoomOut {
   from {

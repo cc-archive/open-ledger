@@ -21,6 +21,7 @@
     <h5>Page {{ results.page }} of {{ results.pages }} page{{ results.pages|pluralize }}</h5>
     {% endif %}
 
+    {% if results.items %}
      {{ pagination.paginate_openledger(results.page, results.pages, search_data_for_pagination) }}
 
       <div class="row">
@@ -33,7 +34,7 @@
                                 'creator_url': result.creator_url,
                                 'title': result.title,
                                 'url': result.url,
-                                'thumbnail': result.thumbnail,
+                                'thumbnail': result.thumbnail or result.url,
                                 'identifier': result.identifier}) %}
           {% set detail_url = url_for('detail', identifier=result.identifier) %}
           {% call image_result.show(detail_url, image) %}{% endcall %}
@@ -42,7 +43,7 @@
         {% endfor %}
       </div>
       {{ pagination.paginate_openledger(results.page, results.pages, search_data_for_pagination) }}
-
+      {% endif %}
     {% endif %}
   </div>
 
