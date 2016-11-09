@@ -57,6 +57,9 @@ DATASOURCES = {
     'searchindex': 'searchindex',
 }
 
+if not env.get('flags'):
+    env.flags = ""
+
 # Load the "small" image datasource by default
 # fab --set datasource=openimages-full
 if env.get('datasource'):
@@ -71,7 +74,7 @@ if not env.get('instance_type'):
 
 # Override the database instance or use the default
 if not env.get('database_id'):
-    env.database_id = 'openledger-db-1'
+    env.database_id = 'openledger-db-2'
 
 # Which branch should we check out on the loader?
 if not env.get('branch'):
@@ -129,6 +132,8 @@ def load_data_from_instance(instance, database):
                  AWS_ACCESS_KEY_ID=AWS_ACCESS_KEY_ID,
                  ELASTICSEARCH_URL=ELASTICSEARCH_URL):
 
+                env.datasource['flags'] = env.flags
+                
                 if env.datasource == 'searchindex':
                     if env.with_nohup:
                         run('screen -d -m ./venv/bin/python -m openledger.search; sleep 1')
@@ -136,9 +141,9 @@ def load_data_from_instance(instance, database):
                         run('./venv/bin/python -m openledger.search --verbose')
                 else:
                     if env.with_nohup:
-                        run('screen -d -m ./venv/bin/python database_import.py {filepath} {source} {datatype} --filesystem {filesystem} --skip-checks; sleep 1 '.format(**env.datasource))
+                        run('screen -d -m ./venv/bin/python database_import.py {filepath} {source} {datatype} --filesystem {filesystem} --skip-checks {flags}; sleep 1 '.format(**env.datasource))
                     else:
-                        run('./venv/bin/python database_import.py {filepath} {source} {datatype} --filesystem {filesystem} --skip-checks'.format(**env.datasource))
+                        run('./venv/bin/python database_import.py {filepath} {source} {datatype} --filesystem {filesystem} --skip-checks {flags}'.format(**env.datasource))
 
 
 def deploy_code(host_string):

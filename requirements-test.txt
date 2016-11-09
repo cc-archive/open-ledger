@@ -2,3 +2,5 @@ Flask-Testing
 lxml
 html5lib==0.9999999
 cssselect
+git+git://github.com/jong/testing.elasticsearch.git#egg=testing.elasticsearch
+mock

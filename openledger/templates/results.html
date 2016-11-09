@@ -39,7 +39,7 @@
                               'creator_url': result.creator_url,
                               'title': result.title,
                               'url': result.url,
-                              'thumbnail': result.url,
+                              'thumbnail': result.thumbnail,
                               'identifier': result.identifier}) %}
         {% set detail_url = url_for('detail', identifier=result.identifier) %}
         {% call image_result.show(detail_url, image) %}{% endcall %}

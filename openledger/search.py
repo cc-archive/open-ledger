@@ -44,12 +44,13 @@ class Result(object):
     def from_elasticsearch(cls, sr):
         r = Result(title=sr.title,
                    url=sr.url,
+                   thumbnail=sr.thumbnail,
                    creator=sr.creator,
                    creator_url=sr.creator_url,
                    foreign_landing_url=sr.foreign_landing_url,
                    identifier=sr.identifier,
                    license=sr.license,
-                   #license_version=sr.license_version Add this when we've reindexed FIXME
+                   license_version=sr.license_version
                    )
         return r
 
@@ -61,6 +62,7 @@ class Image(DocType):
     tags = String(multi=True)
     created_on = Date()
     url = String()
+    thumbnail = String()
     provider = String()
     source = String()
     license = String()
@@ -78,6 +80,7 @@ def db_image_to_index(db_image):
                   creator_url=db_image.creator_url,
                   identifier=db_image.identifier,
                   url=db_image.url,
+                  thumbnail=db_image.thumbnail,
                   provider=db_image.provider,
                   source=db_image.source,
                   license=db_image.license,
