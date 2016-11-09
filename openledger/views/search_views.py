@@ -54,15 +54,14 @@ def fulltext():
 
         # Work types must match
         if 'photos' in search_data.get('work_types'):
-            and_queries.append(Q("match", source=WORK_TYPES['photos'][0]))  # FIXME make this an OR
+            and_queries.append(Q("term", provider=WORK_TYPES['photos'][0]))  # FIXME make this an OR
         if 'cultural' in search_data.get('work_types'):
-            and_queries.append(Q("match", source=WORK_TYPES['cultural'][0]))
+            and_queries.append(Q("term", provider=WORK_TYPES['cultural'][0]))
 
         q = Q('bool',
               should=or_queries,
-              must=Q('bool', should=and_queries, minimum_should_match=1),
+              must=Q('bool', should=and_queries),
               minimum_should_match=1)
-
         s = s.query(q)
         response = s.execute()
         results.pages = int(int(response.hits.total) / PER_PAGE)

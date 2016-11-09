@@ -8,5 +8,4 @@ if __name__ == '__main__':
     # Also run the asset compilers
     Popen(["webpack", "-w"])  # JS/ES6/Babel
     Popen(["sass", "-w", "openledger/static/scss:openledger/static/css"])  # Sass/CSS
-
     application.run(debug=True)

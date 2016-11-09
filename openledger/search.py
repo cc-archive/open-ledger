@@ -85,6 +85,10 @@ def index_all_images():
     helpers.bulk(es, batches)
 
 def init_es():
+    if app.config['DEBUG']:
+        return Elasticsearch(host=app.config['ELASTICSEARCH_URL'],
+                             port=app.config['ELASTICSEARCH_PORT'],)
+
     auth = AWSRequestsAuth(aws_access_key=app.config['AWS_ACCESS_KEY_ID'],
                            aws_secret_access_key=app.config['AWS_SECRET_ACCESS_KEY'],
                            aws_host=app.config['ELASTICSEARCH_URL'],
@@ -92,7 +96,7 @@ def init_es():
                            aws_service='es')
     auth.encode = lambda x: bytes(x.encode('utf-8'))
     es = Elasticsearch(host=app.config['ELASTICSEARCH_URL'],
-                       port=80,
+                       port=app.config['ELASTICSEARCH_PORT'],
                        connection_class=RequestsHttpConnection,
                        http_auth=auth)
     return es

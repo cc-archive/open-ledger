@@ -48,15 +48,15 @@ class TestSearch(TestOpenLedgerApp):
                                  creator="Rashid",
                                  url='http://example.com/1',
                                  license='CC0',
-                                 source="flickr",
-                                 provider="openimages",
+                                 provider="flickr",
+                                 source="openimages",
                                  tags_list=['greyhound', 'dog', 'object'])
         self.img2 = models.Image(title='pumpkins are orange',
                                  creator='諸葛亮',
                                  url='http://example.com/2',
                                  license='CC-BY',
-                                 source="rijksmuseum",
                                  provider="rijksmuseum",
+                                 source="rijksmuseum",
                                  tags_list=['gourds', 'fruit', 'object'])
         self.add_to_db(self.img1, self.img2)
         self.url = url_for('fulltext')
@@ -159,11 +159,15 @@ class TestSearch(TestOpenLedgerApp):
         assert select_node(rv, '.t-no-results') is ()
         assert 2 == len(select_nodes(rv, '.t-image-result'))
 
-
     def test_works_filter(self):
         """It should be possible to filter by work_type"""
         self._index_img(self.img1)
         self._index_img(self.img2)
         rv = self.client.get(self.url, query_string={'search': 'object', 'work_types': 'photos'})
-        assert select_node(rv, '.t-no-results') is ()
         assert 1 == len(select_nodes(rv, '.t-image-result'))
+
+        rv = self.client.get(self.url, query_string={'search': 'object', 'work_types': 'cultural'})
+        assert 1 == len(select_nodes(rv, '.t-image-result'))
+
+        rv = self.client.get(self.url, query_string={'search': 'object', 'work_types': 'unknown'})
+        assert 2 == len(select_nodes(rv, '.t-image-result'))
