@@ -45,16 +45,42 @@ footer.callout {
 .list-detail > form label {
   display: none; }
 
-legend, ul#licenses, ul#licenses li, ul#search_fields, ul#search_fields li {
-  display: inline-block;
-  margin: 0;
-  line-height: 1rem; }
-
-ul#licenses li, ul#search_fields li {
-  font-size: 0.5rem; }
-
-ul#licenses input, ul#search_fields input {
-  margin: 0; }
+.search-form {
+  margin-top: 1rem;
+  border: none; }
+  .search-form ul, .search-form li {
+    display: inline-block;
+    margin: 0;
+    line-height: 1rem;
+    font-size: 0.5rem; }
+  .search-form .search-filters-license li {
+    display: block; }
+  .search-form input {
+    margin: 0; }
+  .search-form .search-filters .column {
+    margin-bottom: 1rem; }
+  .search-form .search-filters legend {
+    text-transform: uppercase;
+    font-size: smaller;
+    margin: 0;
+    padding: 0; }
+  .search-form .search-field-container {
+    border: 1px solid #cacaca;
+    background: white;
+    box-shadow: inset 0 1px 2px rgba(10, 10, 10, 0.1); }
+    .search-form .search-field-container input, .search-form .search-field-container i {
+      display: inline-block; }
+    .search-form .search-field-container i {
+      padding: 0 1rem; }
+    .search-form .search-field-container input[type=text] {
+      width: 80%;
+      border: none;
+      box-shadow: none;
+      margin: 0;
+      padding: 0; }
+    .search-form .search-field-container input[type=submit] {
+      margin: 0;
+      float: right; }
 
 /* List buttons */
 button.tiny, .add-to-list-container, .image-result {

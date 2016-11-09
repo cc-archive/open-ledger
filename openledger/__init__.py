@@ -28,9 +28,10 @@ assets.register('css_all', css)
 
 @application.before_first_request
 def connect_to_search():
-    from openledger import search
-    es = search.init_es()
-    connections.add_connection('default', es)
+    if not app.config.get('TESTING'):
+        from openledger import search
+        es = search.init_es()
+        connections.add_connection('default', es)
 
 # Put these after the app code to avoid circular imports
 from openledger import views

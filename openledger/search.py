@@ -27,33 +27,6 @@ class Results(object):
         self.pages = pages
         self.items = []
 
-class Result(object):
-    """A simple object prototype for individual result items"""
-    fields = ('title', 'url', 'creator', 'creator_url', 'foreign_landing_url',
-              'license', 'identifier', 'tags')
-    def __init__(self, **kwargs):
-        for f in self.fields:
-            self.__setattr__(f, None)
-
-        for k in kwargs:
-            if k in self.fields:
-                self.__setattr__(k, kwargs[k])
-
-
-    @classmethod
-    def from_elasticsearch(cls, sr):
-        r = Result(title=sr.title,
-                   url=sr.url,
-                   thumbnail=sr.thumbnail,
-                   creator=sr.creator,
-                   creator_url=sr.creator_url,
-                   foreign_landing_url=sr.foreign_landing_url,
-                   identifier=sr.identifier,
-                   license=sr.license,
-                   license_version=sr.license_version
-                   )
-        return r
-
 class Image(DocType):
     title = String()
     identifier = String()
@@ -96,6 +69,8 @@ def index_all_images():
     es = init()
     batches = []
     Image.init()
+    mapping = Image._doc_type.mapping
+    mapping.save('openledger')
 
     for db_image in models.Image.query.yield_per(CHUNK_SIZE):
         #log.debug("Indexing database record %s", db_image.identifier)
@@ -110,6 +85,10 @@ def index_all_images():
     helpers.bulk(es, batches)
 
 def init_es():
+    if app.config['DEBUG']:
+        return Elasticsearch(host=app.config['ELASTICSEARCH_URL'],
+                             port=app.config['ELASTICSEARCH_PORT'],)
+
     auth = AWSRequestsAuth(aws_access_key=app.config['AWS_ACCESS_KEY_ID'],
                            aws_secret_access_key=app.config['AWS_SECRET_ACCESS_KEY'],
                            aws_host=app.config['ELASTICSEARCH_URL'],
@@ -117,7 +96,7 @@ def init_es():
                            aws_service='es')
     auth.encode = lambda x: bytes(x.encode('utf-8'))
     es = Elasticsearch(host=app.config['ELASTICSEARCH_URL'],
-                       port=80,
+                       port=app.config['ELASTICSEARCH_PORT'],
                        connection_class=RequestsHttpConnection,
                        http_auth=auth)
     return es

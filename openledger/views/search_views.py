@@ -13,6 +13,12 @@ from openledger.models import db, Image, Tag
 
 PER_PAGE = 20
 
+# Search by source
+WORK_TYPES = {
+    'photos': ['flickr'],
+    'cultural': ['rijksmuseum']
+}
+
 search_funcs = {
     "fpx": search_500,
     "flickr": search_flickr,
@@ -29,28 +35,39 @@ log.setLevel(logging.INFO)
 def fulltext():
     """Primary search interface of the Open Ledger collection"""
     s = Search()
+
     form, search_data = init_search()
 
     results = search.Results(page=search_data['page'])
-    queries = []
 
     if search_data['search']:
+        and_queries = []
+        or_queries = []
+
+        # Search fields
         if 'title' in search_data.get('search_fields'):
-            queries.append(Q("match", title=search_data['search']))
+            or_queries.append(Q("match", title=search_data['search']))
         if 'tags' in search_data.get('search_fields'):
-            queries.append(Q("match", tags=search_data['search']))
+            or_queries.append(Q("match", tags=search_data['search']))
         if 'creator' in search_data.get('search_fields'):
-            queries.append(Q("match", creator=search_data['search']))
+            or_queries.append(Q("match", creator=search_data['search']))
+
+        # Work types must match
+        if 'photos' in search_data.get('work_types'):
+            and_queries.append(Q("term", provider=WORK_TYPES['photos'][0]))  # FIXME make this an OR
+        if 'cultural' in search_data.get('work_types'):
+            and_queries.append(Q("term", provider=WORK_TYPES['cultural'][0]))
+
         q = Q('bool',
-              should=queries,
+              should=or_queries,
+              must=Q('bool', should=and_queries),
               minimum_should_match=1)
         s = s.query(q)
         response = s.execute()
         results.pages = int(int(response.hits.total) / PER_PAGE)
-        start = results.page * PER_PAGE
+        start = results.page
         end = start + PER_PAGE
-        for search_result in s[start:end]:
-            r = search.Result.from_elasticsearch(search_result)
+        for r in s[start -1:end]:
             results.items.append(r)
 
     search_data_for_pagination = {i: search_data[i] for i in search_data if i != 'page'}
@@ -147,6 +164,7 @@ def init_search(provider=None):
 
     user_licenses = request.args.getlist('licenses') or [licenses.DEFAULT_LICENSE]
     search_fields = request.args.getlist('search_fields') or forms.FIELD_DEFAULT
+    work_types = request.args.getlist('work_types') or forms.WORK_TYPE_DEFAULT
 
     # Ensure that all the licenses evaluate to something
     for i, l in enumerate(user_licenses):
@@ -159,13 +177,15 @@ def init_search(provider=None):
     form.search.process_data(search)
     form.licenses.process_data(user_licenses)
     form.search_fields.process_data(search_fields)
+    form.work_types.process_data(work_types)
 
     search_data = {'search': search,
                    'page': request.args.get('page') or 1,
                    'per_page': request.args.get('per_page') or PER_PAGE,
                    'providers': search_funcs.keys() if not provider else [provider],
                    'licenses': user_licenses,
-                   'search_fields': search_fields}
+                   'search_fields': search_fields,
+                   'work_types': work_types}
 
     search_data['page'] = int(search_data['page'])
     search_data['per_page'] = int(search_data['per_page'])
