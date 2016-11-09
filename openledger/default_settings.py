@@ -4,6 +4,8 @@ import os
 CAS_SERVER = "https://login.creativecommons.org"
 CAS_AFTER_LOGIN = "fulltext"
 CAS_LOGIN_ROUTE = "/login"
+CAS_VALIDATE_ROUTE = '/proxyValidate'
+CAS_LOGOUT_ROUTE = "/logout"
 
 try:
     from instance.config import *
