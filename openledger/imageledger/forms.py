@@ -25,7 +25,8 @@ class SearchForm(forms.Form):
     licenses = forms.MultipleChoiceField(label='License', choices=LICENSE_CHOICES)
     search_fields = forms.MultipleChoiceField(label='Fields', choices=FIELD_CHOICES)
     work_types = forms.MultipleChoiceField(label='Work type', choices=WORK_TYPES)
-
+    page = forms.IntegerField(widget=forms.HiddenInput)
+    
 class ListForm(forms.Form):
     title = forms.CharField(label='Title')
     description = forms.CharField(label='Description', widget=forms.Textarea)
