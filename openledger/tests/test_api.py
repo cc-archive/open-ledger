@@ -256,6 +256,31 @@ class TestAPIViews(TestOpenLedgerApp):
         rv = self.client.delete('/api/v1/list/images', data={'slug': lst.slug, 'identifier': 'unknown'})
         assert 404 == rv.status_code
 
+class TestAPIOwnedList(TestOpenLedgerApp):
+
+    def setUp(self):
+        super().setUp()
+        self.lst = models.List(title='test')
+        self.img1 = models.Image(title='image title', url='http://example.com/1', license='CC0')
+        self.img2 = models.Image(title='image title', url='http://example.com/2', license='CC0')
+        self.user = models.User(ccid='user1', email='user@example.com')
+        self.lst.creator = self.user
+        self.lst.images = [self.img1, self.img2]
+        self.add_to_db(self.lst, self.img1, self.img2)
+
+    def test_list_operation_owner_only(self):
+        """The Lists endpoint should only allow modification of an owned list by the owner"""
+        pass
+
+    def test_create_owned_list(self):
+        """The API should allow creation of a list owned by the logged-in user id"""
+        title = 'my list title'
+        assert 0 == models.List.query.filter(models.List.title==title).count()
+        rv = self.client.post('/api/v1/lists', data={'title': title})
+        lst = models.List.query.filter(models.List.title==title).one()
+        pass  # Not yet working
+
+
 class TestAPI(TestOpenLedgerApp):
     """Methods that test the API calls directly"""
 

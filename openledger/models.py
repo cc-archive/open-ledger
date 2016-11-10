@@ -144,6 +144,9 @@ class List(db.Model):
     # The displayable name of a creator, which can be anything
     creator_displayname = db.Column(db.String(2000), index=True)
 
+    # An optional link to an actual User
+    creator_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+
     # The description of the list, which is optional
     description = db.Column(db.Text())
 
@@ -183,6 +186,8 @@ class User(db.Model):
     # This will prepopulate the display_name in List and other UGC. It is not a
     # foreign key in those relationships and can be overridden. Received as `cas:nickname`
     nickname = db.Column(db.String(2000))
+
+    lists = db.relationship('List', backref='creator', lazy='dynamic')
 
     created_on = db.Column(db.DateTime, server_default=db.func.now())
     updated_on = db.Column(db.DateTime, server_default=db.func.now(), onupdate=db.func.now())

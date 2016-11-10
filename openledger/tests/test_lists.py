@@ -52,3 +52,11 @@ class TestListViews(TestOpenLedgerApp):
                               data={'description': self.lst.description,
                                     'title': self.lst.title})
         self.assertRedirects(rv, url_for('list-view', slug=self.lst.slug))
+
+    def test_owned_list(self):
+        """A List may optionally be owned by an individual user"""
+        user = models.User(ccid='user1', email='user@example.com')
+        self.lst.creator = user
+        self.add_to_db(self.lst, user)
+        lst = models.List.query.filter(models.List.creator==user).one()
+        assert lst == self.lst

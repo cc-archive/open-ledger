@@ -8,11 +8,13 @@ from lxml.html import tostring, html5parser
 import responses
 
 from openledger import app, models
+from openledger.views import auth_views
 
 TESTING_CONFIG = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'settings.py')
 
 class TestOpenLedgerApp(TestCase):
     """Setup/teardown for app test cases"""
+
     def create_app(self):
         app.config['TESTING'] = True
         app.config['WTF_CSRF_ENABLED'] = False
@@ -37,6 +39,20 @@ class TestOpenLedgerApp(TestCase):
         for item in items:
             models.db.session.add(item)
         models.db.session.commit()
+
+    def mock_login(self, auth_identifier):
+        """Log in a user. The auth_identifier must match an existing User object, which is returned"""
+        with self.client.session_transaction() as sess:
+            sess[auth_views.AUTH_SESSION_IDENTIFIER] = auth_identifier
+        user = models.User.query.filter(models.User.identifier==auth_identifier).one()
+        return user
+
+    def mock_logout(self):
+        """Log out the current user"""
+        resp = make_response(jsonify({}))
+        resp.delete_cookie('ol-identifier')
+        resp.delete_cookie('session')
+        return resp
 
 def activate_all_provider_mocks():
     """Mock all the responses we know about from all the providers"""
