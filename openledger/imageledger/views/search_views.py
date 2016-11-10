@@ -37,22 +37,26 @@ def index(request):
         if 'cultural' in form.cleaned_data.get('work_types'):
             and_queries.append(Q("term", provider=WORK_TYPES['cultural'][0]))
 
-        q = Q('bool',
-              should=or_queries,
-              must=Q('bool', should=and_queries),
-              minimum_should_match=1)
-        s = s.query(q)
-        response = s.execute()
-        results.pages = int(int(response.hits.total) / PER_PAGE)
+        if len(or_queries) > 0 or len(and_queries) > 0:
 
-        start = results.page
-        end = start + PER_PAGE
-        for r in s[start - 1:end]:
-            results.items.append(r)
-        search_data_for_pagination = {i: form.cleaned_data.get(i) for i in form.cleaned_data if i != 'page'}
+            q = Q('bool',
+                  should=or_queries,
+                  must=Q('bool', should=and_queries),
+                  minimum_should_match=1)
+            s = s.query(q)
+            response = s.execute()
+            results.pages = int(int(response.hits.total) / PER_PAGE)
+
+            start = results.page
+            end = start + PER_PAGE
+            for r in s[start - 1:end]:
+                results.items.append(r)
+            search_data_for_pagination = {i: form.cleaned_data.get(i) for i in form.cleaned_data if i != 'page'}
 
     else:
-        form = forms.SearchForm(initial={'page': 1})
+        form = forms.SearchForm(initial={'page': 1,
+                                         'search_fields': ['title', 'tags', 'creator'],
+                                         'work_types': ['photos', 'cultural']})
 
     return render(request, 'results.html',
                   {'form': form,
