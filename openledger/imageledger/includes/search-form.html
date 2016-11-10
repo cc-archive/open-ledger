@@ -1,0 +1,52 @@
+<form method="GET" action="{{ endpoint }}" class="search-form">
+  <div class="row">
+    <div class="column medium-8">
+
+      {% if not endpoint.endswith('provider-apis') %}
+        <p>
+          Find images to use or remix from organizations and individuals
+          supporting open content:
+        </p>
+      {% endif %}
+      <div class="search-field-container">
+        <i class="fi-magnifying-glass"></i>
+        {{ form.search(placeholder="Search...") }}
+        <input type="submit" class="button" value="GO" />
+      </div>
+
+      <small>Searches to try: <a href="{{ endpoint }}?search=paris&search_fields=title&search_fields=tags">paris</a> | <a href="{{ endpoint }}?search=sunset&search_fields=title&search_fields=tags">sunset</a> | <a href="{{ endpoint }}?search=open&search_fields=title&search_fields=tags">open</a> </small>
+    </div>
+    <div class="column search-filters">
+
+      <div class="row">
+
+        <div class="column shrink search-filters-license">
+          <fieldset>
+            <legend>
+              Find images I can...
+            </legend>
+            {{ form.licenses }}
+          </fieldset>
+        </div>
+        <div class="column shrink">
+          {% if not endpoint.endswith('provider-apis') %}
+            <fieldset>
+              <legend style="margin-right: 1rem">
+                Search within:
+              </legend>
+              {{ form.search_fields }}
+            </fieldset>
+          </div>
+          <div class="column shrink">
+            <fieldset>
+              <legend style="margin-right: 1rem">
+                Find these types of works:
+              </legend>
+              {{ form.work_types }}
+            </fieldset>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+</form>

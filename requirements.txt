@@ -1,4 +1,3 @@
-alembic==0.8.8
 appnope==0.1.0
 awsebcli==3.7.8
 blessed==1.9.5

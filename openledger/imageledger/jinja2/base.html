@@ -1,0 +1,37 @@
+<!doctype html>
+<title>Open Ledger prototype</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/foundation/6.2.3/foundation-flex.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.5.2/animate.min.css">
+
+
+{% block head %}{% endblock head %}
+
+<body>
+  <nav class="top-bar">
+    <div class="top-bar-title">
+      <a href="'fulltext'">Open Ledger Search Prototype</a>
+    </div>
+    <div class="top-bar-left">
+      <a href="#">Search via Provider APIs</a>
+    </div>
+    <div class="top-bar-right">
+      <div>
+          <a href="#">Sign out</a>
+          <a href="#">Sign in</a>
+      </div>
+    </div>
+  </nav>
+
+
+  {% block body %}{% endblock %}
+
+  <footer class="callout secondary">
+    <p>
+      This is a prototype of the <a href="https://creativecommons.org/2016/07/15/meeting-debrief-next-steps-challenge-attribution-view-source-3d-printing/">Open Ledger</a>, aggregating data from publicly available repositories of open content.
+    </p>
+    <p>
+      <a href="https://github.com/creativecommons/open-ledger/">Github repository</a>
+    </p>
+  </footer>
+
+</body>

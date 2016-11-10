@@ -1,0 +1,60 @@
+{% import "includes/image-result.html" as image_result %}
+
+{% extends "base.html" %}
+
+{% block body %}
+
+<div class="row column list-detail">
+
+  <form action="{{ url_for('list-view', slug=lst.slug) }}" method="POST">
+   {{ form.csrf_token }}
+
+    <h2>
+      <div class="form-readonly t-list-title">
+        {{ lst.title }}
+        <a onClick="openledger.form.showForm(event)" class="fi-page-edit" title="Edit this List" alt="Edit this list"></a>
+      </div>
+      {{ form.title.label }}
+      {{ form.title }}
+    </h2>
+
+    <div class="list-description">
+      <div class="form-readonly">
+        {{ lst.description or "No description provided"}}
+      </div>
+      {{ form.description.label }}
+      {{ form.description(rows='10',cols='50') }}
+
+    </div>
+
+    <div class="list-public">
+      List is visible to the public?
+      {{ form.is_public }}
+      <span class="form-readonly">
+        {{ "Yes" if form.is_public else "No"}}
+      </span>
+    </div>
+
+    <input type="submit" value="Update" class="button">
+
+  </form>
+
+  <div class="row">
+  {% for image in images %}
+    {% set detail_url = url_for('detail', identifier=image.identifier) %}
+    {% call image_result.show(detail_url, image) %}
+      <form method="POST">
+        <input type="hidden" name="identifier" value="{{ image.identifier }}" />
+        <input type="hidden" name="slug" value="{{ lst.slug }}" />
+        <button class="button alert tiny fi-page-delete" title="Remove from List" alt="Remove from List" onClick="openledger.list.deleteImageFromList(event)"  />
+      </form>
+    {% endcall %}
+  {% endfor %}
+  </div>
+
+
+</div>
+
+
+
+{% endblock body %}

@@ -41,7 +41,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'imageledger',
 ]
- 
+
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -56,6 +56,18 @@ ROOT_URLCONF = 'openledger.urls'
 
 TEMPLATES = [
     {
+        'BACKEND': 'django.template.backends.jinja2.Jinja2',
+        'DIRS': [],
+        'APP_DIRS': True,
+        'OPTIONS': {
+            'environment': 'openledger.jinja2.environment',
+            'extensions': [
+                'jinja2.ext.with_',
+                'jinja2.ext.do',
+            ],
+        },
+    },
+    {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
         'DIRS': [],
         'APP_DIRS': True,
@@ -69,6 +81,9 @@ TEMPLATES = [
         },
     },
 ]
+import jinja2
+import openledger.jinja2
+jinja2.filters.FILTERS['pluralize'] = openledger.jinja2.pluralize
 
 WSGI_APPLICATION = 'openledger.wsgi.application'
 
@@ -125,3 +140,28 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/1.10/howto/static-files/
 
 STATIC_URL = '/static/'
+
+try:
+    from openledger.local import *
+
+except ImportError:
+
+    # API-specific
+    API_500PX_KEY = os.environ.get('API_500PX_KEY')
+    API_500PX_SECRET = os.environ.get('API_500PX_SECRET')
+    API_RIJKS = os.environ.get('API_RIJKS')
+    FLICKR_KEY = os.environ.get('FLICKR_KEY')
+    FLICKR_SECRET = os.environ.get('FLICKR_SECRET')
+
+    # Database-specific
+    SQLALCHEMY_DATABASE_URI = os.environ.get('SQLALCHEMY_DATABASE_URI')
+
+    SQLALCHEMY_TRACK_MODIFICATIONS = False
+
+    ELASTICSEARCH_URL = os.environ.get('ELASTICSEARCH_URL')
+    ELASTICSEARCH_PORT = 80
+    AWS_ACCESS_KEY_ID = os.environ.get('AWS_ACCESS_KEY_ID')
+    AWS_SECRET_ACCESS_KEY = os.environ.get('AWS_SECRET_ACCESS_KEY')
+
+    # Static assets
+    ASSETS_AUTO_BUILD=False

@@ -1,0 +1,51 @@
+{% import "includes/pagination.html" as pagination %}
+{% import "includes/image-result.html" as image_result %}
+
+{% extends "base.html" %}
+
+{% block body %}
+
+{% with %}
+  {% set endpoint = 'fulltext' %}
+  {% include "includes/search-form.html" %}
+{% endwith %}
+
+<div class="row column results">
+
+  {% if 'search' in search_data and search_data.search and results.items|length == 0 %}
+  <h3 class="t-no-results">No results were found for '{{ search_data.search }}'</h3>
+
+  {% else %}
+
+    {% if results.pages > 1 %}
+    <h5>Page {{ results.page }} of {{ results.pages }} page{{ results.pages|pluralize }}</h5>
+    {% endif %}
+
+    {% if results.items %}
+     {{ pagination.paginate_openledger(results.page, results.pages, search_data_for_pagination) }}
+
+      <div class="row">
+        {% for result in results.items %}
+
+          {% with image = {} %}
+            {% do image.update({'creator': result.creator,
+                                'license': result.license,
+                                'provider_url': result.foreign_landing_url,
+                                'creator_url': result.creator_url,
+                                'title': result.title,
+                                'url': result.url,
+                                'thumbnail': result.thumbnail or result.url,
+                                'identifier': result.identifier}) %}
+          {% set detail_url = 'detail' %}
+          {% call image_result.show(detail_url, image) %}{% endcall %}
+
+          {% endwith %}
+        {% endfor %}
+      </div>
+      {{ pagination.paginate_openledger(results.page, results.pages, search_data_for_pagination) }}
+      {% endif %}
+    {% endif %}
+  </div>
+
+
+{% endblock %}
