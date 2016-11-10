@@ -1,5 +1,6 @@
 from django.shortcuts import render
 from elasticsearch_dsl import Search, Q
+from elasticsearch_dsl.connections import connections
 
 from imageledger import forms, search
 
@@ -12,8 +13,12 @@ WORK_TYPES = {
 }
 
 def index(request):
-    search.init()
+    es = search.init()
+    s = Search()
     form = forms.SearchForm(request.GET)
+    search_data_for_pagination = {}
+    results = search.Results(page=1)
+
     if form.is_valid():
         and_queries = []
         or_queries = []
@@ -39,13 +44,15 @@ def index(request):
         s = s.query(q)
         response = s.execute()
         results.pages = int(int(response.hits.total) / PER_PAGE)
+
         start = results.page
         end = start + PER_PAGE
-        for r in s[start -1:end]:
+        for r in s[start - 1:end]:
             results.items.append(r)
+        search_data_for_pagination = {i: form.cleaned_data.get(i) for i in form.cleaned_data if i != 'page'}
 
-    results = search.Results(page=1)
-    search_data_for_pagination = {i: form.cleaned_data[i] for i in form.cleaned_data if i != 'page'}
+    else:
+        form = forms.SearchForm(initial={'page': 1})
 
     return render(request, 'results.html',
                   {'form': form,
