@@ -3,13 +3,18 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/foundation/6.2.3/foundation-flex.min.css">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.5.2/animate.min.css">
 
+<link rel="stylesheet" href="{{ static("css/app.css") }}">
+<link rel="stylesheet" href="{{ static("css/foundation-icons.css") }}">
+
+<script src="{{ static("js/build/openledger.js") }}"></script>
+
 
 {% block head %}{% endblock head %}
 
 <body>
   <nav class="top-bar">
     <div class="top-bar-title">
-      <a href="'fulltext'">Open Ledger Search Prototype</a>
+      <a href="{{ url ('index') }}">Open Ledger Search Prototype</a>
     </div>
     <div class="top-bar-left">
       <a href="#">Search via Provider APIs</a>
