@@ -2,9 +2,11 @@ import argparse
 from datetime import datetime
 import logging
 import requests
+import time
 
 from openledger import app, models
 from elasticsearch import Elasticsearch, helpers, RequestsHttpConnection
+from elasticsearch.exceptions import ConnectionError
 from aws_requests_auth.aws_auth import AWSRequestsAuth
 from elasticsearch_dsl.connections import connections
 from elasticsearch_dsl import DocType, String, Date, Nested, Boolean, \
@@ -13,6 +15,9 @@ from elasticsearch_dsl import DocType, String, Date, Nested, Boolean, \
 from sqlalchemy import orm
 
 CHUNK_SIZE = 1000
+
+MAX_CONNECTION_RETRIES = 10
+RETRY_WAIT = 5  # Number of sections to wait before retrying
 
 console = logging.StreamHandler()
 log = logging.getLogger(__name__)
@@ -71,16 +76,25 @@ def index_all_images():
     Image.init()
     mapping = Image._doc_type.mapping
     mapping.save('openledger')
-
+    retries = 0
     for db_image in models.Image.query.yield_per(CHUNK_SIZE):
-        #log.debug("Indexing database record %s", db_image.identifier)
-        image = db_image_to_index(db_image)
-        if len(batches) > CHUNK_SIZE:
-            log.debug("Pushing batch of %d records to ES", len(batches))
-            helpers.bulk(es, batches)
-            batches = []  # Clear the batch size
-        else:
-            batches.append(image.to_dict(include_meta=True))
+        try:
+            #log.debug("Indexing database record %s", db_image.identifier)
+            image = db_image_to_index(db_image)
+            if len(batches) > CHUNK_SIZE:
+                log.debug("Pushing batch of %d records to ES", len(batches))
+                helpers.bulk(es, batches)
+                batches = []  # Clear the batch size
+            else:
+                batches.append(image.to_dict(include_meta=True))
+        except ConnectionError as e:
+            if retries < MAX_CONNECTION_RETRIES:
+                log.warn("Got timeout, retrying with %d retries remaining", MAX_CONNECTION_RETRIES - retries)
+                es = init()
+                retries += 1
+                time.sleep(RETRY_WAIT)
+            else:
+                raise
 
     helpers.bulk(es, batches)
 
