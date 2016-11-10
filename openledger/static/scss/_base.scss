@@ -1,0 +1,45 @@
+
+h5 {
+  margin-top: 4rem;
+}
+
+.hero {
+  background: linear-gradient(to bottom, rgba(255,255,255,1) 80%, rgba(233,233,233,1) 100%);
+  border: none;
+  border-bottom: 1px solid rgb(200,200,200);
+  padding: 2rem 0 2rem 0;
+}
+
+footer.callout {
+  margin: 20rem 0 0 0;
+  width: 100%;
+}
+
+/* Top nav */
+.top-bar {
+  padding: .5rem 2rem;
+  .top-bar-left {
+    font-size: smaller;
+  }
+  .top-bar-right {
+    text-align: right;
+  }
+}
+
+
+/* Faster animation than the default animate.css */
+@keyframes zoomOut {
+  from {
+    opacity: 1;
+  }
+
+  20% {
+    opacity: 0;
+    -webkit-transform: scale3d(.3, .3, .3);
+    transform: scale3d(.3, .3, .3);
+  }
+
+  to {
+    opacity: 0;
+  }
+}

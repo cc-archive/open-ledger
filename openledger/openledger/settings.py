@@ -23,7 +23,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = '5h5$ky5rkt5h26zrh#74^fx+-os_&hr_z9r+krq4@7n@!v8kxh'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = ['openledger-dev.creativecommons.org',
                  'openledger.creativecommons.org',

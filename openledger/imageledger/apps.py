@@ -1,7 +1,10 @@
-from __future__ import unicode_literals
+from django.db.models.signals import pre_save
 
 from django.apps import AppConfig
 
+class ImageledgerConfig(AppConfig):
+    name = 'imageledger'
+    verbose_name = "Image Ledger"
 
-class ImagesConfig(AppConfig):
-    name = 'images'
+    def ready(self):
+        import imageledger.signals
