@@ -174,11 +174,11 @@ def load_data_from_instance(instance, database):
                 env.datasource['before_args'] = 'screen -d -m ' if env.with_nohup else ""
 
                 if env.datasource['action'] == 'reindex':
-                    run('{before_args}./venv/bin/python -m openledger.search {flags}'.format(**env.datasource))
+                    run('{before_args}./venv/bin/python -m openledger.search {flags}; sleep 1'.format(**env.datasource))
                 elif env.datasource['action'] == 'load-from-file':
-                    run('{before_args}./venv/bin/python database_import.py {filepath} {source} {datatype} --filesystem {filesystem} --skip-checks {flags}'.format(**env.datasource))
+                    run('{before_args}./venv/bin/python database_import.py {filepath} {source} {datatype} --filesystem {filesystem} --skip-checks {flags} ; sleep 1'.format(**env.datasource))
                 elif env.datasource['action'] == 'load-from-provider':
-                    run('{before_args}./venv/bin/python -m openledger.handlers.handler_{provider} {flags}'.format(**env.datasource))
+                    run('{before_args}./venv/bin/python -m openledger.handlers.handler_{provider} {flags} ; sleep 1'.format(**env.datasource))
 
 def deploy_code(host_string):
     max_retries = 20
