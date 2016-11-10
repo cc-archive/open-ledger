@@ -2,7 +2,7 @@ import logging
 from urllib.parse import urlencode
 
 from elasticsearch_dsl import Search, Q
-from flask import Flask, render_template, request, abort, session, make_response, redirect, url_for
+from flask import Flask, jsonify, request, abort, session, make_response, redirect, url_for
 from sqlalchemy.orm.exc import NoResultFound, MultipleResultsFound
 
 from openledger import app, forms, models
@@ -12,13 +12,16 @@ console = logging.StreamHandler()
 log.addHandler(console)
 log.setLevel(logging.INFO)
 
+# The primary identifier we use to assert whether a user is logged in (via CAS)
+AUTH_SESSION_IDENTIFIER = 'CAS_USERNAME'
+
 @app.route('/auth/redirect')
 def auth_redirect():
     """Receive requests from the CAS login endpoint"""
     attrs = session.get('CAS_ATTRIBUTES')
     ccid = attrs.get('cas:global')
     nickname = attrs.get('cas:nickname')
-    email = session.get('CAS_USERNAME')
+    email = session.get(AUTH_SESSION_IDENTIFIER)
     if not attrs:
         raise Exception("attrs not found in session %s, %s", session, session.get('CAS_ATTRIBUTES'))
     if not email:
@@ -50,3 +53,13 @@ def auth_logout():
     resp.delete_cookie('ol-identifier')
     resp.delete_cookie('session')
     return resp
+
+@app.route('/api/v1/auth/logged-in') 
+def logged_in():
+    """Standalone view to determine whether the current user is logged in, for use in
+    JS requests. Returns a JSON response, `logged_in`, true or false.
+
+    This is just a helper function: no actual authentication should be assumed just because
+    this easily-spoofed function returns true!
+    """
+    return make_response(jsonify({'logged-in': AUTH_SESSION_IDENTIFIER in session}))

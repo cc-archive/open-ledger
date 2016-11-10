@@ -29,32 +29,53 @@ DB_PASSWORD = os.environ['OPEN_LEDGER_DATABASE_PASSWORD']
 AWS_ACCESS_KEY_ID = os.environ['OPEN_LEDGER_ACCESS_KEY_ID']
 AWS_SECRET_ACCESS_KEY = os.environ['OPEN_LEDGER_SECRET_ACCESS_KEY']
 ELASTICSEARCH_URL = os.environ['OPEN_LEDGER_ELASTICSEARCH_URL']
+API_500PX_KEY = os.environ.get('API_500PX_KEY')
+API_500PX_SECRET = os.environ.get('API_500PX_SECRET')
+API_RIJKS = os.environ.get('API_RIJKS')
+FLICKR_KEY = os.environ.get('FLICKR_KEY')
+FLICKR_SECRET = os.environ.get('FLICKR_SECRET')
 
 EB_ENV_ENVIRONMENT_PROD = 'openledger'
 EB_ENV_ENVIRONMENT_DEV = 'openledger-dev'
 
 DATASOURCES = {
-    'openimages-full': {'source': 'openimages',
-                        'filesystem': 's3',
-                        'filepath': 'openimages/images_2016_08/train/images.csv',
-                        'datatype': 'images'},
-    'openimages-small': {'source': 'openimages',
-                        'filesystem': 's3',
-                        'filepath': 'openimages/images_2016_08/validation/images.csv',
-                        'datatype': 'images'},
-    'openimages-tags': {'source': 'openimages',
-                        'filesystem': 's3',
-                        'filepath': 'openimages/dict.csv',
-                        'datatype': 'tags'},
-    'openimages-human-image-tags': {'source': 'openimages',
-                        'filesystem': 's3',
-                        'filepath': 'openimages/human_ann_2016_08/validation/labels.csv',
-                        'datatype': 'image-tags'},
-    'openimages-machine-image-tags': {'source': 'openimages',
-                        'filesystem': 's3',
-                        'filepath': 'openimages/machine_ann_2016_08/validation/labels.csv',
-                        'datatype': 'image-tags'},
-    'searchindex': 'searchindex',
+    'openimages-full': {
+        'action': 'load-from-file',
+        'source': 'openimages',
+        'filesystem': 's3',
+        'filepath': 'openimages/images_2016_08/train/images.csv',
+        'datatype': 'images'},
+    'openimages-small': {
+        'action': 'load-from-file',
+        'source': 'openimages',
+        'filesystem': 's3',
+        'filepath': 'openimages/images_2016_08/validation/images.csv',
+        'datatype': 'images'},
+    'openimages-tags': {
+        'action': 'load-from-file',
+        'source': 'openimages',
+        'filesystem': 's3',
+        'filepath': 'openimages/dict.csv',
+        'datatype': 'tags'},
+    'openimages-human-image-tags': {
+        'action': 'load-from-file',
+        'source': 'openimages',
+        'filesystem': 's3',
+        'filepath': 'openimages/human_ann_2016_08/validation/labels.csv',
+        'datatype': 'image-tags'},
+    'openimages-machine-image-tags': {
+        'action': 'load-from-file',
+        'source': 'openimages',
+        'filesystem': 's3',
+        'filepath': 'openimages/machine_ann_2016_08/validation/labels.csv',
+        'datatype': 'image-tags'},
+    'searchindex': {
+        'action': 'reindex',
+        },
+    'rijksmuseum': {
+        'action': 'load-from-provider',
+        'provider': 'rijks',
+    }
 }
 
 if not env.get('flags'):
@@ -86,6 +107,12 @@ if env.get('with_nohup'):
 else:
     env.with_nohup = False
 
+# Force spinning up a new host (when other jobs are running)
+if env.get('force_new'):
+    env.force_new = True
+else:
+    env.force_new = False
+
 console = logging.StreamHandler()
 log = logging.getLogger(__name__)
 log.addHandler(console)
@@ -101,20 +128,25 @@ def launchloader():
     instance = None
     resource, client = _init_ec2()
     try:
-        instance = _get_running_instance(resource, client)
+        if env.force_new:
+            instance = _start_new_instance(resource, client)
+        else:
+            instance = _get_running_instance(resource, client)
         database = get_named_database()
         deploy_code(instance.public_ip_address)
         load_data_from_instance(instance, database)
     except LoaderException as e:
         log.exception(e)
-        instance.terminate()
+        if instance:
+            instance.terminate()
     except Exception as e:
         log.exception(e)
-        instance.terminate()
+        if instance:
+            instance.terminate()
         raise
     finally:
         # Stop it if it's running, unless we set nohup
-        if not env.with_nohup:
+        if instance and not env.with_nohup:
             instance.stop()
         pass
 
@@ -130,21 +162,23 @@ def load_data_from_instance(instance, database):
                  'name': str(database['name']),}),
                  AWS_SECRET_ACCESS_KEY=AWS_SECRET_ACCESS_KEY,
                  AWS_ACCESS_KEY_ID=AWS_ACCESS_KEY_ID,
-                 ELASTICSEARCH_URL=ELASTICSEARCH_URL):
+                 ELASTICSEARCH_URL=ELASTICSEARCH_URL,
+                 API_500PX_KEY=API_500PX_KEY,
+                 API_500PX_SECRET=API_500PX_SECRET,
+                 API_RIJKS=API_RIJKS,
+                 FLICKR_KEY=FLICKR_KEY,
+                 FLICKR_SECRET=FLICKR_SECRET,
+                 ):
 
                 env.datasource['flags'] = env.flags
-                
-                if env.datasource == 'searchindex':
-                    if env.with_nohup:
-                        run('screen -d -m ./venv/bin/python -m openledger.search; sleep 1')
-                    else:
-                        run('./venv/bin/python -m openledger.search --verbose')
-                else:
-                    if env.with_nohup:
-                        run('screen -d -m ./venv/bin/python database_import.py {filepath} {source} {datatype} --filesystem {filesystem} --skip-checks {flags}; sleep 1 '.format(**env.datasource))
-                    else:
-                        run('./venv/bin/python database_import.py {filepath} {source} {datatype} --filesystem {filesystem} --skip-checks {flags}'.format(**env.datasource))
+                env.datasource['before_args'] = 'screen -d -m ' if env.with_nohup else ""
 
+                if env.datasource['action'] == 'reindex':
+                    run('{before_args}./venv/bin/python -m openledger.search {flags}'.format(**env.datasource))
+                elif env.datasource['action'] == 'load-from-file':
+                    run('{before_args}./venv/bin/python database_import.py {filepath} {source} {datatype} --filesystem {filesystem} --skip-checks {flags}'.format(**env.datasource))
+                elif env.datasource['action'] == 'load-from-provider':
+                    run('{before_args}./venv/bin/python -m openledger.handlers.handler_{provider} {flags}'.format(**env.datasource))
 
 def deploy_code(host_string):
     max_retries = 20
@@ -219,32 +253,36 @@ def _get_running_instance(resource, client):
         log.debug("Found %d running instances, returning %r", len(instances), instances[0]["InstanceId"])
         return resource.Instance(instances[0]['InstanceId'])
     else:
-        # Pick up a stopped instance and start it
-        resp = client.describe_instances(Filters=[{'Name': 'tag:Name', 'Values': [TAG]},
-                                              {'Name': 'instance-state-name', 'Values': ['stopped']}])
-        for r in resp['Reservations']:
-            for i in r['Instances']:
-                instance = resource.Instance(i['InstanceId'])
-                log.debug("Starting previously stopped instance %s", i['InstanceId'])
-                instance.start()
-                instance.wait_until_running()
-                break
-            if instance:
-                break
+        return _start_new_instance(resource, client)
 
-        if not instance:
-            log.debug("No stopped instances found; starting a brand new type %s instance...", env.instance_type)
-            security_groups = SECURITY_GROUPS
-            instance = resource.create_instances(MinCount=1, MaxCount=1,
-                                                 SecurityGroups=security_groups,
-                                                 KeyName=KEY_NAME,
-                                                 InstanceType=env.instance_type,
-                                                 UserData=user_data,
-                                                 ImageId=AMI)[0]
+def _start_new_instance(resource, client):
+    # Pick up a stopped instance and start it
+    instance = None
+    resp = client.describe_instances(Filters=[{'Name': 'tag:Name', 'Values': [TAG]},
+                                          {'Name': 'instance-state-name', 'Values': ['stopped']}])
+    for r in resp['Reservations']:
+        for i in r['Instances']:
+            instance = resource.Instance(i['InstanceId'])
+            log.debug("Starting previously stopped instance %s", i['InstanceId'])
+            instance.start()
             instance.wait_until_running()
-            log.debug("Adding tag %s", TAG)
-            instance.create_tags(Tags=[{'Key': 'Name', 'Value': TAG}])
-            log.debug("Instance started: %r", instance)
+            break
+        if instance:
+            break
+
+    if not instance:
+        log.debug("No stopped instances found; starting a brand new type %s instance...", env.instance_type)
+        security_groups = SECURITY_GROUPS
+        instance = resource.create_instances(MinCount=1, MaxCount=1,
+                                             SecurityGroups=security_groups,
+                                             KeyName=KEY_NAME,
+                                             InstanceType=env.instance_type,
+                                             UserData=user_data,
+                                             ImageId=AMI)[0]
+        instance.wait_until_running()
+        log.debug("Adding tag %s", TAG)
+        instance.create_tags(Tags=[{'Key': 'Name', 'Value': TAG}])
+        log.debug("Instance started: %r", instance)
     return instance
 
 def _init_aws():
