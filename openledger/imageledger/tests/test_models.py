@@ -102,7 +102,6 @@ class TestModels(TestCase):
         lst = models.List(title=title)
         lst.save()
         lst = models.List.objects.all().first()
-        print(lst.slug)
         assert lst.slug.startswith('my-list-about-unicode-snowmen-')
 
     def test_slugify_unique(self):
