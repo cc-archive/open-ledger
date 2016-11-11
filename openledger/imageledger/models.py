@@ -83,6 +83,7 @@ class ImageTags(OpenLedgerModel):
     image = models.ForeignKey(Image, on_delete=models.CASCADE, blank=True, null=True)
 
     class Meta:
+        unique_together = (('tag', 'image'))
         db_table = 'image_tags'
 
 class List(OpenLedgerModel):

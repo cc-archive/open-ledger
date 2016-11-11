@@ -10,7 +10,8 @@ from imageledger import models
 
 @receiver(pre_save, sender=models.Image)
 def set_identifier(sender, instance, **kwargs):
-    instance.identifier = create_identifier(instance.url)
+    if instance.identifier is None:
+        instance.identifier = create_identifier(instance.url)
 
 def create_identifier(key):
     """Create a unique, stable identifier for a key"""

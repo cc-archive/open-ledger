@@ -110,6 +110,24 @@ def import_images_from_openimages(filename, chunk_size=DEFAULT_CHUNK_SIZE, skip_
     end_count = models.Image.objects.all().count()
     log.info("Database now has %d images (+%d)", end_count, (end_count - start_count))
 
+def import_tags_from_openimages(filename):
+    """Import tag names from the `open-images` dataset"""
+    with open(filename) as fh:
+        reader = csv.reader(fh)
+        for row in reader:
+            tag = models.Tag()
+            tag.foreign_identifier = row[0].strip()
+            tag.name = row[1].strip()
+            tag.source = 'openimages'
+            log.debug("Adding tag %s", tag.name)
+            tag.save()
+
+def import_images_tags_from_openimages(filename, chunk_size=DEFAULT_CHUNK_SIZE):
+    """Import tag/image relationships from the `open-images` dataset"""
+    with open(filename) as fh:
+        reader = csv.DictReader(fh)
+        _insert_image_tag(grouper_it, reader, chunk_size)
+
 def grouper_it(n, iterable):
     it = iter(iterable)
     while True:
@@ -162,3 +180,40 @@ def _insert_image(iterator, reader, chunk_size, skip_existence_check=False):
         if len(images) > 0:
             models.Image.objects.bulk_create(images)
             log.debug("*** Committing set of %d images", len(images))
+
+def _insert_image_tag(iterator, reader, chunk_size):
+    image_ids = {}
+    tag_ids = {}
+    try:
+        for chunk in iterator(chunk_size, reader):
+            image_tags = []
+            for row in chunk:
+                image_id = row['ImageID']
+                tag_id = row['LabelName']
+                confidence = row['Confidence']
+                if float(confidence) < TAG_CONFIDENCE_THRESHOLD:
+                    continue
+                img = image_ids.get(image_id) or \
+                    models.Image.objects.filter(foreign_identifier=image_id).first()
+                tag = tag_ids.get(tag_id) or \
+                    models.Tag.objects.filter(foreign_identifier=tag_id).first()
+                if tag and img:
+                    image_ids[img.foreign_identifier] = img
+                    tag_ids[tag.foreign_identifier] = tag
+                    #log.debug("Adding tag %s to image %s ", tag, img)
+                    it = models.ImageTags(image=img, tag=tag)
+                    image_tags.append(it)
+                    # Also add it to the denormalized array
+                    ext_tags = list(set(img.tags_list[:] if img.tags_list else []))
+                    ext_tags.append(tag.name)
+                    img.tags_list = ext_tags
+            if len(image_tags) > 0:
+                models.ImageTags.objects.bulk_create(image_tags)
+                log.debug("*** Committing set of %d image tags", len(image_tags))
+    except:
+        raise
+    finally:
+        log.debug("Saving all %d remaining modified image objects", len(image_ids))
+        # Save all the images we modified
+        for img in image_ids.values():
+            img.save()
