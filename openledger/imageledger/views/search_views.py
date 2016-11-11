@@ -8,8 +8,6 @@ from imageledger.handlers.handler_rijks import photos as search_rijks
 from imageledger.handlers.handler_flickr import photos as search_flickr
 from imageledger.handlers.handler_wikimedia import photos as search_wikimedia
 
-PER_PAGE = 20
-
 # Search by source
 WORK_TYPES = {
     'photos': ['flickr'],
@@ -56,10 +54,10 @@ def index(request):
                   minimum_should_match=1)
             s = s.query(q)
             response = s.execute()
-            results.pages = int(int(response.hits.total) / PER_PAGE)
+            results.pages = int(int(response.hits.total) / forms.PER_PAGE)
 
             start = results.page
-            end = start + PER_PAGE
+            end = start + forms.PER_PAGE
             for r in s[start - 1:end]:
                 results.items.append(r)
             search_data_for_pagination = {i: form.cleaned_data.get(i) for i in form.cleaned_data if i != 'page'}
@@ -85,13 +83,12 @@ def provider_apis(request, provider=None):
             results[p] = search_funcs[p](search=form.cleaned_data['search'],
                                          licenses=form.cleaned_data['licenses'],
                                          page=form.cleaned_data['page'],
-                                         per_page=PER_PAGE)
-        search_data_for_pagination = {i: form.cleaned_data.get(i) for i in form.cleaned_data}
+                                         per_page=forms.PER_PAGE)
+        search_data_for_pagination = form.cleaned_data
     else:
         initial_data = forms.SearchForm._initial_data
         initial_data.update({'providers': forms.PROVIDERS_ALL})
         form = forms.SearchForm(initial=initial_data)
-
     return render(request, 'provider-results.html',
                            {'form': form,
                             'results': results,

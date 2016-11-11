@@ -2,6 +2,8 @@ from django import forms
 
 from imageledger import licenses
 
+PER_PAGE = 20
+
 LICENSE_CHOICES = (
     ('ALL-$', 'Use for commercial purposes'),
     ('ALL-MOD', 'Modify, adapt, or build upon')
@@ -34,6 +36,7 @@ PROVIDERS_ALL = [p[0] for p in PROVIDER_CHOICES if p[0]]
 
 class SearchForm(forms.Form):
     _initial_data = {'page': 1,
+                     'per_page': PER_PAGE,
                      'search_fields': ['title', 'tags', 'creator'],
                      'work_types': ['photos', 'cultural'],
                      'licenses': [licenses.DEFAULT_LICENSE],
@@ -48,6 +51,7 @@ class SearchForm(forms.Form):
                                            widget=forms.CheckboxSelectMultiple)
     page = forms.IntegerField(widget=forms.HiddenInput, required=False)
     providers = forms.MultipleChoiceField(widget=forms.CheckboxSelectMultiple, required=False, choices=PROVIDER_CHOICES)
+    per_page = forms.IntegerField(widget=forms.HiddenInput, required=False)
 
 class ListForm(forms.Form):
     title = forms.CharField(label='Title')
