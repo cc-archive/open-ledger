@@ -55,7 +55,8 @@ footer.callout {
 
 .search-form {
   margin-top: 1rem;
-  border: none; }
+  border: none;
+  /* Visually hide the providers list */ }
   .search-form ul, .search-form li {
     display: inline-block;
     margin: 0;
@@ -89,6 +90,10 @@ footer.callout {
     .search-form .search-field-container input[type=submit] {
       margin: 0;
       float: right; }
+  .search-form ul#id_providers {
+    position: absolute;
+    visibility: hidden;
+    left: -99999; }
 
 /* List buttons */
 button.tiny, .add-to-list-container, .image-result {

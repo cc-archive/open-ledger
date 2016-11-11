@@ -15,8 +15,8 @@ def environment(**options):
     })
     return env
 
-def url_tag(view, **kwargs):
-    url = reverse(view)
+def url_tag(view, *args, **kwargs):
+    url = reverse(view, args=args)
     if kwargs:
         url += '?' + urlencode(kwargs)
     return url

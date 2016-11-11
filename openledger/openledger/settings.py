@@ -145,6 +145,8 @@ STATICFILES_DIRS = [
     os.path.join(BASE_DIR, "static"),
 ]
 
+TESTING = False
+
 try:
     from openledger.local import *
 

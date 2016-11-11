@@ -7,4 +7,6 @@ class ImageledgerConfig(AppConfig):
     verbose_name = "Image Ledger"
 
     def ready(self):
-        import imageledger.signals
+        from imageledger.signals import set_identifier, create_slug
+        from imageledger import search
+        search.init()

@@ -1,5 +1,7 @@
 from django import forms
 
+from imageledger import licenses
+
 LICENSE_CHOICES = (
     ('ALL-$', 'Use for commercial purposes'),
     ('ALL-MOD', 'Modify, adapt, or build upon')
@@ -19,8 +21,23 @@ WORK_TYPES = (
 WORK_TYPE_DEFAULT = [wt[0] for wt in WORK_TYPES]
 FIELD_DEFAULT = [field[0] for field in FIELD_CHOICES]
 
+PROVIDER_CHOICES = (
+    ('fpx', '500px'),
+    ('flickr', 'Flickr'),
+    ('rijks', 'Rijksmuseum'),
+    ('wikimedia', 'Wikimedia Commons'),
+    ('', '')
+) # "No provider" is valid
+
+PROVIDER_DEFAULT = ['']
+PROVIDERS_ALL = [p[0] for p in PROVIDER_CHOICES if p[0]]
 
 class SearchForm(forms.Form):
+    _initial_data = {'page': 1,
+                     'search_fields': ['title', 'tags', 'creator'],
+                     'work_types': ['photos', 'cultural'],
+                     'licenses': [licenses.DEFAULT_LICENSE],
+                     'providers': PROVIDER_DEFAULT}
 
     search = forms.CharField(label='Search', max_length=1000)
     licenses = forms.MultipleChoiceField(label='License', choices=LICENSE_CHOICES, required=False,
@@ -30,6 +47,7 @@ class SearchForm(forms.Form):
     work_types = forms.MultipleChoiceField(label='Work type', choices=WORK_TYPES, required=False,
                                            widget=forms.CheckboxSelectMultiple)
     page = forms.IntegerField(widget=forms.HiddenInput, required=False)
+    providers = forms.MultipleChoiceField(widget=forms.CheckboxSelectMultiple, required=False, choices=PROVIDER_CHOICES)
 
 class ListForm(forms.Form):
     title = forms.CharField(label='Title')

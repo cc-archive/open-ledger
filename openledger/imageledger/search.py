@@ -95,10 +95,7 @@ def index_all_images():
     helpers.bulk(es, batches)
 
 def init_es():
-    if settings.DEBUG:
-        return Elasticsearch(host=settings.ELASTICSEARCH_URL,
-                             port=settings.ELASTICSEARCH_PORT,)
-
+    log.info("connecting to %s %s", settings.ELASTICSEARCH_URL, settings.ELASTICSEARCH_PORT)
     auth = AWSRequestsAuth(aws_access_key=settings.AWS_ACCESS_KEY_ID,
                            aws_secret_access_key=settings.AWS_SECRET_ACCESS_KEY,
                            aws_host=settings.ELASTICSEARCH_URL,
@@ -115,7 +112,7 @@ def init():
     """Initialize all search objects"""
     es = init_es()
     connections.add_connection('default', es)
-    log.debug("Initializing search objects for connection %s", settings.ELASTICSEARCH_URL)
+    log.warn("Initializing search objects for connection %s:%s", settings.ELASTICSEARCH_URL, settings.ELASTICSEARCH_PORT)
     return es
 
 if __name__ == '__main__':

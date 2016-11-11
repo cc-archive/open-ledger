@@ -2,7 +2,11 @@ from django.shortcuts import render
 from elasticsearch_dsl import Search, Q
 from elasticsearch_dsl.connections import connections
 
-from imageledger import forms, search
+from imageledger import forms, search, licenses
+from imageledger.handlers.handler_500px import photos as search_500
+from imageledger.handlers.handler_rijks import photos as search_rijks
+from imageledger.handlers.handler_flickr import photos as search_flickr
+from imageledger.handlers.handler_wikimedia import photos as search_wikimedia
 
 PER_PAGE = 20
 
@@ -12,14 +16,21 @@ WORK_TYPES = {
     'cultural': ['rijksmuseum']
 }
 
+search_funcs = {
+    "fpx": search_500,
+    "flickr": search_flickr,
+    "rijks": search_rijks,
+    "wikimedia": search_wikimedia,
+}
+
 def index(request):
-    es = search.init()
     s = Search()
     form = forms.SearchForm(request.GET)
     search_data_for_pagination = {}
     results = search.Results(page=1)
 
     if form.is_valid():
+
         and_queries = []
         or_queries = []
 
@@ -54,12 +65,45 @@ def index(request):
             search_data_for_pagination = {i: form.cleaned_data.get(i) for i in form.cleaned_data if i != 'page'}
 
     else:
-        form = forms.SearchForm(initial={'page': 1,
-                                         'search_fields': ['title', 'tags', 'creator'],
-                                         'work_types': ['photos', 'cultural']})
+        form = forms.SearchForm(initial=forms.SearchForm._initial_data)
+
 
     return render(request, 'results.html',
                   {'form': form,
                    'results': results,
-                   'search_data': {},
                    'search_data_for_pagination': search_data_for_pagination})
+
+
+def provider_apis(request, provider=None):
+    """Search by passing queries through to provider apis"""
+    results = {}
+    form = forms.SearchForm(request.GET)
+    search_data_for_pagination = {}
+
+    if form.is_valid():
+        for p in form.cleaned_data['providers']:
+            results[p] = search_funcs[p](search=form.cleaned_data['search'],
+                                         licenses=form.cleaned_data['licenses'],
+                                         page=form.cleaned_data['page'],
+                                         per_page=PER_PAGE)
+        search_data_for_pagination = {i: form.cleaned_data.get(i) for i in form.cleaned_data}
+    else:
+        initial_data = forms.SearchForm._initial_data
+        initial_data.update({'providers': forms.PROVIDERS_ALL})
+        form = forms.SearchForm(initial=initial_data)
+
+    return render(request, 'provider-results.html',
+                           {'form': form,
+                            'results': results,
+                            'search_data_for_pagination': search_data_for_pagination,
+                            'license_map': licenses.license_map_from_partners()})
+
+
+def by_provider(request, provider):
+    return provider_apis(request, provider=provider)
+
+def by_image(request):
+    pass
+
+def detail(request):
+    pass

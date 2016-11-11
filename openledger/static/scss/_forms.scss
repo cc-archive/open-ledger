@@ -64,4 +64,10 @@
       float: right;
     }
   }
+  /* Visually hide the providers list */
+  ul#id_providers {
+    position: absolute;
+    visibility: hidden;
+    left: -99999;
+  }
 }

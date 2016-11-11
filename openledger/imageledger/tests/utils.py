@@ -54,15 +54,15 @@ def load_json_data(datafile):
     dir_path = os.path.dirname(os.path.realpath(__file__))
     return json.loads(open(os.path.join(dir_path, datafile)).read())
 
-def select_node(rv, selector):
+def select_node(resp, selector):
     """Give a response from Flask, return just the HTML fragment defined by `selector`.
     Guaranteed to return one node or an empty set."""
-    r = select_nodes(rv, selector)
+    r = select_nodes(resp, selector)
     if r and len(r) > 0:
         return r[0]
     return ()
 
-def select_nodes(rv, selector):
+def select_nodes(resp, selector):
     """Give a response from Flask, return just the HTML fragment defined by `selector`"""
-    h = html5lib.parse(rv.data.decode('utf-8'), treebuilder='lxml', namespaceHTMLElements=False)
+    h = html5lib.parse(resp.content.decode('utf-8'), treebuilder='lxml', namespaceHTMLElements=False)
     return h.getroot().cssselect(selector)
