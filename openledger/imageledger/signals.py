@@ -21,8 +21,9 @@ def create_identifier(key):
 
 @receiver(pre_save, sender=models.List)
 def set_slug(sender, instance, **kwargs):
-    uniquish = str(uuid.uuid4())[:8]
-    instance.slug = create_slug([instance.title, uniquish])
+    if instance.slug is None:
+        uniquish = str(uuid.uuid4())[:8]
+        instance.slug = create_slug([instance.title, uniquish])
 
 def create_slug(el):
     """For the list of items el, create a unique slug out of them"""

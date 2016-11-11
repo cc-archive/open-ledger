@@ -1,4 +1,3 @@
-import argparse
 import csv
 import itertools
 import logging
@@ -10,8 +9,6 @@ import base64
 import boto3
 import botocore
 from django.core.management.base import BaseCommand, CommandError
-
-
 
 from imageledger import models, signals
 
