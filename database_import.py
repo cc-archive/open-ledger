@@ -9,10 +9,9 @@ import base64
 
 import boto3
 import botocore
-from sqlalchemy.exc import IntegrityError
-from sqlalchemy.sql.expression import select
-from openledger.models import db, Image, Tag, create_identifier
-from openledger import app
+
+from imageledger import models, signals
+
 
 console = logging.StreamHandler()
 log = logging.getLogger(__name__)
