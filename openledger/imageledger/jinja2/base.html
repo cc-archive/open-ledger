@@ -21,8 +21,12 @@
     </div>
     <div class="top-bar-right">
       <div>
-          <a href="#">Sign out</a>
-          <a href="#">Sign in</a>
+        {% if request.user.is_anonymous %}
+          <a href="{{ url('cas_ng_login') }}">Sign in</a>
+        {% else %}
+          <a href="{{ url('cas_ng_logout') }}">Sign out</a>
+
+        {% endif %}
       </div>
     </div>
   </nav>

@@ -64,3 +64,4 @@ aws-requests-auth
 jsmin
 cssmin
 django
+django-cas-ng
