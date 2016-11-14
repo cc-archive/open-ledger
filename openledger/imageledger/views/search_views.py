@@ -1,3 +1,5 @@
+import logging
+
 from django.shortcuts import render
 from elasticsearch_dsl import Search, Q
 from elasticsearch_dsl.connections import connections
@@ -7,6 +9,8 @@ from imageledger.handlers.handler_500px import photos as search_500
 from imageledger.handlers.handler_rijks import photos as search_rijks
 from imageledger.handlers.handler_flickr import photos as search_flickr
 from imageledger.handlers.handler_wikimedia import photos as search_wikimedia
+
+log = logging.getLogger(__name__)
 
 # Search by source
 WORK_TYPES = {
@@ -28,7 +32,6 @@ def index(request):
     results = search.Results(page=1)
 
     if form.is_valid():
-
         and_queries = []
         or_queries = []
 
@@ -63,8 +66,7 @@ def index(request):
             search_data_for_pagination = {i: form.cleaned_data.get(i) for i in form.cleaned_data if i != 'page'}
 
     else:
-        form = forms.SearchForm(initial=forms.SearchForm._initial_data)
-
+        form = forms.SearchForm(initial=forms.SearchForm.initial_data)
 
     return render(request, 'results.html',
                   {'form': form,
@@ -77,18 +79,21 @@ def provider_apis(request, provider=None):
     results = {}
     form = forms.SearchForm(request.GET)
     search_data_for_pagination = {}
-
     if form.is_valid():
+        for k in forms.SearchForm.initial_data:
+            if k not in form.cleaned_data or not form.cleaned_data[k]:
+                form.cleaned_data[k] = forms.SearchForm.initial_data[k]
         for p in form.cleaned_data['providers']:
-            results[p] = search_funcs[p](search=form.cleaned_data['search'],
-                                         licenses=form.cleaned_data['licenses'],
-                                         page=form.cleaned_data['page'],
-                                         per_page=forms.PER_PAGE)
+            if p:
+                results[p] = search_funcs[p](search=form.cleaned_data['search'],
+                                             licenses=form.cleaned_data['licenses'],
+                                             page=form.cleaned_data['page'],
+                                             per_page=forms.PER_PAGE)
         search_data_for_pagination = form.cleaned_data
     else:
-        initial_data = forms.SearchForm._initial_data
-        initial_data.update({'providers': forms.PROVIDERS_ALL})
+        initial_data = forms.SearchForm.initial_data
         form = forms.SearchForm(initial=initial_data)
+
     return render(request, 'provider-results.html',
                            {'form': form,
                             'results': results,
@@ -100,7 +105,19 @@ def by_provider(request, provider):
     return provider_apis(request, provider=provider)
 
 def by_image(request):
-    pass
+    """Load an image in detail view, passing parameters by query string so that
+    we can either load an image from an external provider or from our own datastore."""
+    license_version = licenses.license_map_from_partners()[request.GET.get('provider')]['version']
+    license_url = licenses.get_license_url(request.GET.get('license'), license_version)
+    remaining = dict((k, request.GET[k]) for k in request.GET)  # The vals in request.GET are lists, so flatten
+    return render(request, 'detail.html',
+                  {'image': {
+                            'obj': None,
+                            'license_url': license_url,
+                            'license_version': license_version,
+                            **remaining}
+                   })
+
 
 def detail(request):
     pass

@@ -28,19 +28,17 @@ PROVIDER_CHOICES = (
     ('flickr', 'Flickr'),
     ('rijks', 'Rijksmuseum'),
     ('wikimedia', 'Wikimedia Commons'),
-    ('', '')
-) # "No provider" is valid
+)
 
-PROVIDER_DEFAULT = ['']
 PROVIDERS_ALL = [p[0] for p in PROVIDER_CHOICES if p[0]]
 
 class SearchForm(forms.Form):
-    _initial_data = {'page': 1,
+    initial_data = {'page': 1,
                      'per_page': PER_PAGE,
                      'search_fields': ['title', 'tags', 'creator'],
                      'work_types': ['photos', 'cultural'],
                      'licenses': [licenses.DEFAULT_LICENSE],
-                     'providers': PROVIDER_DEFAULT}
+                     'providers': PROVIDERS_ALL}
 
     search = forms.CharField(label='Search', max_length=1000)
     licenses = forms.MultipleChoiceField(label='License', choices=LICENSE_CHOICES, required=False,

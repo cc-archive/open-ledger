@@ -8,14 +8,13 @@ from lxml.html import tostring, html5parser
 import responses
 
 from imageledger import models
-#from imageledger.views import auth_views
 
 TESTING_CONFIG = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'settings.py')
 
-class TestimageledgerApp(TestCase):
+class TestImageledgerApp(TestCase):
     """Setup/teardown for app test cases"""
-
-    pass
+    def setUp(self):
+        activate_all_provider_mocks()
 
 def activate_all_provider_mocks():
     """Mock all the responses we know about from all the providers"""
@@ -55,14 +54,14 @@ def load_json_data(datafile):
     return json.loads(open(os.path.join(dir_path, datafile)).read())
 
 def select_node(resp, selector):
-    """Give a response from Flask, return just the HTML fragment defined by `selector`.
+    """Give a response from the app, return just the HTML fragment defined by `selector`.
     Guaranteed to return one node or an empty set."""
     r = select_nodes(resp, selector)
     if r and len(r) > 0:
         return r[0]
-    return ()
+    return None
 
 def select_nodes(resp, selector):
-    """Give a response from Flask, return just the HTML fragment defined by `selector`"""
+    """Give a response from the app, return just the HTML fragment defined by `selector`"""
     h = html5lib.parse(resp.content.decode('utf-8'), treebuilder='lxml', namespaceHTMLElements=False)
     return h.getroot().cssselect(selector)

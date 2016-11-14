@@ -14,10 +14,7 @@ from testing.elasticsearch import ElasticSearchServer
 from imageledger import search, forms
 from imageledger.tests.utils import *
 
-console = logging.StreamHandler()
 log = logging.getLogger(__name__)
-log.addHandler(console)
-log.setLevel(logging.INFO)
 
 MAX_RETRIES = 5
 
@@ -125,10 +122,10 @@ class TestSearch(TestCase):
     def test_search_results(self):
         """If indexed, a single result should be returned from the search engine"""
         self._index_img(self.img1)
-        resp = self.client.get(self.url, {'search': 'greyhounds', **forms.SearchForm._initial_data})
+        resp = self.client.get(self.url, {'search': 'greyhounds', 'search_fields': 'title'})
         p = select_nodes(resp, '.t-image-result')
         assert 1 == len(p)
-        assert select_node(resp, '.t-no-results') is ()
+        assert select_node(resp, '.t-no-results') is None
 
 
     def test_search_filter_creator(self):
@@ -136,7 +133,7 @@ class TestSearch(TestCase):
         self._index_img(self.img1)
         self._index_img(self.img2)
         resp = self.client.get(self.url, {'search_fields': 'creator', 'search': '諸葛亮'})
-        assert select_node(resp, '.t-no-results') is ()
+        assert select_node(resp, '.t-no-results') is None
         self.assertEquals(1, len(select_nodes(resp, '.t-image-result')))
 
         # Should not find it when searching the title field
@@ -148,7 +145,7 @@ class TestSearch(TestCase):
         self._index_img(self.img1)
         self._index_img(self.img2)
         resp = self.client.get(self.url, {'search_fields': 'title', 'search': 'orange'})
-        assert select_node(resp, '.t-no-results') is ()
+        assert select_node(resp, '.t-no-results') is None
         assert 1 == len(select_nodes(resp, '.t-image-result'))
 
         # Should not find it when searching the creator field
@@ -160,7 +157,7 @@ class TestSearch(TestCase):
         self._index_img(self.img1)
         self._index_img(self.img2)
         resp = self.client.get(self.url, {'search_fields': 'tags', 'search': 'dog'})
-        assert select_node(resp, '.t-no-results') is ()
+        assert select_node(resp, '.t-no-results') is None
         self.assertEqual(1, len(select_nodes(resp, '.t-image-result')))
 
         # Should not find it when searching the creator field
@@ -169,7 +166,7 @@ class TestSearch(TestCase):
 
         # Find both with the same tag
         resp = self.client.get(self.url, {'search_fields': 'tags', 'search': 'object'})
-        assert select_node(resp, '.t-no-results') is ()
+        assert select_node(resp, '.t-no-results') is None
         self.assertEqual(2, len(select_nodes(resp, '.t-image-result')))
 
     def test_works_filter(self):
