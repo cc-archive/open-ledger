@@ -57,7 +57,7 @@ def index(request):
             s = s.query(q)
             response = s.execute()
             results.pages = int(int(response.hits.total) / forms.PER_PAGE)
-            results.page = form.cleaned_data['page']
+            results.page = form.cleaned_data['page'] or 1
             start = results.page
             end = start + forms.PER_PAGE
             for r in s[start - 1:end]:
