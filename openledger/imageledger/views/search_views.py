@@ -1,10 +1,10 @@
 import logging
 
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404
 from elasticsearch_dsl import Search, Q
 from elasticsearch_dsl.connections import connections
 
-from imageledger import forms, search, licenses
+from imageledger import forms, search, licenses, models
 from imageledger.handlers.handler_500px import photos as search_500
 from imageledger.handlers.handler_rijks import photos as search_rijks
 from imageledger.handlers.handler_flickr import photos as search_flickr
@@ -103,14 +103,16 @@ def by_image(request):
     license_version = licenses.license_map_from_partners()[request.GET.get('provider')]['version']
     license_url = licenses.get_license_url(request.GET.get('license'), license_version)
     remaining = dict((k, request.GET[k]) for k in request.GET)  # The vals in request.GET are lists, so flatten
+    remaining.update({'license_version': license_version})
     return render(request, 'detail.html',
-                  {'image': {
-                            'obj': None,
-                            'license_url': license_url,
-                            'license_version': license_version,
-                            **remaining}
+                  {'image': {**remaining},
+                   'license_url': license_url,
                    })
 
 
-def detail(request):
-    pass
+def detail(request, identifier):
+    obj = get_object_or_404(models.Image, identifier=identifier)
+    license_url = licenses.get_license_url(obj.license, obj.license_version)
+    return render(request, 'detail.html',
+                  {'image': obj,
+                    'license_url': license_url,})

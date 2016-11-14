@@ -19,11 +19,11 @@
         <h4>Title</h4>
         <span>{{ image.title }}</span>
       </li>
-      {% if creator %}
+      {% if image.creator %}
       <li>
         <h4>Creator</h4>
         <span>
-          {% if creator_url %}
+          {% if image.creator_url %}
             <a href="{{ image.creator_url }}">{{ image.creator }}</a>
           {% else %}
             {{ image.creator }}
@@ -33,14 +33,14 @@
       {% endif %}
       <li>
         <h4>License</h4>
-        <a href="{{ image.license_url }}">{{ license_logo.license(image.license) }}</a>
+        <a href="{{ license_url }}">{{ license_logo.license(image.license) }}</a>
       </li>
       <li>
-        <a href="{{ image.provider_url }}">Original source</a>
+        <a href="{{ image.foreign_landing_url }}">Original source</a>
       </li>
     </ul>
-    {% if image.obj and image.obj.tags %}
-      {% for tag in image.obj.tags %}
+    {% if image.tags %}
+      {% for tag in image.tags %}
         <span class="secondary label">{{ tag.name }}</span>
       {% endfor %}
     {% endif %}
@@ -48,8 +48,8 @@
   <div class="column">
     <h3>How to use this work</h3>
     <blockquote class="attribution">
-      <a href="{{ provider_url }}">“{{ image.title }}”</a>
-      {% if creator %}
+      <a href="{{ image.foreign_landing_url }}">“{{ image.title }}”</a>
+      {% if image.creator %}
       by
       <i>
         {% if image.creator_url %}
@@ -72,12 +72,10 @@
       Copy credit as HTML
     </button>
 
-    {% if image.obj %} {# Local objects only for now #}
-      {{ lists.add(image.obj.identifier, size="large") }}
+    {% if image.tags %} {# Local objects only for now #}
+      {{ lists.add(image.identifier, size="large") }}
     {% endif %}
   </div>
-
-
 
   </div>
 </div>
