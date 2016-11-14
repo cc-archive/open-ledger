@@ -78,7 +78,6 @@ def provider_apis(request, provider=None):
     """Search by passing queries through to provider apis"""
     results = {}
     form = forms.SearchForm(request.GET)
-    search_data_for_pagination = {}
     if form.is_valid():
         for k in forms.SearchForm.initial_data:
             if k not in form.cleaned_data or not form.cleaned_data[k]:
@@ -89,7 +88,6 @@ def provider_apis(request, provider=None):
                                              licenses=form.cleaned_data['licenses'],
                                              page=form.cleaned_data['page'],
                                              per_page=forms.PER_PAGE)
-        search_data_for_pagination = form.cleaned_data
     else:
         initial_data = forms.SearchForm.initial_data
         form = forms.SearchForm(initial=initial_data)
@@ -97,7 +95,6 @@ def provider_apis(request, provider=None):
     return render(request, 'provider-results.html',
                            {'form': form,
                             'results': results,
-                            'search_data_for_pagination': search_data_for_pagination,
                             'license_map': licenses.license_map_from_partners()})
 
 

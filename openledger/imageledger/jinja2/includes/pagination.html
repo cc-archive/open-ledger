@@ -1,11 +1,11 @@
 
-{% macro paginate_api(page, pages, search_data, provider) -%}
+{% macro paginate_api(provider, page, pages, form) -%}
     <div class="row column text-center">
       <ul class="pagination" role="navigation" aria-label="Pagination">
 
         <li class="pagination-previous {{ "disabled" if page == 1 else ""}}">
           {% if page > 1 %}
-            <a aria-label="Previous page" href="{{ url('by-provider', provider, page=search_data.page-1, per_page=search_data.per_page, licenses=search_data.licenses, search=search_data.search) }}">Previous</a>
+            <a aria-label="Previous page" href="{{ url_with_form('by-provider', form, args=[provider], kwargs={'page': form.cleaned_data.page - 1, 'providers': [provider]}) }}">Previous</a>
           {% else %}
             Previous
           {% endif %}
@@ -13,7 +13,7 @@
 
         <li class="pagination-next {{ "disabled" if page >= pages else ""}}">
           {% if page < pages %}
-          <a aria-label="Next page" href="{{ url('by-provider', provider, page=search_data.page+1, per_page=search_data.per_page, licenses=search_data.licenses, search=search_data.search) }}">Next</a>
+            <a aria-label="Next page" href="{{ url_with_form('by-provider', form, args=[provider], kwargs={'page': form.cleaned_data.page + 1, 'providers': [provider]}) }}">Next</a>
           {% else %}
             Next
           {% endif %}

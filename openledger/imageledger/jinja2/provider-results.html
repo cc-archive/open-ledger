@@ -26,7 +26,7 @@
     {% if 'flickr' in results and results.flickr and results.flickr.photos.total > 0 %}
       <h5>Page {{ results.flickr.photos.page }} of {{ results.flickr.photos.pages }} page{{ results.flickr.photos.pages|pluralize }} from Flickr</h5>
 
-      {{ pagination.paginate_api(results.flickr.photos.page, results.flickr.photos.pages, search_data_for_pagination, 'flickr')}}
+      {{ pagination.paginate_api('flickr', results.flickr.photos.page, results.flickr.photos.pages, form)}}
 
       <div class="row">
         {% for result in results.flickr.photos.photo %}
@@ -47,8 +47,7 @@
         {% endfor %}
 
       </div>
-
-     {{ pagination.paginate_api(results.flickr.photos.page, results.flickr.photos.pages, search_data_for_pagination, 'flickr')}}
+     {{ pagination.paginate_api('flickr', results.flickr.photos.page, results.flickr.photos.pages, form)}}
 
     {% endif %}
 
@@ -56,7 +55,7 @@
     {% if 'fpx' in results and results.fpx and results.fpx.total_items > 0 %}
       <h5>Page {{ results.fpx.current_page }} of {{ results.fpx.total_pages }} page{{ results.fpx.total_pages|pluralize }} from 500px</h5>
 
-      {{ pagination.paginate_api(results.fpx.current_page, results.fpx.total_pages, search_data_for_pagination, 'fpx')}}
+      {{ pagination.paginate_api('fpx', results.fpx.current_page, results.fpx.total_pages, form) }}
 
       <div class="row">
         {% for result in results.fpx.photos %}
@@ -77,7 +76,7 @@
         {% endfor %}
       </div>
 
-      {{ pagination.paginate_api(results.fpx.current_page, results.fpx.total_pages, search_data_for_pagination, 'fpx')}}
+      {{ pagination.paginate_api('fpx', results.fpx.current_page, results.fpx.total_pages, form) }}
 
     {% endif %}
 
@@ -85,7 +84,7 @@
     {% if 'rijks' in results and results.rijks and results.rijks.count > 0 %}
     <h5>Page {{ results.rijks.page }} of {{ results.rijks.pages }} page{{ results.rijks.pages|pluralize }} from Rijksmuseum</h5>
 
-     {{ pagination.paginate_api(results.rijks.page, results.rijks.pages, search_data_for_pagination, 'rijks')}}
+     {{ pagination.paginate_api('rijks', results.rijks.page, results.rijks.pages, form) }}
 
       <div class="row">
         {% for result in results.rijks.artObjects %}
@@ -105,7 +104,7 @@
         {% endfor %}
       </div>
 
-     {{ pagination.paginate_api(results.rijks.page, results.rijks.pages, search_data_for_pagination, 'rijks')}}
+     {{ pagination.paginate_api('rijks', results.rijks.page, results.rijks.pages, form) }}
 
     {% endif %}
 
@@ -113,7 +112,7 @@
     {% if 'wikimedia' in results and results.wikimedia and results.wikimedia.total > 0 %}
     <h5>Page {{ results.wikimedia.page }} of {{ results.wikimedia.pages }} page{{ results.wikimedia.pages|pluralize }} from Wikimedia Commons</h5>
 
-     {{ pagination.paginate_api(results.wikimedia.page, results.wikimedia.pages, search_data_for_pagination, 'wikimedia')}}
+     {{ pagination.paginate_api('wikimedia', results.wikimedia.page, results.wikimedia.pages, form)}}
 
      <div class="row">
       {% for result in results.wikimedia.results %}
@@ -133,8 +132,7 @@
         {% endwith %}
       {% endfor %}
      </div>
-
-     {{ pagination.paginate_api(results.wikimedia.page, results.wikimedia.pages, search_data_for_pagination, 'wikimedia')}}
+     {{ pagination.paginate_api('wikimedia', results.wikimedia.page, results.wikimedia.pages, form)}}
     {% endif %}
   </div>
 {% endif %}
