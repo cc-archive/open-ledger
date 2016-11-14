@@ -1,5 +1,6 @@
 import json
 import os
+from urllib.parse import urlencode
 
 import jinja2
 from django.test import TestCase
@@ -15,6 +16,14 @@ class TestImageledgerApp(TestCase):
     """Setup/teardown for app test cases"""
     def setUp(self):
         activate_all_provider_mocks()
+
+    def delete(self, view, data):
+        """Patch the delete method to actually encode properties correctly"""
+        return self.client.delete(view, data=urlencode(data, doseq=True), content_type='application/x-www-form-urlencoded')
+
+    def put(self, view, data):
+        """Patch the put method to make sense"""
+        return self.client.put(view, data=urlencode(data, doseq=True), content_type='application/x-www-form-urlencoded')
 
 def activate_all_provider_mocks():
     """Mock all the responses we know about from all the providers"""

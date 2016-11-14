@@ -10,8 +10,8 @@ urlpatterns = [
     url(r'^image/detail/(?P<identifier>.*)$', search_views.detail, name="detail"),
 
     # apis
-    url(r'^api/list/images$', api_views.ListImagesAPI.as_view(), name="list-images-api"),
-    url(r'^api/list/(?P<slug>.*)$', api_views.ListAPI.as_view(), name="list-api"),
-    url(r'^api/lists$', api_views.ListsAPI.as_view(), name="lists-api"),
+    url(r'^api/v1/list/images$', api_views.ListImagesAPI.as_view(), name="list-images-api"),
+    url(r'^api/v1/list/(?P<slug>.*)$', api_views.ListAPI.as_view(), name="list-api"),
+    url(r'^api/v1/lists$', api_views.ListsAPI.as_view(), name="lists-api"),
 
 ]
