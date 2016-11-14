@@ -22,7 +22,7 @@
     {% endif %}
 
     {% if results.items %}
-     {{ pagination.paginate_openledger(results.page, results.pages, search_data_for_pagination) }}
+     {{ pagination.paginate_openledger(results.page, results.pages, form) }}
 
       <div class="row">
         {% for result in results.items %}
@@ -42,7 +42,7 @@
           {% endwith %}
         {% endfor %}
       </div>
-      {{ pagination.paginate_openledger(results.page, results.pages, search_data_for_pagination) }}
+      {{ pagination.paginate_openledger(results.page, results.pages, form) }}
       {% endif %}
     {% endif %}
   </div>

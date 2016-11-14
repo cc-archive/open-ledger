@@ -23,13 +23,13 @@
 
 {%- endmacro %}
 
-{% macro paginate_openledger(page, pages, search_data) -%}
+{% macro paginate_openledger(page, pages, form) -%}
 <div class="row column text-center">
   <ul class="pagination" role="navigation" aria-label="Pagination">
 
     <li class="pagination-previous {{ "disabled" if page == 1 }}">
       {% if page > 1 %}
-        <a aria-label="Previous page" href="{{ url('index', page=page-1, **search_data) }}">Previous</a>
+        <a aria-label="Previous page" href="{{ url_with_form('index', form, args=[], kwargs={'page': page-1}) }}">Previous</a>
       {% else %}
         Previous
       {% endif %}
@@ -37,7 +37,7 @@
 
     <li class="pagination-next {{ "disabled" if page >= pages }}">
       {% if page < pages %}
-      <a aria-label="Next page" href="{{ url('index', page=page+1, **search_data) }}">Next</a>
+      <a aria-label="Next page" href="{{ url_with_form('index', form, args=[], kwargs={'page': page+1}) }}">Next</a>
       {% else %}
         Next
       {% endif %}

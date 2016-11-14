@@ -28,7 +28,6 @@ search_funcs = {
 def index(request):
     s = Search()
     form = forms.SearchForm(request.GET)
-    search_data_for_pagination = {}
     results = search.Results(page=1)
 
     if form.is_valid():
@@ -58,20 +57,17 @@ def index(request):
             s = s.query(q)
             response = s.execute()
             results.pages = int(int(response.hits.total) / forms.PER_PAGE)
-
+            results.page = form.cleaned_data['page']
             start = results.page
             end = start + forms.PER_PAGE
             for r in s[start - 1:end]:
                 results.items.append(r)
-            search_data_for_pagination = {i: form.cleaned_data.get(i) for i in form.cleaned_data if i != 'page'}
-
     else:
         form = forms.SearchForm(initial=forms.SearchForm.initial_data)
 
     return render(request, 'results.html',
                   {'form': form,
-                   'results': results,
-                   'search_data_for_pagination': search_data_for_pagination})
+                   'results': results,})
 
 
 def provider_apis(request, provider=None):
