@@ -2,7 +2,6 @@ import logging
 
 from django.http import Http404, JsonResponse, HttpResponse, QueryDict
 from django.views import View
-
 from imageledger import models, api
 
 log = logging.getLogger(__name__)
@@ -59,11 +58,12 @@ class ListsAPI(View):
         r.status_code=204
         return r
 
+
+
     def put(self, request):
         # FIXME same issue as above, don't allow randos to modify other people's lists
         # If 'title' and not 'slug' is supplied, this will be a CREATE as well
-        r = QueryDict(request.body)
-
+        r, _ = request.parse_file_upload(request.META, request)
         status_code = 422
         if r.get('slug'):
             lst = api.update_list(r.get('slug'), image_identifiers=r.getlist('identifier'))

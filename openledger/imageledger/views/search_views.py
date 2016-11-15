@@ -1,6 +1,7 @@
 import logging
 
 from django.shortcuts import render, get_object_or_404
+from django.views.decorators.csrf import ensure_csrf_cookie
 from elasticsearch_dsl import Search, Q
 from elasticsearch_dsl.connections import connections
 
@@ -25,6 +26,7 @@ search_funcs = {
     "wikimedia": search_wikimedia,
 }
 
+@ensure_csrf_cookie
 def index(request):
     s = Search()
     form = forms.SearchForm(request.GET)

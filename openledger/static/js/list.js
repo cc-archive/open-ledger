@@ -1,5 +1,7 @@
 import 'whatwg-fetch'
 var _ = require('underscore')
+import * as Cookies from "js-cookie"
+
 
 const API_BASE = '/api/v1/'
 
@@ -230,9 +232,15 @@ export const addToList = function(e) {
   showUpdateMessage(msg)
   clearForm(form)
 
+  var csrf = Cookies.get('csrftoken')
+
   fetch(url, {
     method: 'PUT',
-    body: data
+    body: data,
+    credentials: "same-origin",
+    headers: {
+      "X-CSRFToken": csrf,
+    }
   })
   .then((response) => {
     return response.json()
