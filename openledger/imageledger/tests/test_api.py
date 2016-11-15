@@ -11,14 +11,14 @@ class TestAPIViews(TestImageledgerApp):
 
     def test_list_not_found(self):
         """The List endpoint should return a 404 if a slug is not found"""
-        resp = self.client.get('/api/v1/list/notfound')
+        resp = self.client.get('/api/v1/lists/notfound')
         assert 404 == resp.status_code
 
     def test_list(self):
         """The List endpoint should return a 200 response if a List matches by slug"""
         lst = models.List.objects.create(title='test title')
-        resp = self.client.get('/api/v1/list/' + lst.slug)
-        assert 200 == resp.status_code
+        resp = self.client.get('/api/v1/lists/' + lst.slug)
+        self.assertEquals(200, resp.status_code)
 
     def test_list_fields(self):
         """The List endpoint should return a JSON rendition of a list by slug"""
@@ -27,7 +27,7 @@ class TestAPIViews(TestImageledgerApp):
         creator_displayname = 'Jamal Doe'
         lst = models.List.objects.create(title=title, description=description, creator_displayname=creator_displayname)
         slug = lst.slug
-        resp = self.client.get('/api/v1/list/' + slug)
+        resp = self.client.get('/api/v1/lists/' + slug)
         assert 200 == resp.status_code
         obj = resp.json()
         assert title == obj['title']
@@ -46,7 +46,7 @@ class TestAPIViews(TestImageledgerApp):
         lst.images.add(img2)
         lst.save()
 
-        resp = self.client.get('/api/v1/list/' + lst.slug)
+        resp = self.client.get('/api/v1/lists/' + lst.slug)
         images = resp.json()['images']
         assert 2 == len(images)
 
@@ -129,7 +129,7 @@ class TestAPIViews(TestImageledgerApp):
         lst.save()
 
         assert 1 == models.List.objects.filter(title='test').first().images.count()
-        resp = self.client.post('/api/v1/list/images', {'slug': lst.slug, 'identifier': img2.identifier})
+        resp = self.client.post('/api/v1/lists/images', {'slug': lst.slug, 'identifier': img2.identifier})
 
         self.assertEquals(201, resp.status_code)
         assert 2 == models.List.objects.filter(title='test').first().images.count()
@@ -140,17 +140,17 @@ class TestAPIViews(TestImageledgerApp):
         img1 = models.Image.objects.create(title='image title', url='http://example.com/1', license='CC0')
         assert 0 == models.List.objects.filter(title='test').first().images.count()
 
-        resp = self.client.post('/api/v1/list/images', {'slug': lst.slug, 'identifier': img1.identifier})
+        resp = self.client.post('/api/v1/lists/images', {'slug': lst.slug, 'identifier': img1.identifier})
         assert 1 == models.List.objects.filter(title='test').first().images.count()
         assert 201 == resp.status_code
 
-        resp = self.client.post('/api/v1/list/images', {'slug': lst.slug, 'identifier': img1.identifier})
+        resp = self.client.post('/api/v1/lists/images', {'slug': lst.slug, 'identifier': img1.identifier})
         assert 1 == models.List.objects.filter(title='test').first().images.count()
 
     def test_add_to_list_no_image(self):
         """The List/Image endpoint should return 404 if the user tries to add a nonexistent image"""
         lst = models.List.objects.create(title='test')
-        resp = self.client.post('/api/v1/list/images', {'slug': lst.slug, 'identifier': 'unknown'})
+        resp = self.client.post('/api/v1/lists/images', {'slug': lst.slug, 'identifier': 'unknown'})
         assert 404 == resp.status_code
 
     def test_add_to_list_no_list(self):
@@ -158,7 +158,7 @@ class TestAPIViews(TestImageledgerApp):
         lst = models.List.objects.create(title='test')
         img1 = models.Image.objects.create(title='image title', url='http://example.com/1', license='CC0')
 
-        resp = self.client.post('/api/v1/list/images', {'slug': 'made up', 'identifier': img1.identifier})
+        resp = self.client.post('/api/v1/lists/images', {'slug': 'made up', 'identifier': img1.identifier})
         assert 404 == resp.status_code
 
     def test_get_lists_by_title(self):
@@ -219,9 +219,9 @@ class TestAPIViews(TestImageledgerApp):
         lst.save()
 
         assert 2 == models.List.objects.filter(title='test').first().images.count()
-        resp = self.delete('/api/v1/list/images', {'slug': lst.slug, 'identifier': img2.identifier})
+        resp = self.delete('/api/v1/lists/images', {'slug': lst.slug, 'identifier': img2.identifier})
 
-#        resp = self.client.post('/api/v1/list/images', {'slug': lst.slug, 'identifier': img2.identifier})
+#        resp = self.client.post('/api/v1/lists/images', {'slug': lst.slug, 'identifier': img2.identifier})
         self.assertEquals(204, resp.status_code)
         assert 1 == models.List.objects.filter(title='test').first().images.count()
 
@@ -229,13 +229,13 @@ class TestAPIViews(TestImageledgerApp):
         """The Lists/Image endpoint should 404 if a List does not exist"""
         img1 = models.Image.objects.create(title='image title', url='http://example.com/1', license='CC0')
         img1.save()
-        resp = self.delete('/api/v1/list/images', {'slug': 'unknown', 'identifier': img1.identifier})
+        resp = self.delete('/api/v1/lists/images', {'slug': 'unknown', 'identifier': img1.identifier})
         assert 404 == resp.status_code
 
     def test_delete_from_list_no_image(self):
         """The Lists/Image endpoint should 404 if the image requested to be removed does not exist"""
         lst = models.List.objects.create(title='test')
-        resp = self.delete('/api/v1/list/images', {'slug': lst.slug, 'identifier': 'unknown'})
+        resp = self.delete('/api/v1/lists/images', {'slug': lst.slug, 'identifier': 'unknown'})
         assert 404 == resp.status_code
 
 # class TestAPIOwnedList(TestImageledgerApp):
