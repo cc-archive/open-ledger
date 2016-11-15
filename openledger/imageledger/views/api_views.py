@@ -28,12 +28,13 @@ class ListImageSerializer(serializers.Serializer):
 
     def validate(self, data):
         data['image_objs'] = []
-        for img in data['images']:
-            try:
-                img = models.Image.objects.get(identifier=img['identifier'])
-                data['image_objs'].append(img)
-            except models.Image.DoesNotExist:
-                raise Http404
+        if 'images' in data:
+            for img in data['images']:
+                try:
+                    img = models.Image.objects.get(identifier=img['identifier'])
+                    data['image_objs'].append(img)
+                except models.Image.DoesNotExist:
+                    raise Http404
 
         return data
 
@@ -49,13 +50,6 @@ class ListImageSerializer(serializers.Serializer):
 
 class ListSerializer(serializers.ModelSerializer):
 
-    def get_queryset(self):
-        queryset = models.List.objects.all()
-        title = self.request.query_params.get('title', None)
-        if title is not None:
-            queryset = queryset.filter(title__startswith=title)
-        return queryset
-
     class Meta:
         model = models.List
         fields = ('title', 'slug', 'created_on', 'updated_on', 'description', 'creator_displayname')
@@ -63,8 +57,15 @@ class ListSerializer(serializers.ModelSerializer):
 class ListList(mixins.ListModelMixin,
                   mixins.CreateModelMixin,
                   generics.GenericAPIView):
-    queryset = models.List.objects.all()
+
     serializer_class = ListSerializer
+
+    def get_queryset(self):
+        queryset = models.List.objects.all()
+        title = self.request.query_params.get('title', None)
+        if title is not None:
+            queryset = queryset.filter(title__startswith=title)
+        return queryset
 
     def get(self, request, *args, **kwargs):
         return self.list(request, *args, **kwargs)
@@ -85,11 +86,15 @@ class ListDetail(mixins.RetrieveModelMixin,
     lookup_field = 'slug'
 
     def get(self, request, slug, **kwargs):
-        return get_object_or_404(models.List, slug=slug)
-
-
-    def put(self, request, slug, **kwargs):
         lst = get_object_or_404(models.List, slug=slug)
+        serializer = ListImageSerializer(lst, data=request.data, partial=True)
+        if serializer.is_valid():
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def put(self, request, slug=None, **kwargs):
+        lst = get_object_or_404(models.List, slug=slug)
+
         replace_images = True if 'replace' in request.data else False
 
         serializer = ListImageSerializer(lst, data=request.data, partial=True)
@@ -110,5 +115,5 @@ class ListDetail(mixins.RetrieveModelMixin,
                     lst.images.remove(img)
             else:
                 lst.delete()
-            return Response(serializer.data)
+            return Response(status=status.HTTP_204_NO_CONTENT)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
