@@ -22,6 +22,9 @@ urlpatterns = [
 apipatterns = [
     url(r'^api/v1/lists$', api_views.ListList.as_view()),
     url(r'^api/v1/lists/(?P<slug>[^/]+)$', api_views.ListDetail.as_view()),
+    url(r'^api/v1/images$', api_views.ListList.as_view()),
+    url(r'^api/v1/images/(?P<identifier>[^/]+)$', api_views.ListDetail.as_view()),
+
 ]
 
 apipatterns = format_suffix_patterns(apipatterns)

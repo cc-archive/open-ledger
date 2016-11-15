@@ -156,6 +156,14 @@ STATICFILES_DIRS = [
 
 TESTING = False
 
+# REST framework settings
+REST_FRAMEWORK = {
+    'TEST_REQUEST_DEFAULT_FORMAT': 'json',
+    'DEFAULT_PARSER_CLASSES': (
+        'rest_framework.parsers.JSONParser',
+    )
+}
+
 # Authentication with CAS
 
 CAS_SERVER_URL = "https://login.creativecommons.org"

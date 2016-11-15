@@ -76,7 +76,7 @@ class Image(OpenLedgerModel):
 
     class Meta:
         db_table = 'image'
-
+        ordering = ['-created_on']
 
 class ImageTags(OpenLedgerModel):
     tag = models.ForeignKey('Tag', on_delete=models.CASCADE, blank=True, null=True)
