@@ -5,7 +5,7 @@ from rest_framework.test import APIClient
 from django.urls import reverse
 import jinja2
 
-from imageledger import models, api
+from imageledger import models
 from imageledger.tests.utils import *
 
 class TestAPIViews(TestImageledgerApp):
@@ -240,19 +240,3 @@ class TestAPIViews(TestImageledgerApp):
 #         lst = models.List.objects.filter(title=title).one()
 #         pass  # Not yet working
 #
-
-class TestAPI(TestImageledgerApp):
-    """Methods that test the API calls directly"""
-
-    def test_get_all_lists_startswith_title(self):
-        """The get_lists function should allow lookup of lists starting with title and return all matches"""
-        title1 = 'test1'
-        title2 = '1test'
-        match = 'test'  # A startswith match
-        lst1 = models.List.objects.create(title=title1)
-        lst2 = models.List.objects.create(title=title2)
-        lst1.save()
-        lst2.save()
-
-        assert 1 == api.get_lists(title='test', match_method='startswith').count()
-        assert 2 == api.get_lists(title='test', match_method='contains').count()
