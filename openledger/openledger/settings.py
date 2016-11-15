@@ -41,6 +41,8 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'django_cas_ng',
     'imageledger',
+    'rest_framework',
+
 ]
 
 MIDDLEWARE = [
