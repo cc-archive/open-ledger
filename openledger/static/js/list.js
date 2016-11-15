@@ -43,7 +43,7 @@ export const deleteImageFromList = function (e) {
   if (confirm("Are you sure you want to delete this image from this list?")) {
     e.preventDefault()
     var form = e.target.parentNode
-    const url = API_BASE + 'lists/' + data.slug
+    const url = API_BASE + 'lists/' + form.elements["slug"].value
 
     var data = {
       images: [
