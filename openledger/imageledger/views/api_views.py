@@ -6,7 +6,7 @@ from django.shortcuts import get_object_or_404
 from rest_framework import mixins, generics, serializers, status
 from rest_framework.response import Response
 
-from imageledger import models, api
+from imageledger import models
 
 log = logging.getLogger(__name__)
 

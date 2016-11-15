@@ -5,7 +5,7 @@ from flask.views import MethodView
 from sqlalchemy.exc import IntegrityError
 
 from openledger import app
-from openledger import models, api, forms
+from openledger import models, forms
 
 log = logging.getLogger(__name__)
 

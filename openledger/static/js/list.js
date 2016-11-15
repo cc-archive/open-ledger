@@ -41,14 +41,25 @@ export const addToListForm = function (e) {
 /* DELETE an image from a List */
 export const deleteImageFromList = function (e) {
   if (confirm("Are you sure you want to delete this image from this list?")) {
-    const url = API_BASE + 'list/images'
-
     e.preventDefault()
     var form = e.target.parentNode
-    var data = new FormData(form)
+    const url = API_BASE + 'lists/' + data.slug
+
+    var data = {
+      images: [
+        {identifier: form.elements["identifier"].value}
+      ]
+    }
+    var csrf = Cookies.get('csrftoken')
+
     fetch(url, {
       method: 'DELETE',
-      body: data
+      body: JSON.stringify(data),
+      credentials: "same-origin",
+      headers: {
+        "X-CSRFToken": csrf,
+        "Content-Type": "application/json"
+      }
     })
     .then(checkStatus)
     .then((response) => {
@@ -138,7 +149,6 @@ export const completeListTitle = function (e) {
   fetch(url, {
     method: 'GET'
   })
-  .then(checkStatus)
   .then((response) => {
     return response.json()
   })
@@ -147,13 +157,15 @@ export const completeListTitle = function (e) {
     var autocomplete = input.nextElementSibling
     autocomplete.innerHTML = ''
 
-    for (var list of json.lists) {
+    for (var list of json) {
       var item = document.createElement('li')
       var a = document.createElement('a')
       a.innerHTML = list.title
       item.appendChild(a)
       var meta = document.createElement('span')
-      meta.innerHTML = ` with ${list.images.length} image${list.images.length != 1 ? 's' : ''}`
+      if (list.hasOwnProperty('images')) {
+        meta.innerHTML = ` with ${list.images.length} image${list.images.length != 1 ? 's' : ''}`
+      }
       item.appendChild(meta)
 
       // Add select events so we can call these with keyboard controls too
@@ -165,11 +177,6 @@ export const completeListTitle = function (e) {
       item.addEventListener('click', selectAndAddToList.bind(form, list.slug))
     }
   })
-  .catch(function(error) {
-    if (error.response.status != 404) {
-      console.log(error)
-    }
-  })
 }
 
 /* Visually indicate which item has been selected either via keyboard or mouse/hover */
@@ -179,21 +186,30 @@ export const selectItemAutocomplete = function() {
 
 /* On Submit of the form, create a new List and add any images in the form to it */
 export const selectAndAddToList = function(slug) {
-  const url = API_BASE + 'list/images'
+  const url = API_BASE + 'lists/' + slug
   const form = this
 
-  var data = new FormData(form)
+  var data = {
+    images: [
+      {identifier: form.elements["identifier"].value}
+    ]
+  }
 
   var msg = form.nextElementSibling
-  showUpdateMessage(msg)
 
+  showUpdateMessage(msg)
   clearForm(form)
 
-  data.set('slug', slug)
+  var csrf = Cookies.get('csrftoken')
 
   fetch(url, {
-    method: 'POST',
-    body: data
+    method: 'PUT',
+    body: JSON.stringify(data),
+    credentials: "same-origin",
+    headers: {
+      "X-CSRFToken": csrf,
+      "Content-Type": "application/json"
+    }
   })
   .then(checkStatus)
   .then((response) => {
@@ -204,7 +220,7 @@ export const selectAndAddToList = function(slug) {
   })
 }
 
-/* Update (PUT) a new image into an existing List */
+/* Update (POST/PUT) a new image into an existing List */
 export const addToList = function(e) {
   const url = API_BASE + 'lists'
 
@@ -221,12 +237,18 @@ export const addToList = function(e) {
     return
   }
 
-  var data = new FormData(form)
+  var data = {
+    title: form.elements["title"].value,
+    images: [
+      {identifier: form.elements["identifier"].value}
+    ]
+  }
 
   // Don't allow submitting without a title if that snuck by the browser
-  if (!data.get('title')) {
+  if (!data.title) {
     return
   }
+
   var msg = form.nextElementSibling
 
   showUpdateMessage(msg)
@@ -235,18 +257,35 @@ export const addToList = function(e) {
   var csrf = Cookies.get('csrftoken')
 
   fetch(url, {
-    method: 'PUT',
-    body: data,
+    method: 'POST',
+    body: JSON.stringify(data),
     credentials: "same-origin",
     headers: {
       "X-CSRFToken": csrf,
+      "Content-Type": "application/json"
     }
   })
   .then((response) => {
     return response.json()
   })
   .then((json) => {
-    successMessage(msg, json.slug, json.title)
+    if (json.slug) {
+      fetch(url + '/' + json.slug, {
+        method: 'PUT',
+        body: JSON.stringify(data),
+        credentials: "same-origin",
+        headers: {
+          "X-CSRFToken": csrf,
+          "Content-Type": "application/json"
+        }
+      })
+      .then((response) => {
+        return response.json()
+      })
+      .then((json) => {
+        successMessage(msg, json.slug, json.title)
+      })
+    }
   })
 }
 
