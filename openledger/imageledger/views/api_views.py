@@ -49,6 +49,13 @@ class ListImageSerializer(serializers.Serializer):
 
 class ListSerializer(serializers.ModelSerializer):
 
+    def get_queryset(self):
+        queryset = models.List.objects.all()
+        title = self.request.query_params.get('title', None)
+        if title is not None:
+            queryset = queryset.filter(title__startswith=title)
+        return queryset
+
     class Meta:
         model = models.List
         fields = ('title', 'slug', 'created_on', 'updated_on', 'description', 'creator_displayname')

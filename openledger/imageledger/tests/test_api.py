@@ -201,7 +201,7 @@ class TestAPIViews(TestImageledgerApp):
         lst1 = models.List.objects.create(title=title1)
         lst2 = models.List.objects.create(title=title2)
 
-        resp = self.req.get('/api/v1/lists?title='  + match)
+        resp = self.req.get('/api/v1/lists', {'title': match})
         assert 200 == resp.status_code
         assert 'lists' in resp.json()
         assert 1 == len(resp.json()['lists'])
