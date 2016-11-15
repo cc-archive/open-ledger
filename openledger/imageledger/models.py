@@ -92,7 +92,7 @@ class List(OpenLedgerModel):
     description = models.TextField(blank=True, null=True)
     is_public = models.NullBooleanField()
     slug = models.CharField(unique=True, max_length=255, blank=True, null=True)
-    images = models.ManyToManyField(Image)
+    images = models.ManyToManyField(Image, related_name="lists")
     class Meta:
         db_table = 'list'
 

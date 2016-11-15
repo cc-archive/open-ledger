@@ -29,13 +29,21 @@ class ListImageSerializer(serializers.Serializer):
     def validate(self, data):
         data['image_objs'] = []
         for img in data['images']:
-            data['image_objs'].append(models.Image.objects.get(identifier=img['identifier']))
+            try:
+                img = models.Image.objects.get(identifier=img['identifier'])
+                data['image_objs'].append(img)
+            except models.Image.DoesNotExist:
+                raise Http404
+
         return data
 
-    def update(self, instance, validated_data):
-        instance.images.clear()
+
+    def update(self, instance, validated_data, **kwargs):
+        if validated_data['replace_images']:
+            instance.images.clear()
         for img in validated_data['image_objs']:
-            instance.images.add(img)
+            if img.lists.filter(id=instance.id).count() == 0:
+                instance.images.add(img)
         return instance
 
 
@@ -49,7 +57,7 @@ class ListList(mixins.ListModelMixin,
                   mixins.CreateModelMixin,
                   generics.GenericAPIView):
     queryset = models.List.objects.all()
-    serializer_class = ListImageSerializer
+    serializer_class = ListSerializer
 
     def get(self, request, *args, **kwargs):
         return self.list(request, *args, **kwargs)
@@ -74,12 +82,26 @@ class ListDetail(mixins.RetrieveModelMixin,
 
 
     def put(self, request, slug, **kwargs):
-        lst = models.List.objects.get(slug=slug)
+        lst = get_object_or_404(models.List, slug=slug)
+        replace_images = True if 'replace' in request.data else False
+
         serializer = ListImageSerializer(lst, data=request.data, partial=True)
         if serializer.is_valid():
-            serializer.save()
+            serializer.save(replace_images=replace_images)
             return Response(serializer.data)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-    def delete(self, request, *args, **kwargs):
-        return self.destroy(request, *args, **kwargs)
+    def delete(self, request, slug, **kwargs):
+        """Passing an `images` param will delete the images; passing none will delete the instance"""
+        lst = get_object_or_404(models.List, slug=slug)
+        serializer = ListImageSerializer(lst, data=request.data, partial=True)
+        delete_images_only = 'images' in request.data and len(request.data['images']) > 0
+
+        if serializer.is_valid():
+            if delete_images_only:
+                for img in serializer.validated_data['image_objs']:
+                    lst.images.remove(img)
+            else:
+                lst.delete()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
