@@ -1,3 +1,5 @@
+
+from django.urls import reverse
 from django.db import models
 from django.contrib.postgres.fields import ArrayField
 
@@ -96,6 +98,8 @@ class List(OpenLedgerModel):
     class Meta:
         db_table = 'list'
 
+    def get_absolute_url(self):
+        return reverse('list-detail', args={'slug': self.slug})
 
 class Tag(OpenLedgerModel):
     foreign_identifier = models.CharField(max_length=255, blank=True, null=True)

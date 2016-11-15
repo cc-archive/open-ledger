@@ -3,7 +3,7 @@ from django.conf.urls import url, include
 from rest_framework.urlpatterns import format_suffix_patterns
 from django_cas_ng.views import login as cas_login, logout as cas_logout, callback as cas_callback
 
-from imageledger.views import search_views, api_views
+from imageledger.views import search_views, api_views, list_views
 
 urlpatterns = [
     url(r'^$', search_views.index, name='index'),
@@ -17,6 +17,10 @@ urlpatterns = [
     url(r'^accounts/logout$', cas_logout, name='cas_ng_logout'),
     url(r'^accounts/callback$', cas_callback, name='cas_ng_proxy_callback'),
 
+    # Lists
+    url(r'list/add/$', list_views.ListCreate.as_view(), name='list-add'),
+    url(r'list/(?P<slug>[^/]+)$', list_views.ListUpdate.as_view(), name='list-update'),
+    url(r'list/(?P<slug>[^/]+)/delete$', list_views.ListDelete.as_view(), name='list-delete'),
 ]
 
 apipatterns = [

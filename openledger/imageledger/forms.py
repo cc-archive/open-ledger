@@ -1,6 +1,6 @@
 from django import forms
 
-from imageledger import licenses
+from imageledger import licenses, models
 
 PER_PAGE = 20
 
@@ -51,7 +51,7 @@ class SearchForm(forms.Form):
     providers = forms.MultipleChoiceField(widget=forms.CheckboxSelectMultiple, required=False, choices=PROVIDER_CHOICES)
     per_page = forms.IntegerField(widget=forms.HiddenInput, required=False)
 
-class ListForm(forms.Form):
-    title = forms.CharField(label='Title')
-    description = forms.CharField(label='Description', widget=forms.Textarea)
-    is_public = forms.BooleanField(label='Is public?', required=False, widget=forms.CheckboxInput)
+class ListForm(forms.ModelForm):
+    class Meta:
+        model = models.List
+        fields = ['title', 'is_public', 'description', 'images', 'creator_displayname']
