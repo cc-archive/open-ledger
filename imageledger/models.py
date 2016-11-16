@@ -73,6 +73,8 @@ class Image(OpenLedgerModel):
     # Denormalized tags as an array, for easier syncing with Elasticsearch
     tags_list = ArrayField(models.CharField(max_length=255), blank=True, null=True)
 
+    tags = models.ManyToManyField('Tag', through='ImageTags')
+
     def __str__(self):
         return '<Image %r found at %r by %r>' % (self.identifier, self.url, self.creator)
 

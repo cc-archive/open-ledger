@@ -40,7 +40,7 @@
       </li>
     </ul>
     {% if image.tags %}
-      {% for tag in image.tags %}
+      {% for tag in image.tags.all() %}
         <span class="secondary label">{{ tag.name }}</span>
       {% endfor %}
     {% endif %}
