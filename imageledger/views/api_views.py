@@ -5,11 +5,31 @@ from django.views import View
 from django.shortcuts import get_object_or_404
 from rest_framework import mixins, generics, serializers, status
 from rest_framework.response import Response
+from rest_framework import permissions
 
 from imageledger import models
 
 log = logging.getLogger(__name__)
 
+
+class ListPermissions(permissions.BasePermission):
+    """
+     - owner may PUT, POST, DELETE
+     - everyone can GET if the list is_public
+    """
+
+    def has_permission(self, request, view):
+        # POST requests require auth at this time
+        if request.method == 'POST' and not request.user.is_authenticated():
+            return False
+        return True
+
+    def has_object_permission(self, request, view, obj):
+        # Allow GET requests for all
+        if request.method == 'GET' and obj.is_public:
+            return True
+        else:
+            return request.user == obj.owner
 
 class ImageSerializer(serializers.Serializer):
     identifier = serializers.CharField()
@@ -52,13 +72,17 @@ class ListSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = models.List
-        fields = ('title', 'slug', 'created_on', 'updated_on', 'description', 'creator_displayname')
+        fields = ('title', 'slug', 'created_on', 'updated_on', 'description',
+                  'creator_displayname', 'owner')
+
+# Views
 
 class ListList(mixins.ListModelMixin,
                   mixins.CreateModelMixin,
                   generics.GenericAPIView):
 
     serializer_class = ListSerializer
+    permission_classes = (ListPermissions, )
 
     def get_queryset(self):
         queryset = models.List.objects.all()
@@ -73,7 +97,7 @@ class ListList(mixins.ListModelMixin,
     def post(self, request, *args, **kwargs):
         serializer = ListSerializer(data=request.data)
         if serializer.is_valid():
-            serializer.save()
+            serializer.save(owner=request.user)
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
@@ -84,16 +108,25 @@ class ListDetail(mixins.RetrieveModelMixin,
     queryset = models.List.objects.all()
     serializer_class = ListImageSerializer
     lookup_field = 'slug'
+    permission_classes = (ListPermissions, )
+
+    def get_object(self):
+        filters = {}
+        filters[self.lookup_field] = self.kwargs[self.lookup_field]
+        lst = get_object_or_404(self.get_queryset(), **filters)
+        self.check_object_permissions(self.request, lst)
+        return lst
 
     def get(self, request, slug, **kwargs):
-        lst = get_object_or_404(models.List, slug=slug)
+        lst = self.get_object()
+
         serializer = ListImageSerializer(lst, data=request.data, partial=True)
         if serializer.is_valid():
             return Response(serializer.data)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     def put(self, request, slug=None, **kwargs):
-        lst = get_object_or_404(models.List, slug=slug)
+        lst = self.get_object()
 
         replace_images = True if 'replace' in request.data else False
 
@@ -105,7 +138,8 @@ class ListDetail(mixins.RetrieveModelMixin,
 
     def delete(self, request, slug, **kwargs):
         """Passing an `images` param will delete the images; passing none will delete the instance"""
-        lst = get_object_or_404(models.List, slug=slug)
+        lst = self.get_object()
+
         serializer = ListImageSerializer(lst, data=request.data, partial=True)
         delete_images_only = 'images' in request.data and len(request.data['images']) > 0
 

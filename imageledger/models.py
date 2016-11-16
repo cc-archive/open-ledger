@@ -1,6 +1,8 @@
 
 from django.urls import reverse
 from django.db import models
+from django.conf import settings
+
 from django.contrib.postgres.fields import ArrayField
 
 class OpenLedgerModel(models.Model):
@@ -97,6 +99,8 @@ class List(OpenLedgerModel):
     is_public = models.NullBooleanField()
     slug = models.CharField(unique=True, max_length=255, blank=True, null=True)
     images = models.ManyToManyField(Image, related_name="lists")
+    owner = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, blank=True, null=True)
+
     class Meta:
         db_table = 'list'
 
