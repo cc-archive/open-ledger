@@ -130,9 +130,8 @@ def launchloader():
             instance = _start_new_instance(resource, client)
         else:
             instance = _get_running_instance(resource, client)
-        database = get_named_database()
         deploy_code(instance.public_ip_address)
-        load_data_from_instance(instance, database)
+        load_data_from_instance(instance)
     except LoaderException as e:
         log.exception(e)
         if instance:
@@ -148,7 +147,7 @@ def launchloader():
             instance.stop()
         pass
 
-def load_data_from_instance(instance, database):
+def load_data_from_instance(instance):
     """Call a loading job from an instance"""
 
     with settings(host_string="ec2-user@" + instance.public_ip_address):
@@ -158,6 +157,7 @@ def load_data_from_instance(instance, database):
                 DJANGO_DATABASE_PORT=os.environ.get('DJANGO_DATABASE_PORT'),
                 DJANGO_DATABASE_HOST=os.environ.get('DJANGO_DATABASE_HOST'),
                 DJANGO_DATABASE_USER=os.environ.get('DJANGO_DATABASE_USER'),
+                DJANGO_DATABASE_PASSWORD=os.environ.get('DJANGO_DATABASE_PASSWORD'),
                 AWS_SECRET_ACCESS_KEY=AWS_SECRET_ACCESS_KEY,
                 AWS_ACCESS_KEY_ID=AWS_ACCESS_KEY_ID,
                 ELASTICSEARCH_URL=ELASTICSEARCH_URL,
@@ -170,6 +170,9 @@ def load_data_from_instance(instance, database):
 
                 env.datasource['flags'] = env.flags
                 env.datasource['before_args'] = 'screen -d -m ' if env.with_nohup else ""
+
+                # Run any migrations first
+                run('../venv/bin/python manage.py migrate')
 
                 if env.datasource['action'] == 'reindex':
                     run('{before_args}../venv/bin/python manage.py indexer {flags}; sleep 1'.format(**env.datasource))
