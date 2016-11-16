@@ -27,6 +27,8 @@ DEBUG = False
 
 ALLOWED_HOSTS = ['openledger-dev.creativecommons.org',
                  'openledger.creativecommons.org',
+                 'openledger-dev.us-west-1.elasticbeanstalk.com',
+                 'openledger.us-west-1.elasticbeanstalk.com',
                  'localhost']
 
 
@@ -192,3 +194,22 @@ except ImportError:
     ELASTICSEARCH_PORT = 80
     AWS_ACCESS_KEY_ID = os.environ.get('AWS_ACCESS_KEY_ID')
     AWS_SECRET_ACCESS_KEY = os.environ.get('AWS_SECRET_ACCESS_KEY')
+
+    LOGGING = {
+        'version': 1,
+        'disable_existing_loggers': False,
+        'handlers': {
+            'file': {
+                'level': 'INFO',
+                'class': 'logging.FileHandler',
+                'filename': os.environ.get('LOG_FILE')
+            },
+        },
+        'loggers': {
+            'django': {
+                'handlers': ['file'],
+                'level': 'INFO',
+                'propagate': True,
+            },
+        },
+    }

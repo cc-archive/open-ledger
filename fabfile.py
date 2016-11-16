@@ -31,10 +31,12 @@ API_500PX_SECRET = os.environ.get('API_500PX_SECRET')
 API_RIJKS = os.environ.get('API_RIJKS')
 FLICKR_KEY = os.environ.get('FLICKR_KEY')
 FLICKR_SECRET = os.environ.get('FLICKR_SECRET')
-
+LOG_FILE = '/tmp/app.log'
 
 EB_ENV_ENVIRONMENT_PROD = 'openledger'
 EB_ENV_ENVIRONMENT_DEV = 'openledger-dev'
+
+
 
 DATASOURCES = {
     'openimages-full': {
@@ -151,7 +153,7 @@ def load_data_from_instance(instance):
     """Call a loading job from an instance"""
 
     with settings(host_string="ec2-user@" + instance.public_ip_address):
-        with cd('open-ledger/openledger'):
+        with cd('open-ledger'):
             with shell_env(
                 DJANGO_DATABASE_NAME=os.environ.get('DJANGO_DATABASE_NAME'),
                 DJANGO_DATABASE_PORT=os.environ.get('DJANGO_DATABASE_PORT'),
@@ -166,20 +168,21 @@ def load_data_from_instance(instance):
                 API_RIJKS=API_RIJKS,
                 FLICKR_KEY=FLICKR_KEY,
                 FLICKR_SECRET=FLICKR_SECRET,
+                LOG_FILE=LOG_FILE,
                 ):
 
                 env.datasource['flags'] = env.flags
                 env.datasource['before_args'] = 'screen -d -m ' if env.with_nohup else ""
 
                 # Run any migrations first
-                run('../venv/bin/python manage.py migrate')
+                run('./venv/bin/python manage.py migrate')
 
                 if env.datasource['action'] == 'reindex':
-                    run('{before_args}../venv/bin/python manage.py indexer {flags}; sleep 1'.format(**env.datasource))
+                    run('{before_args}./venv/bin/python manage.py indexer {flags}; sleep 1'.format(**env.datasource))
                 elif env.datasource['action'] == 'load-from-file':
-                    run('{before_args}../venv/bin/python manage.py loader {filepath} {source} {datatype} --filesystem {filesystem} --skip-checks {flags} ; sleep 1'.format(**env.datasource))
+                    run('{before_args}./venv/bin/python manage.py loader {filepath} {source} {datatype} --filesystem {filesystem} --skip-checks {flags} ; sleep 1'.format(**env.datasource))
                 elif env.datasource['action'] == 'load-from-provider':  # FIXME update this
-                    run('{before_args}../venv/bin/python -m openledger.handlers.handler_{provider} {flags} ; sleep 1'.format(**env.datasource))
+                    run('{before_args}./venv/bin/python -m openledger.handlers.handler_{provider} {flags} ; sleep 1'.format(**env.datasource))
 
 def deploy_code(host_string):
     max_retries = 20

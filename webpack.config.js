@@ -2,7 +2,7 @@ var webpack = require('webpack');
 
 var PROD = (process.env.NODE_ENV === 'production')
 
-var root = "/openledger/static"
+var root = "/static"
 
 module.exports = [{
   context: __dirname + root + "/js",
