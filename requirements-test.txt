@@ -3,3 +3,7 @@ html5lib==0.9999999
 cssselect
 git+git://github.com/jong/testing.elasticsearch.git#egg=testing.elasticsearch
 mock
+awsebcli
+Fabric3==1.12.post1
+responses
+git+git://github.com/lizadaly/fabtools.git#egg=fabtools

@@ -3,7 +3,6 @@ import logging
 import time
 
 import requests
-from sqlalchemy.exc import IntegrityError
 
 from django.conf import settings
 from imageledger import models

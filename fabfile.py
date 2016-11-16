@@ -10,8 +10,6 @@ from fabric.context_managers import shell_env
 from fabric.contrib.console import confirm
 from fabric.exceptions import NetworkError
 
-import database_import
-
 timestamp="release-%s" % int(time.time() * 1000)
 
 CODE_DIR = '/home/liza/open-ledger'
@@ -95,7 +93,7 @@ if not env.get('instance_type'):
 
 # Override the database instance or use the default
 if not env.get('database_id'):
-    env.database_id = 'openledger-db-2'
+    env.database_id = 'openledger-db-1'
 
 # Which branch should we check out on the loader?
 if not env.get('branch'):
@@ -224,7 +222,6 @@ def get_named_database(identifier=env.database_id):
     database['port'] = r['Endpoint']['Port']
     database['name'] = r['DBName']
     database['user'] = r['MasterUsername']
-    database['password'] = DB_PASSWORD
     log.info("Returning database at {}".format(database['host']))
     return database
 
