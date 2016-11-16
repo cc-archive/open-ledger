@@ -25,7 +25,6 @@ KEY_NAME = os.environ['OPEN_LEDGER_LOADER_KEY_NAME']
 SECURITY_GROUPS = os.environ['OPEN_LEDGER_LOADER_SECURITY_GROUPS'].split(',')
 REGION = os.environ['OPEN_LEDGER_REGION']
 ACCOUNT_NUMBER = os.environ['OPEN_LEDGER_ACCOUNT']
-DB_PASSWORD = os.environ['OPEN_LEDGER_DATABASE_PASSWORD']
 AWS_ACCESS_KEY_ID = os.environ['OPEN_LEDGER_ACCESS_KEY_ID']
 AWS_SECRET_ACCESS_KEY = os.environ['OPEN_LEDGER_SECRET_ACCESS_KEY']
 ELASTICSEARCH_URL = os.environ['OPEN_LEDGER_ELASTICSEARCH_URL']
@@ -34,6 +33,7 @@ API_500PX_SECRET = os.environ.get('API_500PX_SECRET')
 API_RIJKS = os.environ.get('API_RIJKS')
 FLICKR_KEY = os.environ.get('FLICKR_KEY')
 FLICKR_SECRET = os.environ.get('FLICKR_SECRET')
+
 
 EB_ENV_ENVIRONMENT_PROD = 'openledger'
 EB_ENV_ENVIRONMENT_DEV = 'openledger-dev'
@@ -154,30 +154,30 @@ def load_data_from_instance(instance, database):
     """Call a loading job from an instance"""
 
     with settings(host_string="ec2-user@" + instance.public_ip_address):
-        with cd('open-ledger'):
-            with shell_env(SQLALCHEMY_DATABASE_URI="postgresql://{user}:{password}@{host}/{name}".format(
-                **{'user': str(database['user']),
-                 'password': str(database['password']),
-                 'host': str(database['host']),
-                 'name': str(database['name']),}),
-                 AWS_SECRET_ACCESS_KEY=AWS_SECRET_ACCESS_KEY,
-                 AWS_ACCESS_KEY_ID=AWS_ACCESS_KEY_ID,
-                 ELASTICSEARCH_URL=ELASTICSEARCH_URL,
-                 API_500PX_KEY=API_500PX_KEY,
-                 API_500PX_SECRET=API_500PX_SECRET,
-                 API_RIJKS=API_RIJKS,
-                 FLICKR_KEY=FLICKR_KEY,
-                 FLICKR_SECRET=FLICKR_SECRET,
-                 ):
+        with cd('open-ledger/openledger'):
+            with shell_env(
+                DJANGO_DATABASE_NAME=os.environ.get('DJANGO_DATABASE_NAME'),
+                DJANGO_DATABASE_PORT=os.environ.get('DJANGO_DATABASE_PORT'),
+                DJANGO_DATABASE_HOST=os.environ.get('DJANGO_DATABASE_HOST'),
+                DJANGO_DATABASE_USER=os.environ.get('DJANGO_DATABASE_USER'),
+                AWS_SECRET_ACCESS_KEY=AWS_SECRET_ACCESS_KEY,
+                AWS_ACCESS_KEY_ID=AWS_ACCESS_KEY_ID,
+                ELASTICSEARCH_URL=ELASTICSEARCH_URL,
+                API_500PX_KEY=API_500PX_KEY,
+                API_500PX_SECRET=API_500PX_SECRET,
+                API_RIJKS=API_RIJKS,
+                FLICKR_KEY=FLICKR_KEY,
+                FLICKR_SECRET=FLICKR_SECRET,
+                ):
 
                 env.datasource['flags'] = env.flags
                 env.datasource['before_args'] = 'screen -d -m ' if env.with_nohup else ""
 
                 if env.datasource['action'] == 'reindex':
-                    run('{before_args}./venv/bin/python -m openledger.search {flags}; sleep 1'.format(**env.datasource))
+                    run('{before_args}./venv/bin/python manage.py indexer {flags}; sleep 1'.format(**env.datasource))
                 elif env.datasource['action'] == 'load-from-file':
-                    run('{before_args}./venv/bin/python database_import.py {filepath} {source} {datatype} --filesystem {filesystem} --skip-checks {flags} ; sleep 1'.format(**env.datasource))
-                elif env.datasource['action'] == 'load-from-provider':
+                    run('{before_args}./venv/bin/python manage.py loader {filepath} {source} {datatype} --filesystem {filesystem} --skip-checks {flags} ; sleep 1'.format(**env.datasource))
+                elif env.datasource['action'] == 'load-from-provider':  # FIXME update this
                     run('{before_args}./venv/bin/python -m openledger.handlers.handler_{provider} {flags} ; sleep 1'.format(**env.datasource))
 
 def deploy_code(host_string):

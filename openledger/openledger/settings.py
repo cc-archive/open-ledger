@@ -103,11 +103,11 @@ WSGI_APPLICATION = 'openledger.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'openledger',
-        'USER': 'deploy',
-        'PASSWORD': 'deploy',
-        'HOST': 'localhost',
-        'PORT': 5432,
+        'NAME': os.environ.get('DJANGO_DATABASE_NAME'),
+        'USER': os.environ.get('DJANGO_DATABASE_USER'),
+        'PASSWORD': os.environ.get('DJANGO_DATABASE_PASSWORD'),
+        'HOST': os.environ.get('DJANGO_DATABASE_HOST'),
+        'PORT': os.environ.get('DJANGO_DATABASE_PORT'),
     }
 }
 
@@ -170,6 +170,7 @@ CAS_SERVER_URL = "https://login.creativecommons.org"
 CAS_LOGOUT_COMPLETELY = False
 CAS_CREATE_USER = True
 
+
 #CAS_AFTER_LOGIN = "auth_redirect"
 #CAS_LOGIN_ROUTE = "/login"
 #CAS_VALIDATE_ROUTE = '/proxyValidate'
@@ -187,15 +188,7 @@ except ImportError:
     FLICKR_KEY = os.environ.get('FLICKR_KEY')
     FLICKR_SECRET = os.environ.get('FLICKR_SECRET')
 
-    # Database-specific
-    SQLALCHEMY_DATABASE_URI = os.environ.get('SQLALCHEMY_DATABASE_URI')
-
-    SQLALCHEMY_TRACK_MODIFICATIONS = False
-
     ELASTICSEARCH_URL = os.environ.get('ELASTICSEARCH_URL')
     ELASTICSEARCH_PORT = 80
     AWS_ACCESS_KEY_ID = os.environ.get('AWS_ACCESS_KEY_ID')
     AWS_SECRET_ACCESS_KEY = os.environ.get('AWS_SECRET_ACCESS_KEY')
-
-    # Static assets
-    ASSETS_AUTO_BUILD=False
