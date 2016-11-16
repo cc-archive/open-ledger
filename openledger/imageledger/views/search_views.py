@@ -107,7 +107,7 @@ def by_image(request):
     remaining = dict((k, request.GET[k]) for k in request.GET)  # The vals in request.GET are lists, so flatten
     remaining.update({'license_version': license_version})
     return render(request, 'detail.html',
-                  {'image': {**remaining},
+                  {'image': remaining,
                    'license_url': license_url,
                    })
 
