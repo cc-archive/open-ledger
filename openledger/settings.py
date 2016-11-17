@@ -177,12 +177,6 @@ CAS_SERVER_URL = "https://login.creativecommons.org"
 CAS_LOGOUT_COMPLETELY = False
 CAS_CREATE_USER = True
 
-
-#CAS_AFTER_LOGIN = "auth_redirect"
-#CAS_LOGIN_ROUTE = "/login"
-#CAS_VALIDATE_ROUTE = '/proxyValidate'
-#CAS_LOGOUT_ROUTE = "/logout"
-
 try:
     from openledger.local import *
 
