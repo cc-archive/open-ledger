@@ -11,6 +11,22 @@ from imageledger import models
 
 log = logging.getLogger(__name__)
 
+class ListAutocompletePermissions(permissions.BasePermission):
+    """Only a logged-in user can use this endpoint, and only a List owner can GET
+    List matches."""
+
+    def has_permission(self, request, view):
+        # POST requests require auth at this time
+        if request.method == 'GET' and request.user.is_authenticated():
+            return True
+        return False
+
+    def has_object_permission(self, request, view, obj):
+        # Allow GET requests for owner
+        if request.method == 'GET' and request.user == obj.owner:
+            return True
+        return False
+
 
 class ListPermissions(permissions.BasePermission):
     """
@@ -81,15 +97,10 @@ class ListList(mixins.ListModelMixin,
                   mixins.CreateModelMixin,
                   generics.GenericAPIView):
 
+    queryset = models.List.objects.all()
     serializer_class = ListSerializer
     permission_classes = (ListPermissions, )
 
-    def get_queryset(self):
-        queryset = models.List.objects.all()
-        title = self.request.query_params.get('title', None)
-        if title is not None:
-            queryset = queryset.filter(title__startswith=title)
-        return queryset
 
     def get(self, request, *args, **kwargs):
         return self.list(request, *args, **kwargs)
@@ -101,10 +112,29 @@ class ListList(mixins.ListModelMixin,
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+class ListAutocomplete(mixins.ListModelMixin,
+                       generics.GenericAPIView):
+    """A view for the List autocomplete feature, which will match, by title, only
+    Lists which are owned by the requestor."""
+    serializer_class = ListSerializer
+    permission_classes = (ListAutocompletePermissions, )
+    queryset = models.List.objects.all()
+
+    def filter_queryset(self, queryset):
+        queryset = super().filter_queryset(queryset)
+        queryset = queryset.filter(owner=self.request.user)
+        title = self.request.query_params.get('title', None)
+        if title is not None:
+            queryset = queryset.filter(title__startswith=title)
+        return queryset
+
+    def get(self, request, *args, **kwargs):
+        return self.list(request, *args, **kwargs)
+
 class ListDetail(mixins.RetrieveModelMixin,
-                    mixins.UpdateModelMixin,
-                    mixins.DestroyModelMixin,
-                    generics.GenericAPIView):
+                 mixins.UpdateModelMixin,
+                 mixins.DestroyModelMixin,
+                 generics.GenericAPIView):
     queryset = models.List.objects.all()
     serializer_class = ListImageSerializer
     lookup_field = 'slug'

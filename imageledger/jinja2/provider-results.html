@@ -42,7 +42,7 @@
                                 'provider': "flickr"}) %}
             {% set detail_url = url('by-image', url=image.url, provider_url=image.provider_url, license=image.license, creator=image.creator, title=image.title, provider=image.provider, creator_url=image.creator_url) %}
 
-            {% call image_result.show(detail_url, image) %}{% endcall %}
+            {% call image_result.show(detail_url, image, request) %}{% endcall %}
           {% endwith %}
         {% endfor %}
 

@@ -230,17 +230,6 @@ class TestAPIViews(TestImageledgerApp):
         assert 200 == resp.status_code  # Because Chrome; ideally would be 404
         assert 0 == len(resp.json())
 
-    def test_get_all_lists_by_title(self):
-        """The Lists endpoint should allow lookup starting with a title and return all matches"""
-        title1 = 'test1'
-        title2 = '1test'
-        match = 'test'  # A startswith match
-        lst1 = models.List.objects.create(title=title1, is_public=True)
-        lst2 = models.List.objects.create(title=title2, is_public=True)
-
-        resp = self.req.get('/api/v1/lists', {'title': match})
-        assert 200 == resp.status_code
-        assert 1 == len(resp.json())
 
     def test_delete_from_list(self):
         """The Lists/Image endpoint should allow removing an Image from a List without modifying other images"""
@@ -271,3 +260,40 @@ class TestAPIViews(TestImageledgerApp):
         self.req.force_login(self.user)
         resp = self.req.delete('/api/v1/lists/' + lst.slug, {'images': [{'identifier': 'unknown'}]})
         assert 404 == resp.status_code
+
+    def test_list_autocomplete_lists_by_title(self):
+        """The Lists autocomplete endpoint should allow lookup starting with a
+        title and return all matches owned by that user"""
+        title1 = 'test1'
+        title2 = '1test'
+        match = 'test'  # A startswith match
+        lst1 = models.List.objects.create(title=title1, owner=self.user)
+        lst2 = models.List.objects.create(title=title2, owner=self.user)
+        self.req.force_login(self.user)
+        resp = self.req.get('/api/v1/autocomplete/lists', {'title': match})
+        assert 200 == resp.status_code
+        self.assertEquals(1, len(resp.json()))
+
+    def test_list_autocomplete(self):
+        """The List autocomplete should only return Lists owned by the requesting user"""
+        title = 'title'
+        user2 = get_user_model().objects.create(username='other user')
+        lst1 = models.List.objects.create(title=title, owner=user2)
+        lst2 = models.List.objects.create(title=title, owner=self.user)
+        lst3 = models.List.objects.create(title=title)
+        self.req.force_login(self.user)
+        resp = self.req.get('/api/v1/autocomplete/lists', {'title': title})
+        assert 200 == resp.status_code
+        self.assertEquals(1, len(resp.json()))
+
+    def test_list_autocomplete_none_found(self):
+        """The List autocomplete should return an empty list with a 200 response if no matching lists are found"""
+        self.req.force_login(self.user)
+        resp = self.req.get('/api/v1/autocomplete/lists', {'title': 'title'})
+        assert 200 == resp.status_code
+        self.assertEquals(0, len(resp.json()))
+
+    def test_list_autocomplete_anon_user(self):
+        """The List autocomplete should return a 403 on anonymous users"""
+        resp = self.req.get('/api/v1/autocomplete/lists', {'title': 'title'})
+        self.assertEqual(403, resp.status_code)

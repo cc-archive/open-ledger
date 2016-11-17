@@ -24,7 +24,7 @@
         {% if request.user.is_anonymous %}
           <a href="{{ url('cas_ng_login') }}">Sign in</a>
         {% else %}
-          <a href="{{ url('cas_ng_logout') }}">Sign out</a>
+          <a href="{{ url('cas_ng_logout') }}">{{ request.user.username }} Sign out</a>
 
         {% endif %}
       </div>

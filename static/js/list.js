@@ -62,7 +62,7 @@ export const deleteImageFromList = function (e) {
     fetch(url, {
       method: 'DELETE',
       body: JSON.stringify(data),
-      credentials: "same-origin",
+      credentials: "include",
       headers: {
         "X-CSRFToken": csrf,
         "Content-Type": "application/json"
@@ -151,11 +151,13 @@ export const completeListTitle = function (e) {
     return
   }
 
-  const url = API_BASE + 'lists?title=' + encodeURIComponent(input.value)
+  const url = API_BASE + 'autocomplete/lists?title=' + encodeURIComponent(input.value)
 
   fetch(url, {
-    method: 'GET'
+    method: 'GET',
+    credentials: 'include'
   })
+  .then(checkStatus)
   .then((response) => {
     return response.json()
   })
@@ -212,7 +214,7 @@ export const selectAndAddToList = function(slug) {
   fetch(url, {
     method: 'PUT',
     body: JSON.stringify(data),
-    credentials: "same-origin",
+    credentials: "include",
     headers: {
       "X-CSRFToken": csrf,
       "Content-Type": "application/json"
@@ -266,7 +268,7 @@ export const addToList = function(e) {
   fetch(url, {
     method: 'POST',
     body: JSON.stringify(data),
-    credentials: "same-origin",
+    credentials: "include",
     headers: {
       "X-CSRFToken": csrf,
       "Content-Type": "application/json"
@@ -280,7 +282,7 @@ export const addToList = function(e) {
       fetch(url + '/' + json.slug, {
         method: 'PUT',
         body: JSON.stringify(data),
-        credentials: "same-origin",
+        credentials: "include",
         headers: {
           "X-CSRFToken": csrf,
           "Content-Type": "application/json"

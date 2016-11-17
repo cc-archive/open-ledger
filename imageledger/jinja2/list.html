@@ -13,7 +13,7 @@
         {{ object.title }}
         <a onClick="openledger.form.showForm(event)" class="fi-page-edit" title="Edit this List" alt="Edit this list"></a>
       </div>
-      {{ form.title.label }}
+      <label for="title">{{ form.title.label }}</label>
       {{ form.title }}
     </h2>
 
@@ -21,7 +21,7 @@
       <div class="form-readonly">
         {{ object.description or "No description provided"}}
       </div>
-      {{ form.description.label }}
+      <label for="description">{{ form.description.label }}</label>
       {{ form.description }}
 
     </div>
@@ -30,7 +30,7 @@
       List is visible to the public?
       {{ form.is_public }}
       <span class="form-readonly">
-        {{ "Yes" if form.is_public else "No"}}
+        {{ "Yes" if object.is_public else "No"}}
       </span>
     </div>
 
@@ -41,7 +41,7 @@
   <div class="row">
   {% for image in object.images.all() %}
     {% set detail_url = url('detail', image.identifier) %}
-    {% call image_result.show(detail_url, image) %}
+    {% call image_result.show(detail_url, image, request) %}
       <form method="POST">
         <input type="hidden" name="identifier" value="{{ image.identifier }}" />
         <input type="hidden" name="slug" value="{{ object.slug }}" />

@@ -28,7 +28,7 @@
         {% for result in results.items %}
 
           {% set detail_url = url('detail', result.identifier) %}
-          {% call image_result.show(detail_url, result) %}{% endcall %}
+          {% call image_result.show(detail_url, result, request) %}{% endcall %}
 
         {% endfor %}
       </div>
