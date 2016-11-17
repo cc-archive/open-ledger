@@ -96,7 +96,7 @@ class List(OpenLedgerModel):
     title = models.CharField(max_length=2000)
     creator_displayname = models.CharField(max_length=2000, blank=True, null=True)
     description = models.TextField(blank=True, null=True)
-    is_public = models.NullBooleanField()
+    is_public = models.BooleanField(default=False)
     slug = models.CharField(unique=True, max_length=255, blank=True, null=True)
     images = models.ManyToManyField(Image, related_name="lists")
     owner = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, blank=True, null=True)
