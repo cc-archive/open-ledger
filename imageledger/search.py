@@ -112,7 +112,7 @@ def init():
     """Initialize all search objects"""
     es = init_es()
     connections.add_connection('default', es)
-    log.warn("Initializing search objects for connection %s:%s", settings.ELASTICSEARCH_URL, settings.ELASTICSEARCH_PORT)
+    log.debug("Initializing search objects for connection %s:%s", settings.ELASTICSEARCH_URL, settings.ELASTICSEARCH_PORT)
     return es
 
 if __name__ == '__main__':

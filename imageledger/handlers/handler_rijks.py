@@ -5,7 +5,8 @@ import time
 import requests
 
 from django.conf import settings
-from imageledger import models
+from imageledger import models, signals
+from django.db.utils import IntegrityError
 
 BASE_URL = 'https://www.rijksmuseum.nl'
 ENDPOINT_PHOTOS = BASE_URL + '/api/en/collection'
@@ -20,10 +21,8 @@ DELAY_SECONDS = 2  # Time to wait between API requests
 
 THUMBNAIL_WIDTH = 200
 
-console = logging.StreamHandler()
 log = logging.getLogger(__name__)
-log.addHandler(console)
-log.setLevel(logging.INFO)
+
 
 def photos(search=None, page=1, per_page=20, **kwargs):
     # Rijks pages are zero-indexed, so always subtract one before the request
@@ -69,7 +68,7 @@ def serialize(result):
     image.width = result['webImage']['width']
     image.height = result['webImage']['height']
     image.title = result['longTitle']
-    image.identifier = models.create_identifier(image.url)
+    image.identifier = signals.create_identifier(image.url)
     return image
 
 def walk(page=1, per_page=200):
@@ -100,18 +99,24 @@ def grouper_it(n, iterable):
             return
         yield itertools.chain((first_el,), chunk_it)
 
-def insert_image(chunk_size):
+def insert_image(chunk_size, max_results=5000):
+    count = 0
+    success_count = 0
     for chunk in grouper_it(chunk_size, walk()):
-        try:
+        if count >= max_results:
+            break
+        else:
             images = []
             for result in chunk:
                 image = serialize(result)
                 images.append(image)
             if len(images) > 0:
-                # FIXME SQLAlchemy should still be used here but need different approach
-                #models.db.session.bulk_save_objects(images)
-                #models.db.session.commit()
-                log.info("*** Committing set of %d images", len(images))
-        except IntegrityError as e:
-            #models.db.session.rollback()
-            log.debug(e)
+                try:
+                    models.Image.objects.bulk_create(images)
+                    log.debug("*** Committed set of %d images", len(images))
+                    success_count += len(images)
+                except IntegrityError as e:
+                    log.warn("Got one or more integrity errors on batch: %s", e)
+                finally:
+                    count += len(images)
+    return success_count
