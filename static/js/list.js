@@ -12,6 +12,13 @@ const HOST_URL = `${window.location.protocol}//${window.location.hostname}${HOST
 export const addToListForm = function (e) {
 
   var form = e.target.nextElementSibling
+
+  // If they aren't logged in, tell them to do so. We can improve the UI here later.
+  if (form.dataset.loggedIn != 'True') {
+    alert("Please sign in to save this image to a list.")
+    return
+  }
+
   var input = form.querySelector('input[type=text]')
 
   // Clear any old messages

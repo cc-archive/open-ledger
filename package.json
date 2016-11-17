@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "A prototype repository for reuse of freely licensed imagery",
   "scripts": {
-    "test": "_mocha --require openledger/static/js/test/global --compilers js:babel-core/register --recursive 'openledger/static/js/test/*.js'"
+    "test": "_mocha --require static/js/test/global --compilers js:babel-core/register --recursive 'static/js/test/*.js'"
   },
   "repository": {
     "type": "git",

@@ -73,7 +73,7 @@
     </button>
 
     {% if image.tags %} {# Local objects only for now #}
-      {{ lists.add(image.identifier, size="large") }}
+      {{ lists.add(image.identifier, request, size="large") }}
     {% endif %}
   </div>
 
