@@ -15,12 +15,6 @@ import os
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-
-# Quick-start development settings - unsuitable for production
-# See https://docs.djangoproject.com/en/1.10/howto/deployment/checklist/
-
-SECRET_KEY = '5h5$ky5rkt5h26zrh#74^fx+-os_&hr_z9r+krq4@7n@!v8kxh'
-
 DEBUG = False
 
 import socket
@@ -205,6 +199,8 @@ except ImportError:
     ELASTICSEARCH_PORT = 80
     AWS_ACCESS_KEY_ID = os.environ.get('AWS_ACCESS_KEY_ID')
     AWS_SECRET_ACCESS_KEY = os.environ.get('AWS_SECRET_ACCESS_KEY')
+
+    SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY')
 
     LOGGING = {
         'version': 1,
