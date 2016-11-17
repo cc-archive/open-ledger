@@ -100,8 +100,8 @@ def grouper_it(n, iterable):
             return
         yield itertools.chain((first_el,), chunk_it)
 
-def insert_image(iterator, walk, chunk_size):
-    for chunk in iterator(chunk_size, walk()):
+def insert_image(chunk_size):
+    for chunk in grouper_it(chunk_size, walk()):
         try:
             images = []
             for result in chunk:
@@ -115,7 +115,3 @@ def insert_image(iterator, walk, chunk_size):
         except IntegrityError as e:
             #models.db.session.rollback()
             log.debug(e)
-
-if __name__ == '__main__':
-    chunk_size = 1000
-    insert_image(grouper_it, walk, chunk_size)
