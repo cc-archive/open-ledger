@@ -72,7 +72,7 @@ DATASOURCES = {
     'searchindex': {
         'action': 'reindex',
         },
-    'rijksmuseum': {
+    'rijks': {
         'action': 'load-from-provider',
         'provider': 'rijks',
     }
@@ -182,7 +182,7 @@ def load_data_from_instance(instance):
                 elif env.datasource['action'] == 'load-from-file':
                     run('{before_args}./venv/bin/python manage.py loader {filepath} {source} {datatype} --filesystem {filesystem} --skip-checks {flags} ; sleep 1'.format(**env.datasource))
                 elif env.datasource['action'] == 'load-from-provider':  # FIXME update this
-                    run('{before_args}./venv/bin/python -m openledger.handlers.handler_{provider} {flags} ; sleep 1'.format(**env.datasource))
+                    run('{before_args}./venv/bin/python manage.py handler {provider} {flags} ; sleep 1'.format(**env.datasource))
 
 def deploy_code(host_string):
     max_retries = 20
