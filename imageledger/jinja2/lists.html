@@ -1,0 +1,42 @@
+{% import "includes/image-result.html" as image_result %}
+
+{% extends "base.html" %}
+
+{% block body %}
+<div class="row column list-my-lists list-iterator">
+
+  <h2>My Lists</h2>
+  <p>
+      Lists of images that you've collected:
+  </p>
+
+  {% for lst in object_list %}
+    <div class="list-iterable">
+      <h3>{{ lst.title }}
+        <a href="{{ lst.get_absolute_url() }}" class="fi-page-edit" title="Edit this List" alt="Edit this list"></a>
+      </h3>
+      <p class="list-dates">
+        Created on {{ lst.created_on.strftime('%a, %d %b %Y') }}, last updated {{ lst.updated_on.strftime('%d %b %Y')}}
+      </p>
+      <p class="list-description">
+        {{ lst.description or "" }}
+      </p>
+      <div class="row">
+      {% for image in lst.images.all() %}
+        {% set detail_url = url('detail', image.identifier) %}
+        {% call image_result.show(detail_url, image, request) %}
+          <form method="POST">
+            <input type="hidden" name="identifier" value="{{ image.identifier }}" />
+            <input type="hidden" name="slug" value="{{ lst.slug }}" />
+            <button class="button alert tiny fi-page-delete" title="Remove from List" alt="Remove from List" onClick="openledger.list.deleteImageFromList(event)"  />
+          </form>
+        {% endcall %}
+      {% endfor %}
+      </div>
+    </div>
+
+  {% endfor %}
+
+</div>
+
+{% endblock body %}

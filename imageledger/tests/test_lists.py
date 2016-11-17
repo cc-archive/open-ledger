@@ -3,7 +3,9 @@ import logging
 
 from django.urls import reverse
 from django.conf import settings
+from django.contrib.auth import get_user_model
 
+from imageledger import models
 from imageledger.tests.utils import *
 
 class TestListViews(TestImageledgerApp):
@@ -15,7 +17,9 @@ class TestListViews(TestImageledgerApp):
         self.img2 = models.Image.objects.create(title='image title', url='http://example.com/2', license='CC0')
         self.lst.images.add(self.img1)
         self.lst.images.add(self.img2)
-        
+        self.username = 'testuser'
+        self.user = get_user_model().objects.create_user(self.username, password=self.username)
+
     def test_view_list_detail(self):
         """It should be possible to view a list's information"""
         resp = self.client.get('/list/' + self.lst.slug)
@@ -50,3 +54,9 @@ class TestListViews(TestImageledgerApp):
                               {'description': self.lst.description,
                                     'title': self.lst.title})
         self.assertRedirects(resp, reverse('list-update', kwargs={'slug': self.lst.slug}))
+
+    def test_my_lists(self):
+        """The my-lists page should load for a logged-in user"""
+        self.client.force_login(self.user)
+        resp = self.client.get(reverse('my-lists'))
+        self.assertEquals(200, resp.status_code)

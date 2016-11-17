@@ -18,9 +18,11 @@ urlpatterns = [
     url(r'^accounts/callback$', cas_callback, name='cas_ng_proxy_callback'),
 
     # Lists
-    url(r'list/add/$', list_views.ListCreate.as_view(), name='list-add'),
-    url(r'list/(?P<slug>[^/]+)$', list_views.ListUpdate.as_view(), name='list-update'),
-    url(r'list/(?P<slug>[^/]+)/delete$', list_views.ListDelete.as_view(), name='list-delete'),
+    url(r'list/add/$', list_views.OLListCreate.as_view(), name='list-add'),
+    url(r'list/(?P<slug>[^/]+)$', list_views.OLListUpdate.as_view(), name='list-update'),
+    url(r'list/(?P<slug>[^/]+)/delete$', list_views.OLListDelete.as_view(), name='list-delete'),
+    url(r'lists/mine', list_views.OLOwnedListList.as_view(), name="my-lists"),
+
 ]
 
 apipatterns = [

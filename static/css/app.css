@@ -113,6 +113,18 @@ button.tiny, .add-to-list-container, .image-result {
     margin: 2rem 0;
     font-style: italic; }
 
+/* List listing page */
+.list-iterator {
+  margin-top: 2rem; }
+  .list-iterator .list-iterable {
+    border-bottom: 1px solid #c8c8c8;
+    padding: 1rem 0; }
+    .list-iterator .list-iterable .list-description {
+      text-size: smaller; }
+    .list-iterator .list-iterable .list-dates {
+      font-size: smaller;
+      font-style: italic; }
+
 /* List creation features */
 .add-to-list-container .add-to-list {
   position: absolute;

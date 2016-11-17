@@ -1,0 +1,62 @@
+# Example local.py for development
+DEBUG = True
+SECRET_KEY = 'CHANGEME'
+
+CSRF_COOKIE_SECURE = False
+
+API_500PX_KEY = 'CHANGEME'
+API_500PX_SECRET = 'CHANGEME'
+API_RIJKS = 'CHANGEME'
+FLICKR_KEY = 'CHANGEME'
+FLICKR_SECRET = 'CHANGEME'
+
+ELASTICSEARCH_URL = 'localhost'
+ELASTICSEARCH_PORT = 9200
+
+AWS_ACCESS_KEY_ID = 'CHANGEME'
+AWS_SECRET_ACCESS_KEY = 'CHANGEME'
+
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'openledger',
+        'USER': 'deploy',
+        'PASSWORD': 'CHANGEME',
+        'HOST': 'localhost',
+        'PORT': 5432,
+    }
+}
+ALLOWED_HOSTS = ['localhost']
+
+LOGGING = {
+     'version': 1,
+     'disable_existing_loggers': False,
+     'filters': {
+         'require_debug_false': {
+             '()': 'django.utils.log.RequireDebugFalse'
+         }
+     },
+     'handlers': {
+         'mail_admins': {
+             'level': 'ERROR',
+             'filters': ['require_debug_false'],
+             'class': 'django.utils.log.AdminEmailHandler'
+         },
+         'console': {
+             'level': 'DEBUG',
+             'class': 'logging.StreamHandler'
+         },
+     },
+     'loggers': {
+         'django.request': {
+             'handlers': ['mail_admins'],
+             'level': 'ERROR',
+             'propagate': True,
+         },
+         'imageledger': {
+             'handlers': ['console'],
+             'level': 'DEBUG'
+         },
+
+     }
+}

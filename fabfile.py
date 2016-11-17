@@ -12,8 +12,6 @@ from fabric.exceptions import NetworkError
 
 timestamp="release-%s" % int(time.time() * 1000)
 
-CODE_DIR = '/home/liza/open-ledger'
-
 DEBUG = False
 
 TAG = 'open-ledger-loader'
@@ -32,11 +30,6 @@ API_RIJKS = os.environ.get('API_RIJKS')
 FLICKR_KEY = os.environ.get('FLICKR_KEY')
 FLICKR_SECRET = os.environ.get('FLICKR_SECRET')
 LOG_FILE = '/tmp/app.log'
-
-EB_ENV_ENVIRONMENT_PROD = 'openledger'
-EB_ENV_ENVIRONMENT_DEV = 'openledger-dev'
-
-
 
 DATASOURCES = {
     'openimages-full': {
@@ -169,6 +162,7 @@ def load_data_from_instance(instance):
                 FLICKR_KEY=FLICKR_KEY,
                 FLICKR_SECRET=FLICKR_SECRET,
                 LOG_FILE=LOG_FILE,
+                DJANGO_SECRET_KEY=os.environ.get('DJANGO_SECRET_KEY')
                 ):
 
                 env.datasource['flags'] = env.flags
@@ -182,7 +176,7 @@ def load_data_from_instance(instance):
                 elif env.datasource['action'] == 'load-from-file':
                     run('{before_args}./venv/bin/python manage.py loader {filepath} {source} {datatype} --filesystem {filesystem} --skip-checks {flags} ; sleep 1'.format(**env.datasource))
                 elif env.datasource['action'] == 'load-from-provider':  # FIXME update this
-                    run('{before_args}./venv/bin/python manage.py handler {provider} {flags} ; sleep 1'.format(**env.datasource))
+                    run('{before_args}./venv/bin/python manage.py handlers {provider} {flags} ; sleep 1'.format(**env.datasource))
 
 def deploy_code(host_string):
     max_retries = 20

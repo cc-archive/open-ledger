@@ -20,6 +20,7 @@
       <a href="{{ url ('provider-apis')}}">Search via Provider APIs</a>
     </div>
     <div class="top-bar-right">
+
       <div>
         {% if request.user.is_anonymous %}
           <a href="{{ url('cas_ng_login') }}">Sign in</a>
@@ -28,6 +29,12 @@
 
         {% endif %}
       </div>
+      {% if not request.user.is_anonymous %}
+      <div>
+        <a href="{{ url('my-lists')}}">Your Lists</a>
+      </div>
+      {% endif %}
+
     </div>
   </nav>
 
