@@ -19,18 +19,16 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/1.10/howto/deployment/checklist/
 
-# SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = '5h5$ky5rkt5h26zrh#74^fx+-os_&hr_z9r+krq4@7n@!v8kxh'
 
-# SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
-ALLOWED_HOSTS = ['openledger-dev.creativecommons.org',
-                 'openledger.creativecommons.org',
-                 'openledger-dev.us-west-1.elasticbeanstalk.com',
-                 'openledger.us-west-1.elasticbeanstalk.com',
-                 'localhost']
+import socket
+local_ip = str(socket.gethostbyname(socket.gethostname()))
 
+ALLOWED_HOSTS = [local_ip,
+                 '.creativecommons.org',
+                 '.elasticbeanstalk.com',]
 
 # Application definition
 
