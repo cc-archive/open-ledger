@@ -1,7 +1,9 @@
+from collections import namedtuple
 import logging
 
 from elasticsearch import helpers
 from django.core.management.base import BaseCommand, CommandError
+from django.db import connection, transaction
 
 from imageledger import models, search
 
@@ -36,33 +38,61 @@ class Command(BaseCommand):
             log.setLevel(logging.DEBUG)
         self.index_all_images(chunk_size=options['chunk_size'])
 
+    def server_cursor_query(self, queryset, chunk_size=DEFAULT_CHUNK_SIZE):
+        compiler = queryset.query.get_compiler(using=queryset.db)
+        sql, params = compiler.as_sql()
+
+        model = compiler.klass_info['model']
+        select_fields = compiler.klass_info['select_fields']
+        fields = [field[0].target.attname
+                  for field in compiler.select[select_fields[0]:select_fields[-1] + 1]]
+
+        cursor = connection.connection.cursor(name='gigantic_cursor')
+        with transaction.atomic(savepoint=False):
+            cursor.execute(sql, params)
+
+            while True:
+                rows = cursor.fetchmany(chunk_size)
+                if not rows:
+                    break
+                for row in rows:
+                    DBObj = namedtuple('DBObj', fields)
+                    obj = DBObj(*row[select_fields[0]:select_fields[-1] + 1])
+                    yield obj
+                    #yield fields
+                    #obj = model.from_db(queryset.db, fields, row[select_fields[0]:select_fields[-1] + 1])
+                    #yield obj
+
     def index_all_images(self, chunk_size=DEFAULT_CHUNK_SIZE):
         """Index every record in the database as efficiently as possible"""
         es = search.init()
         search.Image.init()
         mapping = search.Image._doc_type.mapping
         mapping.save('openledger')
+        connection.cursor()
 
         batches = []
         retries = 0
 
-        for db_image in models.Image.objects.all().iterator():
-            try:
-                #log.debug("Indexing database record %s", db_image.identifier)
-                image = search.db_image_to_index(db_image)
-                if len(batches) > chunk_size:
-                    helpers.bulk(es, batches)
-                    log.debug("Pushed batch of %d records to ES", len(batches))
-                    batches = []  # Clear the batch size
-                else:
-                    batches.append(image.to_dict(include_meta=True))
-            except ConnectionError as e:
-                if retries < MAX_CONNECTION_RETRIES:
-                    log.warn("Got timeout, retrying with %d retries remaining", MAX_CONNECTION_RETRIES - retries)
-                    es = init()
-                    retries += 1
-                    time.sleep(RETRY_WAIT)
-                else:
-                    raise
+        qs = models.Image.objects.all()
+        for db_image in self.server_cursor_query(qs, chunk_size):
+             log.debug("Indexing database record %s", db_image.identifier)
+             image = search.db_image_to_index(db_image)
+             try:
+                 if len(batches) > chunk_size:
+                     helpers.bulk(es, batches)
+                     log.debug("Pushed batch of %d records to ES", len(batches))
+                     batches = []  # Clear the batch size
+                 else:
+                     batches.append(image.to_dict(include_meta=True))
+             except ConnectionError as e:
+                 if retries < MAX_CONNECTION_RETRIES:
+                     log.warn("Got timeout, retrying with %d retries remaining", MAX_CONNECTION_RETRIES - retries)
+                     es = init()
+                     retries += 1
+                     time.sleep(RETRY_WAIT)
+                 else:
+                     raise
+
 
         helpers.bulk(es, batches)
