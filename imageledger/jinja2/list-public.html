@@ -1,0 +1,29 @@
+{% import "includes/image-result.html" as image_result %}
+
+{% extends "base.html" %}
+
+{% block body %}
+
+<div class="row column list-detail">
+    <h2 class="t-list-title">
+        {{ object.title }}
+    </h2>
+
+    {% if object.description %}
+    <div class="list-description">
+        {{ object.description }}
+    </div>
+    {% endif %}
+
+  <div class="row">
+  {% for image in object.images.all() %}
+    {% set detail_url = url('detail', image.identifier) %}
+    {% call image_result.show(detail_url, image, request) %}
+    {% endcall %}
+  {% endfor %}
+  </div>
+
+
+</div>
+
+{% endblock body %}

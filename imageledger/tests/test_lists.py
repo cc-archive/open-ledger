@@ -81,9 +81,26 @@ class TestListViews(TestImageledgerApp):
         # Should still exist
         assert models.List.objects.filter(slug=self.lst.slug).exists()
 
-
     def test_list_delete_owner(self):
         """An owner should be able to delete a List"""
         self._login_and_own()
         resp = self.client.post(reverse('my-list-delete', kwargs={'slug': self.lst.slug}), follow=True)
         assert not models.List.objects.filter(slug=self.lst.slug).exists()
+
+    def test_public_list(self):
+        """The public list detail page should return a List if it is public"""
+        self.lst.is_public = True
+        self.lst.save()
+
+        resp = self.client.get(reverse('list-detail', kwargs={'slug': self.lst.slug}))
+        self.assertEquals(200, resp.status_code)
+        p = select_node(resp, ".t-list-title")
+        self.assertEquals(self.lst.title, p.text.strip())
+
+    def test_public_list_must_be_public(self):
+        """The public list detail page should return a 404 if the list is not public"""
+        self.lst.is_public = False
+        self.lst.save()
+
+        resp = self.client.get(reverse('list-detail', kwargs={'slug': self.lst.slug}))
+        self.assertEquals(404, resp.status_code)

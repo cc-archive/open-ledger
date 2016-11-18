@@ -1,6 +1,7 @@
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.views.generic.list import ListView
+from django.views.generic.detail import DetailView
 from django.urls import reverse_lazy
 
 from imageledger import models
@@ -11,6 +12,17 @@ class AbstractListView(object):
         """Lists owned by the current user only"""
         qs = super().get_queryset()
         qs = qs.filter(owner=self.request.user)
+        return qs
+
+class OLListDetail(DetailView):
+    model = models.List
+    template_name = "list-public.html"
+    fields = ['title', 'description', 'creator_displayname', 'images']
+
+    def get_queryset(self):
+        """Public lists only, or the user's own list FIXME"""
+        qs = super().get_queryset()
+        qs = qs.filter(is_public=True)
         return qs
 
 
