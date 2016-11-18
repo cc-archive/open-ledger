@@ -9,6 +9,7 @@ import base64
 import boto3
 import botocore
 from django.core.management.base import BaseCommand, CommandError
+from django.db.utils import IntegrityError
 
 from imageledger import models, signals
 
@@ -153,7 +154,7 @@ def _insert_image(iterator, reader, chunk_size, skip_existence_check=False):
     for chunk in iterator(chunk_size, reader):
         images = []
         for row in chunk:
-            if skip_existence_check or models.Image.objects.filter(foreign_identifier=row['ImageID']).count() == 0:
+            if skip_existence_check or models.Image.objects.filter(foreign_identifier=row['ImageID']).exists():
                 image = models.Image()
                 image.identifier = signals.create_identifier(row['OriginalURL'])
                 image.foreign_identifier = row['ImageID']
@@ -181,36 +182,37 @@ def _insert_image(iterator, reader, chunk_size, skip_existence_check=False):
 def _insert_image_tag(iterator, reader, chunk_size):
     image_ids = {}
     tag_ids = {}
-    try:
-        for chunk in iterator(chunk_size, reader):
-            image_tags = []
-            for row in chunk:
-                image_id = row['ImageID']
-                tag_id = row['LabelName']
-                confidence = row['Confidence']
-                if float(confidence) < TAG_CONFIDENCE_THRESHOLD:
-                    continue
-                img = image_ids.get(image_id) or \
-                    models.Image.objects.filter(foreign_identifier=image_id).first()
-                tag = tag_ids.get(tag_id) or \
-                    models.Tag.objects.filter(foreign_identifier=tag_id).first()
-                if tag and img:
-                    image_ids[img.foreign_identifier] = img
-                    tag_ids[tag.foreign_identifier] = tag
-                    #log.debug("Adding tag %s to image %s ", tag, img)
-                    it = models.ImageTags(image=img, tag=tag)
-                    image_tags.append(it)
-                    # Also add it to the denormalized array
-                    ext_tags = list(set(img.tags_list[:] if img.tags_list else []))
-                    ext_tags.append(tag.name)
-                    img.tags_list = ext_tags
-            if len(image_tags) > 0:
+    for chunk in iterator(chunk_size, reader):
+        image_tags = []
+        for row in chunk:
+            image_id = row['ImageID']
+            tag_id = row['LabelName']
+            confidence = row['Confidence']
+            if float(confidence) < TAG_CONFIDENCE_THRESHOLD:
+                continue
+            img = image_ids.get(image_id) or \
+                models.Image.objects.filter(foreign_identifier=image_id).first()
+            tag = tag_ids.get(tag_id) or \
+                models.Tag.objects.filter(foreign_identifier=tag_id).first()
+            if tag and img:
+                image_ids[img.foreign_identifier] = img
+                tag_ids[tag.foreign_identifier] = tag
+                #log.debug("Adding tag %s to image %s ", tag, img)
+                it = models.ImageTags(image=img, tag=tag)
+                image_tags.append(it)
+                # Also add it to the denormalized array
+                ext_tags = list(set(img.tags_list[:] if img.tags_list else []))
+                ext_tags.append(tag.name)
+                img.tags_list = ext_tags
+        if len(image_tags) > 0:
+            try:
                 models.ImageTags.objects.bulk_create(image_tags)
                 log.debug("*** Committing set of %d image tags", len(image_tags))
-    except:
-        raise
-    finally:
-        log.debug("Saving all %d remaining modified image objects", len(image_ids))
-        # Save all the images we modified
-        for img in image_ids.values():
-            img.save()
+            except IntegrityError as e:
+                #log.debug(e)
+                pass
+
+    log.debug("Saving all %d remaining modified image objects", len(image_ids))
+    # Save all the images we modified
+    for img in image_ids.values():
+        img.save()
