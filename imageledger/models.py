@@ -105,7 +105,7 @@ class List(OpenLedgerModel):
         db_table = 'list'
 
     def get_absolute_url(self):
-        return reverse('list-update', kwargs={'slug': self.slug})
+        return reverse('my-list-update', kwargs={'slug': self.slug})
 
 class Tag(OpenLedgerModel):
     foreign_identifier = models.CharField(max_length=255, blank=True, null=True)

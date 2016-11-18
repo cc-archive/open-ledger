@@ -1,5 +1,4 @@
 .list-detail {
-  & > form {
     input {
       display: none;
     }
@@ -9,8 +8,9 @@
     label {
       display: none;
     }
-  }
 }
+
+
 .search-form {
   margin-top: 1rem;
   border: none;

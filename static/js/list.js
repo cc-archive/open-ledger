@@ -342,6 +342,14 @@ export const successMessage = (msg, slug, title) => {
   msg.classList.add('pulse')
 }
 
+export const deleteConfirm = function (e) {
+  // Before deleting a List, confirm
+  if (!confirm("Are you sure you want to permanently delete this List?")) {
+    e.preventDefault()
+    return
+  }
+}
+
 /* Close any open models -- this is called last in the event bubbling chain if no autocomplete actions are in-progress */
 const cancelListModals = function (e) {
   if (e.keyCode === 27) {
