@@ -48,7 +48,7 @@ class Command(BaseCommand):
 
         for db_image in models.Image.objects.all().iterator():
             try:
-                #log.debug("Indexing database record %s", db_image.identifier)
+                log.debug("Indexing database record %s", db_image.identifier)
                 image = search.db_image_to_index(db_image)
                 if len(batches) > chunk_size:
                     helpers.bulk(es, batches)
