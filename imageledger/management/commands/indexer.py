@@ -7,10 +7,7 @@ from django.db import connection, transaction
 
 from imageledger import models, search
 
-console = logging.StreamHandler()
 log = logging.getLogger(__name__)
-log.addHandler(console)
-log.setLevel(logging.INFO)
 
 MAX_CONNECTION_RETRIES = 10
 RETRY_WAIT = 5  # Number of sections to wait before retrying
@@ -73,21 +70,24 @@ class Command(BaseCommand):
 
         batches = []
         retries = 0
+        completed = 0
 
         # Make use of the auto-incrementing ID
         total = models.Image.objects.count()
+        log.info("Will index %d records", total)
 
         for pk in range(0, total):
             try:
                 db_image = models.Image.objects.get(pk=pk)
             except models.Image.DoesNotExist:
                 continue
-            log.debug("Indexing database record %s", db_image.identifier)
+            # log.debug("Indexing database record %s", db_image.identifier)
             image = search.db_image_to_index(db_image)
             try:
                  if len(batches) > chunk_size:
                      helpers.bulk(es, batches)
                      log.debug("Pushed batch of %d records to ES", len(batches))
+                     completed += len(batches)
                      batches = []  # Clear the batch size
                  else:
                      batches.append(image.to_dict(include_meta=True))
@@ -102,3 +102,5 @@ class Command(BaseCommand):
 
 
         helpers.bulk(es, batches)
+        completed += len(batches)
+        log.info("Finished with %d batches completed", completed)
