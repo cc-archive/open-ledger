@@ -1,4 +1,5 @@
 from collections import namedtuple
+import itertools
 import logging
 
 from elasticsearch import helpers
@@ -73,34 +74,47 @@ class Command(BaseCommand):
         completed = 0
 
         # Make use of the auto-incrementing ID
-        total = models.Image.objects.count()
+        total = 10000000
         log.info("Will index %d records", total)
+        rng = range(0, total)
 
-        for pk in range(0, total):
-            try:
-                db_image = models.Image.objects.get(pk=pk)
-            except models.Image.DoesNotExist:
-                continue
-            log.debug("Indexing database record %s", db_image.identifier)
-            image = search.db_image_to_index(db_image)
-            try:
-                 if len(batches) > chunk_size:
-                     helpers.bulk(es, batches)
-                     log.debug("Pushed batch of %d records to ES", len(batches))
-                     completed += len(batches)
-                     batches = []  # Clear the batch size
-                 else:
-                     batches.append(image.to_dict(include_meta=True))
-            except ConnectionError as e:
-                 if retries < MAX_CONNECTION_RETRIES:
-                     log.warn("Got timeout, retrying with %d retries remaining", MAX_CONNECTION_RETRIES - retries)
-                     es = init()
-                     retries += 1
-                     time.sleep(RETRY_WAIT)
-                 else:
-                     raise
+        for chunk in grouper_it(chunk_size, rng):
+            for pk in chunk:
+                try:
+                    db_image = models.Image.objects.get(pk=pk)
+                except models.Image.DoesNotExist:
+                    continue
+                log.debug("Indexing database record %s", db_image.identifier)
+                image = search.db_image_to_index(db_image)
+                try:
+                     if len(batches) > chunk_size:
+                         helpers.bulk(es, batches)
+                         log.debug("Pushed batch of %d records to ES", len(batches))
+                         completed += len(batches)
+                         batches = []  # Clear the batch size
+                     else:
+                         batches.append(image.to_dict(include_meta=True))
+                except ConnectionError as e:
+                     if retries < MAX_CONNECTION_RETRIES:
+                         log.warn("Got timeout, retrying with %d retries remaining", MAX_CONNECTION_RETRIES - retries)
+                         es = init()
+                         retries += 1
+                         time.sleep(RETRY_WAIT)
+                     else:
+                         raise
 
 
         helpers.bulk(es, batches)
         completed += len(batches)
         log.info("Finished with %d batches completed", completed)
+
+
+def grouper_it(n, iterable):
+    it = iter(iterable)
+    while True:
+        chunk_it = itertools.islice(it, n)
+        try:
+            first_el = next(chunk_it)
+        except StopIteration:
+            return
+        yield itertools.chain((first_el,), chunk_it)
