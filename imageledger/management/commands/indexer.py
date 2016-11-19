@@ -81,7 +81,7 @@ class Command(BaseCommand):
                 db_image = models.Image.objects.get(pk=pk)
             except models.Image.DoesNotExist:
                 continue
-            # log.debug("Indexing database record %s", db_image.identifier)
+            log.debug("Indexing database record %s", db_image.identifier)
             image = search.db_image_to_index(db_image)
             try:
                  if len(batches) > chunk_size:
