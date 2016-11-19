@@ -8,7 +8,11 @@ from django.db import connection, transaction
 
 from imageledger import models, search
 
+console = logging.StreamHandler()
 log = logging.getLogger(__name__)
+log.addHandler(console)
+log.setLevel(logging.INFO)
+
 
 MAX_CONNECTION_RETRIES = 10
 RETRY_WAIT = 5  # Number of sections to wait before retrying
