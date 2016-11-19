@@ -74,18 +74,24 @@ class Command(BaseCommand):
         batches = []
         retries = 0
 
-        qs = models.Image.objects.all()
-        for db_image in self.server_cursor_query(qs, chunk_size):
-             log.debug("Indexing database record %s", db_image.identifier)
-             image = search.db_image_to_index(db_image)
-             try:
+        # Make use of the auto-incrementing ID
+        total = models.Image.objects.count()
+
+        for pk in range(0, total):
+            try:
+                db_image = models.Image.objects.get(pk=pk)
+            except models.Image.DoesNotExist:
+                continue
+            log.debug("Indexing database record %s", db_image.identifier)
+            image = search.db_image_to_index(db_image)
+            try:
                  if len(batches) > chunk_size:
                      helpers.bulk(es, batches)
                      log.debug("Pushed batch of %d records to ES", len(batches))
                      batches = []  # Clear the batch size
                  else:
                      batches.append(image.to_dict(include_meta=True))
-             except ConnectionError as e:
+            except ConnectionError as e:
                  if retries < MAX_CONNECTION_RETRIES:
                      log.warn("Got timeout, retrying with %d retries remaining", MAX_CONNECTION_RETRIES - retries)
                      es = init()
