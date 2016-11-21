@@ -114,15 +114,3 @@ def init():
     connections.add_connection('default', es)
     log.debug("Initializing search objects for connection %s:%s", settings.ELASTICSEARCH_URL, settings.ELASTICSEARCH_PORT)
     return es
-
-if __name__ == '__main__':
-    # Run me as python -m openledger.search
-    parser = argparse.ArgumentParser()
-    parser.add_argument("--verbose",
-                        action="store_true",
-                        default=False,
-                        help="Be very chatty and run logging at DEBUG")
-    args = parser.parse_args()
-    if args.verbose:
-        log.setLevel(logging.DEBUG)
-    index_all_images()
