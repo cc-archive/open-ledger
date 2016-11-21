@@ -46,11 +46,11 @@ footer.callout {
 .attribution-button {
   width: 200px; }
 
-.list-detail input {
+.list-detail > form input {
   display: none; }
-.list-detail textarea {
+.list-detail > form textarea {
   display: none; }
-.list-detail label {
+.list-detail > form label {
   display: none; }
 
 .search-form {

@@ -1,4 +1,5 @@
 .list-detail {
+  &> form {
     input {
       display: none;
     }
@@ -8,6 +9,7 @@
     label {
       display: none;
     }
+  }
 }
 
 

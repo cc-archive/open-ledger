@@ -23,7 +23,7 @@ class TestListViews(TestImageledgerApp):
     def _login_and_own(self):
         self.client.force_login(self.user)
         self.lst.owner = self.user
-        self.lst.owner.save()
+        self.lst.save()
 
     def test_view_my_list_detail(self):
         """It should be possible to view a list's information"""
@@ -34,9 +34,9 @@ class TestListViews(TestImageledgerApp):
         assert self.lst.title == p.text.strip()
 
     def test_view_my_list_not_found(self):
-        """A request to view a list that doesn't exist should 404"""
+        """A request to view a list that doesn't exist should ultimately 404"""
         self._login_and_own()
-        resp = self.client.get(reverse('my-list-update', kwargs={'slug': 'unknown'}))
+        resp = self.client.get(reverse('my-list-update', kwargs={'slug': 'unknown'}), follow=True)
         assert 404 == resp.status_code
 
     def test_view_my_list_images(self):
@@ -84,7 +84,8 @@ class TestListViews(TestImageledgerApp):
     def test_list_delete_owner(self):
         """An owner should be able to delete a List"""
         self._login_and_own()
-        resp = self.client.post(reverse('my-list-delete', kwargs={'slug': self.lst.slug}), follow=True)
+        resp = self.client.post(reverse('my-list-delete', kwargs={'slug': self.lst.slug}))
+        self.assertRedirects(resp, reverse('my-lists'))
         assert not models.List.objects.filter(slug=self.lst.slug).exists()
 
     def test_public_list(self):
@@ -104,3 +105,36 @@ class TestListViews(TestImageledgerApp):
 
         resp = self.client.get(reverse('list-detail', kwargs={'slug': self.lst.slug}))
         self.assertEquals(404, resp.status_code)
+
+    def test_redirect_owned_list(self):
+        """[#72] A request for a public list url should redirect to the editable version
+        for the owner of that List"""
+        self._login_and_own()
+        self.lst.is_public = True
+        self.lst.save()
+        resp = self.client.get(reverse('list-detail', kwargs={'slug': self.lst.slug}))
+        self.assertRedirects(resp, reverse('my-list-update', kwargs={'slug': self.lst.slug}))
+
+    def test_redirect_owned_list_not_public(self):
+        """[#72] A request for a public list url should redirect to the editable version
+        for the owner of that List even if the list isn't `is_public`"""
+        self._login_and_own()
+        self.lst.is_public = False
+        self.lst.save()
+        resp = self.client.get(reverse('list-detail', kwargs={'slug': self.lst.slug}))
+        self.assertRedirects(resp, reverse('my-list-update', kwargs={'slug': self.lst.slug}))
+
+    def test_redirect_owned_page_not_owner(self):
+        """[#72] A request for an owned, is_public List page by an anonymous user should redirect to the non-owner page"""
+        self.lst.is_public = True
+        self.lst.save()
+        resp = self.client.get(reverse('my-list-update', kwargs={'slug': self.lst.slug}))
+        self.assertRedirects(resp, reverse('list-detail', kwargs={'slug': self.lst.slug}))
+
+    def test_redirect_owned_page_not_owner(self):
+        """[#72] A request for an owned, is_public List page by a different user should redirect to the non-owner page"""
+        self.lst.is_public = True
+        self.lst.save()
+        self.client.force_login(self.user)
+        resp = self.client.get(reverse('my-list-update', kwargs={'slug': self.lst.slug}))
+        self.assertRedirects(resp, reverse('list-detail', kwargs={'slug': self.lst.slug}))

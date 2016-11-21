@@ -4,9 +4,9 @@
 
 {% block body %}
 
-<div class="row column">
+<div class="row column list-detail">
 
-  <form action="{{ url('my-list-update', object.slug) }}" method="POST" class="list-detail">
+  <form action="{{ url('my-list-update', object.slug) }}" method="POST">
    {{ csrf_input }}
     <h2>
       <div class="form-readonly t-list-title">
