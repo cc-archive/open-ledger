@@ -61,7 +61,7 @@ def index(request):
             results.pages = int(int(response.hits.total) / forms.PER_PAGE)
             results.page = form.cleaned_data['page'] or 1
             start = results.page
-            end = start + forms.PER_PAGE
+            end = start + forms.PER_PAGE - 1
             for r in s[start - 1:end]:
                 results.items.append(r)
     else:
