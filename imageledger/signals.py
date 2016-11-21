@@ -1,17 +1,32 @@
 import base64
 import hashlib
+import logging
 import uuid
 
-from django.db.models.signals import pre_save
+from django.db.models.signals import pre_save, post_save
 from django.dispatch import receiver
 from django.utils.text import slugify
+from django.conf import settings
 
-from imageledger import models
+from imageledger import models, search
+
+log = logging.getLogger(__name__)
 
 @receiver(pre_save, sender=models.Image)
 def set_identifier(sender, instance, **kwargs):
     if instance.identifier is None:
         instance.identifier = create_identifier(instance.url)
+
+@receiver(post_save, sender=models.Image)
+def update_search_index(sender, instance, **kwargs):
+    """When an Image instance is saved, tell the search engine about it."""
+    if not settings.TESTING:
+        # FIXME This may result in a lot of concurrent requests during batch updates;
+        # in those cases consider unregistering this signal and manually batching requests
+        # (note that Django's bulk_create will not fire this)
+        search_obj = search.db_image_to_index(instance)
+        log.debug("Indexing db image %s", instance.identifier)
+        search_obj.save()
 
 def create_identifier(key):
     """Create a unique, stable identifier for a key"""

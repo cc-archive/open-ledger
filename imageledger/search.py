@@ -61,38 +61,7 @@ def db_image_to_index(db_image):
                   foreign_landing_url=db_image.foreign_landing_url,
                   _id=db_image.identifier,
                   tags=db_image.tags_list)
-    if db_image.tags_list:
-        log.debug("Tags for %s: %s", image.title, ", ".join(image.tags))
     return image
-
-def index_all_images():
-    """Index every record in the database as efficiently as possible"""
-    es = init()
-    batches = []
-    Image.init()
-    mapping = Image._doc_type.mapping
-    mapping.save('openledger')
-    retries = 0
-    for db_image in models.Image.all().iterator():
-        try:
-            #log.debug("Indexing database record %s", db_image.identifier)
-            image = db_image_to_index(db_image)
-            if len(batches) > CHUNK_SIZE:
-                log.debug("Pushing batch of %d records to ES", len(batches))
-                helpers.bulk(es, batches)
-                batches = []  # Clear the batch size
-            else:
-                batches.append(image.to_dict(include_meta=True))
-        except ConnectionError as e:
-            if retries < MAX_CONNECTION_RETRIES:
-                log.warn("Got timeout, retrying with %d retries remaining", MAX_CONNECTION_RETRIES - retries)
-                es = init()
-                retries += 1
-                time.sleep(RETRY_WAIT)
-            else:
-                raise
-
-    helpers.bulk(es, batches)
 
 def init_es():
     log.info("connecting to %s %s", settings.ELASTICSEARCH_URL, settings.ELASTICSEARCH_PORT)

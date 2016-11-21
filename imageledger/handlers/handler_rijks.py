@@ -4,8 +4,9 @@ import time
 
 import requests
 
+from elasticsearch import helpers
 from django.conf import settings
-from imageledger import models, signals
+from imageledger import models, signals, search
 from django.db.utils import IntegrityError
 
 BASE_URL = 'https://www.rijksmuseum.nl'
@@ -102,6 +103,11 @@ def grouper_it(n, iterable):
 def insert_image(chunk_size, max_results=5000):
     count = 0
     success_count = 0
+    es = search.init()
+    search.Image.init()
+    mapping = search.Image._doc_type.mapping
+    mapping.save('openledger')
+
     for chunk in grouper_it(chunk_size, walk()):
         if count >= max_results:
             break
@@ -112,6 +118,9 @@ def insert_image(chunk_size, max_results=5000):
                 images.append(image)
             if len(images) > 0:
                 try:
+                    # Bulk update the search engine too
+                    search_objs = [search.db_image_to_index(img).to_dict(include_meta=True) for img in images]
+                    helpers.bulk(es, search_objs)
                     models.Image.objects.bulk_create(images)
                     log.debug("*** Committed set of %d images", len(images))
                     success_count += len(images)
