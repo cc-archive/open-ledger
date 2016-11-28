@@ -42,6 +42,7 @@ class Image(DocType):
     license = String()
     license_version = String()
     foreign_landing_url = String()
+    removed_from_source = Boolean()
 
     class Meta:
         index = "openledger"
@@ -59,6 +60,7 @@ def db_image_to_index(db_image):
                   source=db_image.source,
                   license=db_image.license,
                   foreign_landing_url=db_image.foreign_landing_url,
+                  removed_from_source=db_image.removed_from_source,
                   _id=db_image.identifier,
                   tags=db_image.tags_list)
     return image

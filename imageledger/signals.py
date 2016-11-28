@@ -21,12 +21,20 @@ def set_identifier(sender, instance, **kwargs):
 def update_search_index(sender, instance, **kwargs):
     """When an Image instance is saved, tell the search engine about it."""
     if not settings.TESTING:
-        # FIXME This may result in a lot of concurrent requests during batch updates;
-        # in those cases consider unregistering this signal and manually batching requests
-        # (note that Django's bulk_create will not fire this)
-        search_obj = search.db_image_to_index(instance)
-        log.debug("Indexing db image %s", instance.identifier)
+        _update_search_index(instance)
+
+def _update_search_index(img):
+    # FIXME This may result in a lot of concurrent requests during batch updates;
+    # in those cases consider unregistering this signal and manually batching requests
+    # (note that Django's bulk_create will not fire this signal, which is good)
+    search_obj = search.db_image_to_index(img)
+    if (search_obj.removed_from_source):
+        log.debug("Removing image %s from search index", img.identifier)
+        search_obj.delete()
+    else:
+        log.debug("Indexing image %s", img.identifier)
         search_obj.save()
+
 
 def create_identifier(key):
     """Create a unique, stable identifier for a key"""

@@ -10,11 +10,17 @@ from elasticsearch.client import ClusterClient
 from elasticsearch_dsl import Search, Q, Index
 from elasticsearch_dsl.connections import connections
 from testing.elasticsearch import ElasticSearchServer
+import responses
 
-from imageledger import search, forms
+from imageledger import search, forms, signals
 from imageledger.tests.utils import *
 
 log = logging.getLogger(__name__)
+
+TEST_IMAGE_REMOVED = '404.png'
+FOREIGN_URL = 'http://example.com/'
+
+dir_path = os.path.dirname(os.path.realpath(__file__))
 
 MAX_RETRIES = 5
 
@@ -66,6 +72,8 @@ class TestSearch(TestCase):
         self.img1.save()
         self.img2.save()
         self.url = reverse('index')
+        self.removed = models.Image.objects.create(title='removed', url=FOREIGN_URL + TEST_IMAGE_REMOVED, license="cc0")
+
 
     def tearDown(self):
         index = Index('openledger')
@@ -178,3 +186,18 @@ class TestSearch(TestCase):
 
         resp = self.client.get(self.url, {'search': 'object', 'work_types': 'cultural'})
         assert 1 == len(select_nodes(resp, '.t-image-result'))
+
+    def test_remove_from_search_after_sync(self):
+        """When an image is removed from the source, it should be removed from the search engine"""
+        self._index_img(self.removed)
+        s = self.s.query(Q("match", title="removed"))
+        r = s.execute()
+        assert 1 == r.hits.total
+        with responses.RequestsMock() as rsps:
+            rsps.add(responses.HEAD, FOREIGN_URL + TEST_IMAGE_REMOVED, status=404)
+            self.removed.sync()
+        signals._update_search_index(self.removed)
+        self.es.indices.refresh(force=True)
+        s = self.s.query(Q("match", title="removed"))
+        r = s.execute()
+        assert 0 == r.hits.total

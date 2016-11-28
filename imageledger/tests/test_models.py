@@ -1,9 +1,24 @@
+import os
+
 from django.test import TestCase
 from psycopg2.extensions import new_array_type
+import responses
 
 from imageledger import models, signals
 
+TEST_IMAGE_EXISTS = 'image.png'
+TEST_IMAGE_REMOVED = '404.png'
+FOREIGN_URL = 'http://example.com/'
+
+dir_path = os.path.dirname(os.path.realpath(__file__))
+
 class TestModels(TestCase):
+
+    def setUp(self):
+        responses.add(responses.HEAD, FOREIGN_URL + TEST_IMAGE_EXISTS, status=200)
+        responses.add(responses.HEAD, FOREIGN_URL + TEST_IMAGE_REMOVED, status=404)
+        responses.add(responses.GET, FOREIGN_URL + TEST_IMAGE_EXISTS, content_type='image/png',
+                      body=open(os.path.join(dir_path, TEST_IMAGE_EXISTS), 'rb').read())
 
     def test_db_connection(self):
         """The test database should be accessible"""
@@ -119,3 +134,57 @@ class TestModels(TestCase):
         assert lst1.slug.startswith(expected_slugged_title)
         assert lst2.slug.startswith(expected_slugged_title)
         assert lst1.slug != lst2.slug
+
+
+    @responses.activate
+    def test_sync_image(self):
+        """An image should be able to be synced with its source"""
+        img_url = FOREIGN_URL + TEST_IMAGE_EXISTS
+        img = models.Image.objects.create(url=img_url, title='exists', license='CC0')
+        img.sync()
+
+    @responses.activate
+    def test_sync_image_timestamp(self):
+        """The sync function should update the last-checked timestamp"""
+        img_url = FOREIGN_URL + TEST_IMAGE_EXISTS
+        img = models.Image.objects.create(url=img_url, title='exists', license='CC0')
+        last_synced = img.last_synced_with_source
+        assert last_synced is None
+        img.sync()
+        assert img.last_synced_with_source is not None
+
+    @responses.activate
+    def test_sync_mark_removed(self):
+        """The sync function should mark an image as removed if we get a non-200 response from the source"""
+        img_url = FOREIGN_URL + TEST_IMAGE_REMOVED
+        img = models.Image.objects.create(url=img_url, title='removed', license='CC0')
+        assert not img.removed_from_source
+        img.sync()
+        assert img.removed_from_source
+
+    @responses.activate
+    def test_sync_dont_mark_removed(self):
+        """The sync function should not mark an image as removed if we get 200 response from the source"""
+        img_url = FOREIGN_URL + TEST_IMAGE_EXISTS
+        img = models.Image.objects.create(url=img_url, title='exists', license='CC0')
+        assert not img.removed_from_source
+        img.sync()
+        assert not img.removed_from_source
+
+    @responses.activate
+    def test_generate_hash(self):
+        """The generate_hash function should generate a perceptual hash from a byte stream"""
+        img_url = FOREIGN_URL + TEST_IMAGE_EXISTS
+        img = models.Image.objects.create(url=img_url, title='exists', license='CC0')
+        old_hash = img.perceptual_hash
+        new_hash = img.generate_hash()
+        self.assertNotEqual(new_hash, old_hash)
+
+    @responses.activate
+    def test_generate_hash_same(self):
+        """The generate_hash function should generate the same hash for the same image"""
+        img_url = FOREIGN_URL + TEST_IMAGE_EXISTS
+        img = models.Image.objects.create(url=img_url, title='exists', license='CC0')
+        old_hash = img.generate_hash()
+        new_hash = img.generate_hash()
+        self.assertEqual(new_hash, old_hash)

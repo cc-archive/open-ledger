@@ -1,7 +1,14 @@
+import io
+import tempfile
+from PIL import Image as PillowImage
 
 from django.urls import reverse
 from django.db import models
 from django.conf import settings
+from django.utils import timezone
+
+import imagehash
+import requests
 
 from django.contrib.postgres.fields import ArrayField
 
@@ -9,7 +16,6 @@ class OpenLedgerModel(models.Model):
 
     created_on = models.DateTimeField(auto_now_add=True)
     updated_on = models.DateTimeField(auto_now=True)
-
 
     class Meta:
         abstract = True
@@ -76,6 +82,50 @@ class Image(OpenLedgerModel):
     tags_list = ArrayField(models.CharField(max_length=255), blank=True, null=True)
 
     tags = models.ManyToManyField('Tag', through='ImageTags')
+
+    # The last time this image was synced with the URL in `foreign_landing_url`
+    # A null value here means we have never synced it
+    last_synced_with_source = models.DateTimeField(blank=True, null=True, db_index=True)
+
+    # True if this image has been removed from the source
+    removed_from_source = models.BooleanField(default=False)
+
+    def sync(self, attempt_perceptual_hash=False):
+        """Attempt to sync the image with the remote location. Optionally does a number of
+        other actions:
+        * If the image exists and we have not constructed a fingerprint for it,
+          do so at this time and populate the image model's perceptual_hash field
+          (if attempt_perceptual_hash is True; defaults to False because it's slow)
+        * If the image does not exist, mark it as removed_from_source
+        * If the image is removed_from_source, delete it from the search engine
+        * In all cases, update the last_synced_with_source timestamp on the image"""
+        req = requests.head(self.url)
+        if req.status_code == 200:
+            if not self.perceptual_hash and attempt_perceptual_hash:
+                self.perceptual_hash = self.generate_hash()
+        else:
+            self.removed_from_source = True
+
+        self.last_synced_with_source = timezone.now()
+
+        self.save()
+
+    def generate_hash(self):
+        """Requests the image as found in `url` and generates a perceptual_hash from it"""
+        # This is slow: it has to get the image and spool it to a tempfile, then compute
+        # the hash
+        req = requests.get(self.url)
+        if req.status_code == 200:
+            buff = tempfile.SpooledTemporaryFile(max_size=1e9)
+            downloaded = 0
+            filesize = int(req.headers.get('content-length', 1000))  # Set a default length for the test client
+            for chunk in req.iter_content():
+                downloaded += len(chunk)
+                buff.write(chunk)
+            buff.seek(0)
+            im = PillowImage.open(io.BytesIO(buff.read()))
+            return str(imagehash.average_hash(im))
+
 
     def __str__(self):
         return '<Image %r found at %r by %r>' % (self.identifier, self.url, self.creator)
