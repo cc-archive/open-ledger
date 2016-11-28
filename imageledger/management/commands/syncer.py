@@ -46,6 +46,6 @@ class Command(BaseCommand):
 
     def sync_all_images(self, chunk_size=DEFAULT_CHUNK_SIZE, with_fingerprinting=False):
         """Sync all of the images, sorting from least-recently-synced"""
-        imgs = models.Image.objects.all().order_by('-last_synced_with_source').iterator()
+        imgs = models.Image.objects.all().order_by('-last_synced_with_source')[0:chunk_size]
         for img in imgs:
             img.sync(attempt_perceptual_hash=with_fingerprinting)
