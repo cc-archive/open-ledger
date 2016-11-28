@@ -1,16 +1,18 @@
 footer {
+
   box-shadow: 0 0 10px 0 rgba(0,0,0,.8);
   background-color: $dark-gray;
   color: $gray;
   font-size: 14px;
   line-height: 1.3em;
   width: 100%;
-  padding: 25px 15%;
+  padding: 25px 0;
   margin-top: 25px;
 
   ul, li {
     list-style-type: none;
     display: inline;
+    margin: 0;
   }
   a {
     color: $gray;
@@ -20,6 +22,9 @@ footer {
     line-height: 18px;
     a {
       text-decoration: underline;
+    }
+    .license-link {
+      text-decoration: none;
     }
   }
   li {
@@ -43,6 +48,23 @@ footer {
     }
     a.mail, a.tel {
       color: $cyan;
+    }
+  }
+  @media screen and (max-width: 39.9375em) {
+    .contact-info {
+      display: none;
+    }
+  }
+  .footer-main {
+    img {
+      max-width: 90%;
+      @media screen and (max-width: 39.9375em) {
+        display: none;
+      }
+    }
+    ul {
+      margin-top: 2rem;
+      display: block;
     }
   }
 }

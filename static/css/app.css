@@ -20,7 +20,7 @@ a:hover {
   display: block; }
 
 footer, .page-wrap:after {
-  height: 200px; }
+  min-height: 200px; }
 
 body, p, h1, h2, h3, h4, h5, h6 {
   font-family: "Source Sans Pro",sans-serif; }
@@ -33,18 +33,6 @@ h5 {
   border: none;
   border-bottom: 1px solid #c8c8c8;
   padding: 2rem 0 2rem 0; }
-
-footer.callout {
-  margin: 20rem 0 0 0;
-  width: 100%; }
-
-/* Top nav */
-.top-bar {
-  padding: .5rem 2rem; }
-  .top-bar .top-bar-left {
-    font-size: smaller; }
-  .top-bar .top-bar-right {
-    text-align: right; }
 
 /* Faster animation than the default animate.css */
 @keyframes zoomOut {
@@ -130,6 +118,10 @@ footer.callout {
     position: absolute;
     visibility: hidden;
     left: -99999; }
+
+.license-logo {
+  max-width: 25px;
+  max-height: 25px; }
 
 /* List buttons */
 button.tiny, .add-to-list-container, .image-result {
@@ -242,11 +234,15 @@ nav.top-bar {
     display: inline-block;
     border-left: 1px solid white;
     padding: 0 .8em; }
-  nav.top-bar ul.login li {
-    font-size: 1rem;
-    border: none; }
-    nav.top-bar ul.login li.username {
-      border-right: 1px solid white; }
+  nav.top-bar ul.login {
+    text-align: right; }
+    nav.top-bar ul.login li {
+      font-size: 1rem;
+      border: none; }
+      nav.top-bar ul.login li.username {
+        border-right: 1px solid white; }
+  nav.top-bar ul.subnav {
+    text-align: right; }
 
 header {
   box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.8);
@@ -259,11 +255,12 @@ footer {
   font-size: 14px;
   line-height: 1.3em;
   width: 100%;
-  padding: 25px 15%;
+  padding: 25px 0;
   margin-top: 25px; }
   footer ul, footer li {
     list-style-type: none;
-    display: inline; }
+    display: inline;
+    margin: 0; }
   footer a {
     color: #999999; }
   footer .openledger-info, footer .license-info {
@@ -271,6 +268,8 @@ footer {
     line-height: 18px; }
     footer .openledger-info a, footer .license-info a {
       text-decoration: underline; }
+    footer .openledger-info .license-link, footer .license-info .license-link {
+      text-decoration: none; }
   footer li {
     padding: 0 .5rem 0 0; }
     footer li:not(:first-child) {
@@ -286,5 +285,16 @@ footer {
       color: white; }
   footer .contact-info a.mail, footer .contact-info a.tel {
     color: #049bce; }
+  @media screen and (max-width: 39.9375em) {
+    footer .contact-info {
+      display: none; } }
+  footer .footer-main img {
+    max-width: 90%; }
+    @media screen and (max-width: 39.9375em) {
+      footer .footer-main img {
+        display: none; } }
+  footer .footer-main ul {
+    margin-top: 2rem;
+    display: block; }
 
 /*# sourceMappingURL=app.css.map */

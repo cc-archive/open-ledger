@@ -21,7 +21,7 @@ a:hover {
 }
 
 footer, .page-wrap:after {
-  height: $footer-height;
+  min-height: $footer-height;
 }
 
 body, p, h1, h2, h3, h4, h5, h6 {
@@ -38,23 +38,6 @@ h5 {
   border-bottom: 1px solid rgb(200,200,200);
   padding: 2rem 0 2rem 0;
 }
-
-footer.callout {
-  margin: 20rem 0 0 0;
-  width: 100%;
-}
-
-/* Top nav */
-.top-bar {
-  padding: .5rem 2rem;
-  .top-bar-left {
-    font-size: smaller;
-  }
-  .top-bar-right {
-    text-align: right;
-  }
-}
-
 
 /* Faster animation than the default animate.css */
 @keyframes zoomOut {
