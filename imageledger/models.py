@@ -1,13 +1,11 @@
 import io
 import tempfile
-from PIL import Image as PillowImage
 
 from django.urls import reverse
 from django.db import models
 from django.conf import settings
 from django.utils import timezone
 
-import imagehash
 import requests
 
 from django.contrib.postgres.fields import ArrayField
@@ -114,17 +112,18 @@ class Image(OpenLedgerModel):
         """Requests the image as found in `url` and generates a perceptual_hash from it"""
         # This is slow: it has to get the image and spool it to a tempfile, then compute
         # the hash
-        req = requests.get(self.url)
-        if req.status_code == 200:
-            buff = tempfile.SpooledTemporaryFile(max_size=1e9)
-            downloaded = 0
-            filesize = int(req.headers.get('content-length', 1000))  # Set a default length for the test client
-            for chunk in req.iter_content():
-                downloaded += len(chunk)
-                buff.write(chunk)
-            buff.seek(0)
-            im = PillowImage.open(io.BytesIO(buff.read()))
-            return str(imagehash.average_hash(im))
+        return None
+#        req = requests.get(self.url)
+#        if req.status_code == 200:
+#            buff = tempfile.SpooledTemporaryFile(max_size=1e9)
+#            downloaded = 0
+#            filesize = int(req.headers.get('content-length', 1000))  # Set a default length for the test client
+#            for chunk in req.iter_content():
+#                downloaded += len(chunk)
+#                buff.write(chunk)
+#            buff.seek(0)
+#            im = PillowImage.open(io.BytesIO(buff.read()))
+#            return str(imagehash.average_hash(im))
 
 
     def __str__(self):

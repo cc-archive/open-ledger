@@ -12,6 +12,3 @@ django
 django-cas-ng
 djangorestframework
 django-filter
-numpy
-Pillow
-imagehash

@@ -68,6 +68,9 @@ DATASOURCES = {
     'rijks': {
         'action': 'load-from-provider',
         'provider': 'rijks',
+    },
+    'sync': {
+        'action': 'sync'
     }
 }
 
@@ -175,8 +178,10 @@ def load_data_from_instance(instance):
                     run('{before_args}./venv/bin/python manage.py indexer {flags}; sleep 1'.format(**env.datasource))
                 elif env.datasource['action'] == 'load-from-file':
                     run('{before_args}./venv/bin/python manage.py loader {filepath} {source} {datatype} --filesystem {filesystem} --skip-checks {flags} ; sleep 1'.format(**env.datasource))
-                elif env.datasource['action'] == 'load-from-provider':  # FIXME update this
+                elif env.datasource['action'] == 'load-from-provider':
                     run('{before_args}./venv/bin/python manage.py handlers {provider} {flags} ; sleep 1'.format(**env.datasource))
+                elif env.datasource['action'] == 'sync':
+                    run('{before_args}./venv/bin/python manage.py syncer {flags} ; sleep 1'.format(**env.datasource))
 
 def deploy_code(host_string):
     max_retries = 20
