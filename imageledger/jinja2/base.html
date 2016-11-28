@@ -13,59 +13,95 @@
 {% block head %}{% endblock head %}
 
 <body>
-  <header>
+  <div class="page-wrap">
 
-    <nav class="top-bar">
+    <header>
 
-      <div class="top-bar-title">
-        <a class="cc-site-logo-link" href="https://creativecommons.org/" rel="home">
-          <img class="cc-site-logo" alt="Creative Commons" width="240" height="57" src="{{ static('images/cc.logo.white.svg')}}" scale="0" data-pin-nopin="true">
+      <nav class="top-bar">
+
+        <div class="top-bar-title">
+          <a class="cc-site-logo-link" href="https://creativecommons.org/" rel="home">
+            <img class="cc-site-logo" alt="Creative Commons" width="240" height="57" src="{{ static('images/cc.logo.white.svg')}}" scale="0" data-pin-nopin="true">
+          </a>
+
+        </div>
+
+        <div class="top-bar-right">
+
+          <ul class="login">
+            {% if request.user.is_anonymous %}
+              <li>
+                <a href="{{ url('cas_ng_login') }}">Sign in</a>
+              </li>
+            {% else %}
+              <li class="username">
+                {{ request.user.username }}
+              </li>
+              <li>
+                <a href="{{ url('cas_ng_logout') }}">Sign out</a>
+              </li>
+            {% endif %}
+          </ul>
+          <ul class="subnav">
+            <li>
+              <a href="{{ url ('index') }}">Open Ledger</a>
+            </li>
+            <li>
+              <a href="{{ url ('provider-apis')}}">Provider API search</a>
+            </li>
+            {% if not request.user.is_anonymous %}
+            <li>
+              <a href="{{ url('my-lists')}}">Your Lists</a>
+            </li>
+            {% endif %}
+          </ul>
+        </div>
+      </nav>
+    </header>
+
+    {% block body %}{% endblock %}
+
+  </div> <!-- End page wrap -->
+
+  <footer>
+    <div class="row">
+
+      <div class="column">
+        <a href="https://creativecommons.org/" class="custom-logo-link" rel="home" itemprop="url">
+          <img src="https://creativecommons.org/wp-content/uploads/2016/06/cc.logo_.white_.png" class="custom-logo" alt="cc.logo.white" itemprop="logo" srcset="https://creativecommons.org/wp-content/uploads/2016/06/cc.logo_.white_.png 980w, https://creativecommons.org/wp-content/uploads/2016/06/cc.logo_.white_-300x73.png 300w, https://creativecommons.org/wp-content/uploads/2016/06/cc.logo_.white_-768x188.png 768w, https://creativecommons.org/wp-content/uploads/2016/06/cc.logo_.white_-140x34.png 140w, https://creativecommons.org/wp-content/uploads/2016/06/cc.logo_.white_-50x12.png 50w, https://creativecommons.org/wp-content/uploads/2016/06/cc.logo_.white_-270x66.png 270w, https://creativecommons.org/wp-content/uploads/2016/06/cc.logo_.white_-245x60.png 245w" sizes="(max-width: 709px) 85vw, (max-width: 909px) 67vw, (max-width: 1362px) 62vw, 840px" data-pin-nopin="true">
         </a>
-
-      </div>
-
-      <div class="top-bar-right">
-
-        <ul class="login">
-          {% if request.user.is_anonymous %}
-            <li>
-              <a href="{{ url('cas_ng_login') }}">Sign in</a>
-            </li>
-          {% else %}
-            <li class="username">
-              {{ request.user.username }}
-            </li>
-            <li>
-              <a href="{{ url('cas_ng_logout') }}">Sign out</a>
-            </li>
-          {% endif %}
-        </ul>
-        <ul class="subnav">
-          <li>
-            <a href="{{ url ('index') }}">Open Ledger</a>
-          </li>
-          <li>
-            <a href="{{ url ('provider-apis')}}">Provider API search</a>
-          </li>
-          {% if not request.user.is_anonymous %}
-          <li>
-            <a href="{{ url('my-lists')}}">Your Lists</a>
-          </li>
-          {% endif %}
+        <ul>
+          <li><a href="https://creativecommons.org/about/contact/">Contact</a></li>
+          <li><a href="https://creativecommons.org/privacy/">Privacy</a></li>
+          <li><a href="https://creativecommons.org/policies/">Policies</a></li>
+          <li><a href="https://creativecommons.org/terms/">Terms</a></li>
         </ul>
       </div>
-    </nav>
-  </header>
+      <div class="column contact-info">
+        <h6><a href="/about/contact">We'd love to hear from you!</a></h6>
+        <address>
+        Creative Commons<br>
+        PO Box 1866, Mountain View, CA 94042
+        </address>
+        <a href="mailto:info@creativecommons.org" class="mail">info@creativecommons.org</a>
+        <br/>
+        <a href="tel:1-415-429-6753" class="tel">1-415-429-6753</a> <br/>
 
-  {% block body %}{% endblock %}
+        <a style="color: white; font-weight: bold" href="https://creativecommons.org/faq">Frequently Asked Questions</a>
 
-  <footer class="callout secondary">
-    <p>
-      This is a prototype of the <a href="https://creativecommons.org/2016/07/15/meeting-debrief-next-steps-challenge-attribution-view-source-3d-printing/">Open Ledger</a>, aggregating data from publicly available repositories of open content.
-    </p>
-    <p>
-      <a href="https://github.com/creativecommons/open-ledger/">Github repository</a>
-    </p>
+      </div>
+      <div class="column license-info">
+          <a rel="license" href="https://creativecommons.org/licenses/by/4.0/" title="Creative Commons Attribution 4.0 International license">
+            <i class="cc-icon-cc"></i><i class="cc-icon-cc-by"></i>
+          </a>
+          <p xmlns:cc="https://creativecommons.org/ns#" about="https://creativecommons.org">
+            Except where otherwise <a class="subfoot" href="/policies#license">noted</a>, content on this site is licensed under a <a class="subfoot" href="https://creativecommons.org/licenses/by/4.0/" rel="license">Creative Commons Attribution 4.0 International license</a>. <a class="subfoot" href="/website-icons" target="blank">Icons</a> by The Noun Project.
+          </p>
+      </div>
+      <div class="column openledger-info">
+          This is a prototype of the <a href="https://creativecommons.org/2016/07/15/meeting-debrief-next-steps-challenge-attribution-view-source-3d-printing/">Open Ledger</a>, aggregating data from publicly available repositories of open content.
+        <a href="https://github.com/creativecommons/open-ledger/">Github repository</a>
+      </div>
+    </div>
   </footer>
-
 </body>

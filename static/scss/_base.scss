@@ -1,3 +1,29 @@
+/* Fonts */
+html, body {
+  height: 100%;
+}
+a {
+  color: $cyan;
+}
+a:hover {
+  text-decoration: underline;
+}
+
+.page-wrap {
+  min-height: 100%;
+  /* equal to footer height */
+  margin-bottom: -($footer-height);
+}
+
+.page-wrap:after {
+  content: "";
+  display: block;
+}
+
+footer, .page-wrap:after {
+  height: $footer-height;
+}
+
 body, p, h1, h2, h3, h4, h5, h6 {
   font-family: "Source Sans Pro",sans-serif;
 }

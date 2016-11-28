@@ -1,0 +1,47 @@
+footer {
+  background-color: $dark-gray;
+  color: $gray;
+  font-size: 14px;
+  line-height: 1.3em;
+  width: 100%;
+  padding: 25px 15%;
+  margin-top: 25px;
+
+  ul, li {
+    list-style-type: none;
+    display: inline;
+  }
+  a {
+    color: $gray;
+  }
+  .openledger-info, .license-info {
+    font-size: 12px;
+    line-height: 18px;
+    a {
+      text-decoration: underline;
+    }
+  }
+  li {
+    padding: 0 .5rem 0 0;
+    &:not(:first-child) {
+      padding: 0 .5rem;
+      border-left: 1px solid $gray;
+    }
+  }
+  .custom-logo {
+    margin-bottom: 2rem;
+  }
+  .contact-info {
+    h6 {
+      font-size: 18px;
+      font-weight: bold;
+      line-height: 19.5px;
+      a {
+        color: $white;
+      }
+    }
+    a.mail, a.tel {
+      color: $cyan;
+    }
+  }
+}

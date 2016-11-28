@@ -1,3 +1,27 @@
+/* Colors */
+/* Other globals */
+/* Fonts */
+html, body {
+  height: 100%; }
+
+a {
+  color: #049bce; }
+
+a:hover {
+  text-decoration: underline; }
+
+.page-wrap {
+  min-height: 100%;
+  /* equal to footer height */
+  margin-bottom: -200px; }
+
+.page-wrap:after {
+  content: "";
+  display: block; }
+
+footer, .page-wrap:after {
+  height: 200px; }
+
 body, p, h1, h2, h3, h4, h5, h6 {
   font-family: "Source Sans Pro",sans-serif; }
 
@@ -50,9 +74,9 @@ footer.callout {
   width: 200px; }
 
 .button {
-  background-color: #00b5da; }
+  background-color: #049bce; }
   .button:hover {
-    background-color: #008ba7; }
+    background-color: #03759c; }
   .button.success {
     background-color: #01a635; }
     .button.success:hover {
@@ -226,5 +250,39 @@ nav.top-bar {
 header {
   box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.8);
   margin-bottom: 2rem; }
+
+footer {
+  background-color: #2b2b2b;
+  color: #999999;
+  font-size: 14px;
+  line-height: 1.3em;
+  width: 100%;
+  padding: 25px 15%;
+  margin-top: 25px; }
+  footer ul, footer li {
+    list-style-type: none;
+    display: inline; }
+  footer a {
+    color: #999999; }
+  footer .openledger-info, footer .license-info {
+    font-size: 12px;
+    line-height: 18px; }
+    footer .openledger-info a, footer .license-info a {
+      text-decoration: underline; }
+  footer li {
+    padding: 0 .5rem 0 0; }
+    footer li:not(:first-child) {
+      padding: 0 .5rem;
+      border-left: 1px solid #999999; }
+  footer .custom-logo {
+    margin-bottom: 2rem; }
+  footer .contact-info h6 {
+    font-size: 18px;
+    font-weight: bold;
+    line-height: 19.5px; }
+    footer .contact-info h6 a {
+      color: white; }
+  footer .contact-info a.mail, footer .contact-info a.tel {
+    color: #049bce; }
 
 /*# sourceMappingURL=app.css.map */

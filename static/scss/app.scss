@@ -1,10 +1,15 @@
 
-
+/* Colors */
 $white: rgb(255, 255, 255);
 $black: rgb(20, 20, 20);
-$cyan: rgb(0, 181, 218);
+$cyan: rgb(4, 155, 206);
 $orange-dark: rgb(236, 89, 47);
 $green: rgb(1, 166, 53);
+$dark-gray: rgb(43, 43, 43);
+$gray:  rgb(153, 153, 153);
+
+/* Other globals */
+$footer-height: 200px;
 
 @import 'base';
 @import 'detail';
@@ -13,3 +18,4 @@ $green: rgb(1, 166, 53);
 @import 'lists';
 @import 'result';
 @import 'nav';
+@import 'footer';
