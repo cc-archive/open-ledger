@@ -44,8 +44,11 @@ class Command(BaseCommand):
             log.setLevel(logging.DEBUG)
         self.sync_all_images(chunk_size=options['chunk_size'], with_fingerprinting=options['with_fingerprinting'])
 
-    def sync_all_images(self, chunk_size=DEFAULT_CHUNK_SIZE, with_fingerprinting=False):
+    def sync_all_images(self, chunk_size=DEFAULT_CHUNK_SIZE, with_fingerprinting=False, num_iterations=1000):
         """Sync all of the images, sorting from least-recently-synced"""
-        imgs = models.Image.objects.all().order_by('-last_synced_with_source')[0:chunk_size]
-        for img in imgs:
-            img.sync(attempt_perceptual_hash=with_fingerprinting)
+        count = 0
+        while count < num_iterations:
+            imgs = models.Image.objects.all().order_by('-last_synced_with_source')[0:chunk_size]
+            for img in imgs:
+                img.sync(attempt_perceptual_hash=with_fingerprinting)
+                count += 1
