@@ -1,0 +1,32 @@
+nav.top-bar {
+  background-image: linear-gradient(90deg,#EE5B32,#FB7928,#EE5B32);
+  color: $white;
+
+  a {
+    color: $white;
+  }
+  ul {
+    list-style-type: none;
+    background: none;
+  }
+  li {
+    font-weight: 700;
+    font-size: 28px;
+    display: inline-block;
+    border-left: 1px solid $white;
+    padding: 0 .8em;
+  }
+  ul.login {
+    li {
+      font-size: 1rem;
+      border: none;
+      &.username {
+        border-right: 1px solid $white;
+      }
+    }
+  }
+}
+header {
+  box-shadow: 0 0 10px 0 rgba(0,0,0,.8);
+  margin-bottom: 2rem;
+}

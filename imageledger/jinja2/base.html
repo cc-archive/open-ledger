@@ -2,6 +2,7 @@
 <title>Open Ledger prototype</title>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/foundation/6.2.3/foundation-flex.min.css">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.5.2/animate.min.css">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro%3A400%2C600%2C700%7CRoboto+Condensed&ver=4.6.1" />
 
 <link rel="stylesheet" href="{{ static("css/app.css") }}">
 <link rel="stylesheet" href="{{ static("css/foundation-icons.css") }}">
@@ -12,32 +13,49 @@
 {% block head %}{% endblock head %}
 
 <body>
-  <nav class="top-bar">
-    <div class="top-bar-title">
-      <a href="{{ url ('index') }}">Open Ledger Search Prototype</a>
-    </div>
-    <div class="top-bar-left">
-      <a href="{{ url ('provider-apis')}}">Search via Provider APIs</a>
-    </div>
-    <div class="top-bar-right">
+  <header>
 
-      <div>
-        {% if request.user.is_anonymous %}
-          <a href="{{ url('cas_ng_login') }}">Sign in</a>
-        {% else %}
-          <a href="{{ url('cas_ng_logout') }}">{{ request.user.username }} Sign out</a>
+    <nav class="top-bar">
 
-        {% endif %}
+      <div class="top-bar-title">
+        <a class="cc-site-logo-link" href="https://creativecommons.org/" rel="home">
+          <img class="cc-site-logo" alt="Creative Commons" width="240" height="57" src="{{ static('images/cc.logo.white.svg')}}" scale="0" data-pin-nopin="true">
+        </a>
+
       </div>
-      {% if not request.user.is_anonymous %}
-      <div>
-        <a href="{{ url('my-lists')}}">Your Lists</a>
+
+      <div class="top-bar-right">
+
+        <ul class="login">
+          {% if request.user.is_anonymous %}
+            <li>
+              <a href="{{ url('cas_ng_login') }}">Sign in</a>
+            </li>
+          {% else %}
+            <li class="username">
+              {{ request.user.username }}
+            </li>
+            <li>
+              <a href="{{ url('cas_ng_logout') }}">Sign out</a>
+            </li>
+          {% endif %}
+        </ul>
+        <ul class="subnav">
+          <li>
+            <a href="{{ url ('index') }}">Open Ledger</a>
+          </li>
+          <li>
+            <a href="{{ url ('provider-apis')}}">Provider API search</a>
+          </li>
+          {% if not request.user.is_anonymous %}
+          <li>
+            <a href="{{ url('my-lists')}}">Your Lists</a>
+          </li>
+          {% endif %}
+        </ul>
       </div>
-      {% endif %}
-
-    </div>
-  </nav>
-
+    </nav>
+  </header>
 
   {% block body %}{% endblock %}
 

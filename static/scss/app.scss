@@ -1,7 +1,15 @@
-@import 'base';
 
+
+$white: rgb(255, 255, 255);
+$black: rgb(20, 20, 20);
+$cyan: rgb(0, 181, 218);
+$orange-dark: rgb(236, 89, 47);
+$green: rgb(1, 166, 53);
+
+@import 'base';
 @import 'detail';
 @import 'forms';
 @import 'licenses';
 @import 'lists';
 @import 'result';
+@import 'nav';

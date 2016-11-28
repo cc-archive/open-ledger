@@ -1,3 +1,6 @@
+body, p, h1, h2, h3, h4, h5, h6 {
+  font-family: "Source Sans Pro",sans-serif; }
+
 h5 {
   margin-top: 4rem; }
 
@@ -45,6 +48,15 @@ footer.callout {
 
 .attribution-button {
   width: 200px; }
+
+.button {
+  background-color: #00b5da; }
+  .button:hover {
+    background-color: #008ba7; }
+  .button.success {
+    background-color: #01a635; }
+    .button.success:hover {
+      background-color: #01d945; }
 
 .list-detail > form input {
   display: none; }
@@ -190,5 +202,29 @@ figcaption {
 
 .figure-metadata {
   margin-top: .25rem; }
+
+nav.top-bar {
+  background-image: linear-gradient(90deg, #EE5B32, #FB7928, #EE5B32);
+  color: white; }
+  nav.top-bar a {
+    color: white; }
+  nav.top-bar ul {
+    list-style-type: none;
+    background: none; }
+  nav.top-bar li {
+    font-weight: 700;
+    font-size: 28px;
+    display: inline-block;
+    border-left: 1px solid white;
+    padding: 0 .8em; }
+  nav.top-bar ul.login li {
+    font-size: 1rem;
+    border: none; }
+    nav.top-bar ul.login li.username {
+      border-right: 1px solid white; }
+
+header {
+  box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.8);
+  margin-bottom: 2rem; }
 
 /*# sourceMappingURL=app.css.map */

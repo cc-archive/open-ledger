@@ -1,3 +1,17 @@
+.button {
+  background-color: $cyan;
+  &:hover {
+      background-color: darken($cyan, 10%);
+  }
+  &.success {
+    background-color: $green;
+    &:hover {
+      background-color: lighten($green, 10%);
+    }
+  }
+
+}
+
 .list-detail {
   &> form {
     input {
