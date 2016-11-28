@@ -228,6 +228,7 @@ figcaption {
   margin-top: .25rem; }
 
 nav.top-bar {
+  padding: .5rem 2rem;
   background-image: linear-gradient(90deg, #EE5B32, #FB7928, #EE5B32);
   color: white; }
   nav.top-bar a {
@@ -252,6 +253,7 @@ header {
   margin-bottom: 2rem; }
 
 footer {
+  box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.8);
   background-color: #2b2b2b;
   color: #999999;
   font-size: 14px;
