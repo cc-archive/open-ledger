@@ -1,4 +1,7 @@
-{% macro license(l) -%}
+{% macro license(l, with_cc=False) -%}
+{% if with_cc %}
+  <img src="{{ static ('images/cc.svg') }}" alt="Creative Commons" title="Creative Commons" class="license-logo" />
+{% endif %}
 {% for license in l.split('-') %}
   <img src="{{ static ('images/' + license.lower() + '.svg') }}" alt="{{ license.upper() }}" title="{{ license }}" class="license-logo" />
 {% endfor %}
