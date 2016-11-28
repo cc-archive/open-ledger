@@ -32,9 +32,9 @@ technical and privacy challenges here, and we seek to identify those early.
 
 ### Web app prototype
 
-The web application `openledger` is a simple Python/Flask application which
+The web application `openledger` is a simple Python/Django application which
 passes through requests to partner APIs. API keys are stored outside of the
-repo in `openledger/instance/config`. See `openledger/config.example` for
+repo in environment variables or a local file. See `openledger/local.py.example` for
 a snapshot of the current expected values.
 
 This prototype is expected to grow to include works drawn directly from the
@@ -101,20 +101,12 @@ postgres=# GRANT ALL PRIVILEGES ON DATABASE openledger to XXX;
 GRANT
 ```
 
-Set up a testing database as well:
-
-```
-create user cctest with password 'cctest';
-create database openledgertest;
-grant all privileges on database openledgertest to cctest;
-```
-
 ## Instance configuration
 
 ### Elastic Beanstalk deployment
 
 The application is already set up in EB. See the `open-ledger` Application and
-`open-ledger-dev` Environment in the EB console.
+`open-ledger-1` Environment in the EB console.
 
 ### EC2 Loader
 
@@ -132,7 +124,7 @@ fab launchloader
 Will spin up a single instance of `INSTANCE_TYPE`, provision its packages, and
 install the latest version of the code `from Github` (make sure local changes are pushed!)
 
-Be sure to have in your environment the following values:
+The code will expect a number of environment variables to be set, including:
 
 ```
 export OPEN_LEDGER_LOADER_AMI="XXX" # The AMI name
@@ -140,23 +132,12 @@ export OPEN_LEDGER_LOADER_KEY_NAME="XXX" # An SSH key name registered with Amazo
 export OPEN_LEDGER_LOADER_SECURITY_GROUPS="default,open-ledger-loader"
 export OPEN_LEDGER_REGION="us-west-1"
 export OPEN_LEDGER_ACCOUNT="XXX"  # The AWS account for CC
-export OPEN_LEDGER_DATABASE_PASSWORD="XXX" # This would've been set in RDS when the Elastic Beanstalk cluster was set up
 export OPEN_LEDGER_ACCESS_KEY_ID="XXX" # Use an IAM that can reach these hosts, like 'cc-openledger'
 export OPEN_LEDGER_SECRET_ACCESS_KEY="XXX"
 ```
 
-You'll need to register the RDS security group here if you want to reach the database.
-
-TODO snapshotting the AMI when it's mature would speed up start time
-
-### Manual install
-
-For installation on a "normal" host, like a Digital Ocean instance, use the instance
-configuration options provided by Flask:
-
-Flask uses the `instance/config.py` file per-host to specify environment variables. For this application, most of these are going to be API keys or database configuration.
-
-A sample is included in `config.py.example`. Copy that into `instance/config.py` and update the values for your host.
+...and most of the same Django-level configuration variables expected in `local.py.example`.
+These values can be extracted from the Elastic Beanstalk config by using the AWS console.
 
 ## Open Images dataset
 
@@ -169,9 +150,7 @@ on the CC S3 bucket (used by the AWS deployments)
 * Image URLs and metadata
 * Human image-level annotations (validation set)
 
-(as of 11 Oct 16 we aren't yet including the machine annotations)
-
-2. Run the database import script:
+2. Run the database import script as a Django management command:
 
 The script expects:
 
@@ -183,14 +162,30 @@ that map images to tags.)
 ```
 . venv/bin/activate
 
-python database_import.py /path/to/openimages/images_2016_08/validation/images.csv openimages images
-python database_import.py /path/to/openimages/dict.csv openimages tags
-python database_import.py /path/to/openimages/human_ann_2016_08/validation/labels.csv
+./manage.py loader /path/to/openimages/images_2016_08/validation/images.csv openimages images
+./manage.py loader /path/to/openimages/dict.csv openimages tags
+./manage.py loader /path/to/openimages/human_ann_2016_08/validation/labels.csv openimages image-tags
 ```
 
-This loads the smaller "validation" subject; the "train" files are the full 9 million set.
+(This loads the smaller "validation" subject; the "train" files are the full 9 million set.)
+
+This loader is invoked in production using the Fabric task, above:
+
+```
+fab launchloader --set datasource=openimages-small
+```
+
+See `fabfile.py` for complete documentation on loader tasks, including search engine indexing
+and loading of other image sets.
 
 ## Development
+
+### Python
+
+Normal Django development applies:
+
+* Run the app in development with `manage.py runserver`
+* Handle database changes via `manage.py migrate`
 
 JavaScript dependencies are managed with `npm` and built with `webpack`.
 `Babel` is a dependency as the code is written in ES6+.
@@ -201,7 +196,7 @@ When JavaScript assets are changed, run webpack:
 webpack
 ```
 
-It is run automatically on deploy.
+It is run automatically on deploy prior to a server-side call to `manage.py collectstatic`
 
 ## Testing
 
@@ -214,8 +209,6 @@ pip install -r requirements-test.txt
 Search tests require a local version of elasticsearch 2.x; install using your favorite
 package manager.
 
-Run pytest from the root of the project as:
-
 ```
-python -m pytest openledger
+./manage.py test
 ```
