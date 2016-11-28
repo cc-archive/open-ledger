@@ -27,7 +27,7 @@ class Image(OpenLedgerModel):
     identifier = models.CharField(unique=True, max_length=255, blank=True, null=True, db_index=True)
 
     # The perceptual hash we generate from the source image TODO
-    perceptual_hash = models.CharField(unique=True, max_length=255, blank=True, null=True, db_index=True)
+    perceptual_hash = models.CharField(unique=False, max_length=255, blank=True, null=True, db_index=True)
 
     # The provider of the data, typically a partner like Flickr or 500px
     provider = models.CharField(max_length=80, blank=True, null=True, db_index=True)
