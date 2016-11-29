@@ -37,6 +37,10 @@ h5 {
   border: none;
   border-bottom: 1px solid rgb(200,200,200);
   padding: 2rem 0 2rem 0;
+  &.image-detail figure {
+    margin: auto;
+    max-width: 70vw;
+  }
 }
 
 /* Faster animation than the default animate.css */

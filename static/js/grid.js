@@ -6,6 +6,7 @@ const gutter = 10
 
 const init = () => {
   var grid = document.querySelector('.grid')
+
   if (grid) {
     new Masonry(grid, {
       itemSelector: '.grid-item',
@@ -36,18 +37,20 @@ const init = () => {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-  var imgLoad = imagesLoaded('.results')
-  imgLoad.on('always', () => {
-    // detect which image is broken
-    for (var i=0, len=imgLoad.images.length; i < len; i++) {
-      var image = imgLoad.images[i]
-      if (!image.isLoaded) {
-        let parent = image.img.parentNode.parentNode.parentNode.parentNode
-        parent.style.display = 'none'
+  var results = document.querySelector('.results')
+  if (results) {
+    var imgLoad = imagesLoaded('.results')
+    imgLoad.on('always', () => {
+      // detect which image is broken
+      for (var i=0, len=imgLoad.images.length; i < len; i++) {
+        var image = imgLoad.images[i]
+        if (!image.isLoaded) {
+          let parent = image.img.parentNode.parentNode.parentNode.parentNode
+          parent.style.display = 'none'
+        }
       }
-    }
-    var results = document.querySelector('.results')
-    results.style.visibility = 'visible'
-    init()
-  })
+      results.style.visibility = 'visible'
+      init()
+    })
+  }
 })

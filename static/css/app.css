@@ -33,6 +33,9 @@ h5 {
   border: none;
   border-bottom: 1px solid #c8c8c8;
   padding: 2rem 0 2rem 0; }
+  .hero.image-detail figure {
+    margin: auto;
+    max-width: 70vw; }
 
 /* Faster animation than the default animate.css */
 @keyframes zoomOut {
