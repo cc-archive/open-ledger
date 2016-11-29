@@ -124,7 +124,7 @@ h5 {
   max-height: 25px; }
 
 /* List buttons */
-button.tiny, .add-to-list-container, .image-result {
+button.tiny, .add-to-list-container {
   font-size: 1rem;
   padding: .5rem;
   margin: 0; }
@@ -205,19 +205,34 @@ button.tiny, .add-to-list-container, .image-result {
       background-color: #e6e6e6; }
 
 figure {
-  margin: 0; }
+  margin: 0;
+  position: relative; }
 
 figcaption {
-  text-align: center;
-  max-width: 200px;
-  font-size: .75rem; }
+  padding: 10px 5px 5px 5px;
+  background: rgba(255, 255, 255, 0.75);
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  display: none; }
+  figcaption .title {
+    text-align: center;
+    font-size: 1rem;
+    line-height: 1.1rem; }
 
 .figure-wrapper {
   max-height: 200px;
   overflow: hidden; }
 
-.figure-metadata {
-  margin-top: .25rem; }
+.results {
+  visibility: hidden; }
+
+.grid-item {
+  width: 200px;
+  margin-bottom: 10px; }
+  .grid-item:hover figcaption {
+    display: block; }
 
 nav.top-bar {
   padding: .5rem 2rem;

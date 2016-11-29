@@ -28,7 +28,7 @@
 
       {{ pagination.paginate_api('flickr', results.flickr.photos.page, results.flickr.photos.pages, form)}}
 
-      <div class="row">
+      <div class="grid1">
         {% for result in results.flickr.photos.photo %}
           {% with image = {} %}
             {% do image.update({'identifier': None,
@@ -57,7 +57,7 @@
 
       {{ pagination.paginate_api('fpx', results.fpx.current_page, results.fpx.total_pages, form) }}
 
-      <div class="row">
+      <div class="grid2">
         {% for result in results.fpx.photos %}
           {% with image = {} %}
             {% do image.update({'identifier': None,
@@ -86,7 +86,7 @@
 
      {{ pagination.paginate_api('rijks', results.rijks.page, results.rijks.pages, form) }}
 
-      <div class="row">
+      <div class="grid3">
         {% for result in results.rijks.artObjects %}
           {% with image = {} %}
             {% do image.update({'license': "cc0",
@@ -114,7 +114,7 @@
 
      {{ pagination.paginate_api('wikimedia', results.wikimedia.page, results.wikimedia.pages, form)}}
 
-     <div class="row">
+     <div class="grid4">
       {% for result in results.wikimedia.results %}
         {% with image = {} %}
           {% do image.update({'license': "cc0",

@@ -46,13 +46,13 @@ class Command(BaseCommand):
             log.setLevel(logging.DEBUG)
         self.sync_all_images(chunk_size=options['chunk_size'], with_fingerprinting=options['with_fingerprinting'])
 
-    def sync_all_images(self, chunk_size=DEFAULT_CHUNK_SIZE, with_fingerprinting=False, num_iterations=5):
+    def sync_all_images(self, chunk_size=DEFAULT_CHUNK_SIZE, with_fingerprinting=False, num_iterations=1000):
         """Sync all of the images, sorting from least-recently-synced"""
-        pool = ThreadPool(4)
-        starts = [i * chunk_size for i in range(0, num_iterations)]
-        pool.starmap(do_sync, zip(starts, itertools.repeat(chunk_size, num_iterations), itertools.repeat(with_fingerprinting, num_iterations)))
-        pool.close()
-        pool.join()
+        with ThreadPool(4) as pool:
+            starts = [i * chunk_size for i in range(0, num_iterations)]
+            pool.starmap(do_sync, zip(starts,
+                                      itertools.repeat(chunk_size, num_iterations),
+                                      itertools.repeat(with_fingerprinting, num_iterations)))
 
 def do_sync(start, chunk_size, with_fingerprinting):
     end = start + chunk_size

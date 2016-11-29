@@ -2,35 +2,37 @@
 {% import "includes/lists.html" as lists %}
 
 {% macro show(detail_url, image, request) -%}
-<div class="shrink columns t-image-result image-result">
+<div class="grid-item image-result t-image-result">
   <figure>
     <div class="figure-wrapper">
       <a href="{{ detail_url }}" class="t-detail-link">
-        <img src="{{ image.thumbnail }}" class="thumbnail" width="200" />
+        <img src="{{ image.thumbnail }}" />
       </a>
     </div>
     <figcaption>
-      {{ image.title|truncate(20) }}
-      {% if image.creator %} by
-        {% if image.creator_url %}
-          <a href="{{ image.creator_url }}">{{ image.creator }}</a>
-        {% else %}
-          {{ image.creator }}
+      <p class="title">{{ image.title|truncate(50) }}
+        {% if image.creator %} by
+          {% if image.creator_url %}
+            <a href="{{ image.creator_url }}">{{ image.creator }}</a>
+          {% else %}
+            {{ image.creator }}
+          {% endif %}
         {% endif %}
-      {% endif %}
+        </p>
+      <div class="figure-metadata">
+        {{ license_logo.license(image.license) }}
+
+        {% if image.identifier %}
+          {{ lists.add(image.identifier, request, size="small") }}
+        {% endif %}
+
+        {% if caller %}
+         {{ caller() }}
+        {% endif %}
+      </div>
     </figcaption>
   </figure>
-  <div class="figure-metadata">
-    {{ license_logo.license(image.license) }}
 
-    {% if image.identifier %}
-      {{ lists.add(image.identifier, request, size="small") }}
-    {% endif %}
-
-    {% if caller %}
-     {{ caller() }}
-    {% endif %}
-  </div>
 
 </div>
 {%- endmacro %}

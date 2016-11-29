@@ -1,12 +1,23 @@
 
 figure {
   margin: 0;
+  position: relative;
 }
 
 figcaption {
-  text-align: center;
-  max-width: 200px;
-  font-size: .75rem;
+
+  padding: 10px 5px 5px 5px;
+  background: rgba(255, 255, 255, 0.75);
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  .title {
+    text-align: center;
+    font-size: 1rem;
+    line-height: 1.1rem;
+  }
+  display: none;
 }
 
 .figure-wrapper {
@@ -14,5 +25,18 @@ figcaption {
   overflow: hidden;
 }
 .figure-metadata {
-  margin-top: .25rem;
+
+}
+.results {
+  visibility: hidden;
+}
+.grid-item {
+  width: 200px;
+  margin-bottom: 10px;
+  &:hover {
+    figcaption {
+      display: block;
+
+    }
+  }
 }

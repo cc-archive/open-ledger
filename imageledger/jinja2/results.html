@@ -24,7 +24,7 @@
     {% if results.items %}
      {{ pagination.paginate_openledger(results.page, results.pages, form) }}
 
-      <div class="row">
+      <div class="grid">
         {% for result in results.items %}
 
           {% set detail_url = url('detail', result.identifier) %}

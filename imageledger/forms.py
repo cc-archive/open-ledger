@@ -2,7 +2,8 @@ from django import forms
 
 from imageledger import licenses, models
 
-PER_PAGE = 20
+PER_PAGE = 100
+PROVIDER_PER_PAGE = 20
 
 LICENSE_CHOICES = (
     ('ALL-$', 'Use for commercial purposes'),

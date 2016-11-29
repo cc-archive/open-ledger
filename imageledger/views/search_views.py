@@ -85,7 +85,7 @@ def provider_apis(request, provider=None):
                 results[p] = search_funcs[p](search=form.cleaned_data['search'],
                                              licenses=form.cleaned_data['licenses'],
                                              page=form.cleaned_data['page'],
-                                             per_page=forms.PER_PAGE)
+                                             per_page=forms.PROVIDER_PER_PAGE)
     else:
         initial_data = forms.SearchForm.initial_data
         form = forms.SearchForm(initial=initial_data)
