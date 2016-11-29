@@ -17,6 +17,7 @@ CHUNK_SIZE = 1000
 
 MAX_CONNECTION_RETRIES = 10
 RETRY_WAIT = 5  # Number of sections to wait before retrying
+TIMEOUT = 30
 
 log = logging.getLogger()
 
@@ -76,6 +77,8 @@ def init_es():
     es = Elasticsearch(host=settings.ELASTICSEARCH_URL,
                        port=settings.ELASTICSEARCH_PORT,
                        connection_class=RequestsHttpConnection,
+                       timeout=TIMEOUT,
+                       max_retries=10, retry_on_timeout=True,
                        http_auth=auth)
     return es
 
