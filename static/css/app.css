@@ -232,7 +232,7 @@ figcaption {
   visibility: hidden; }
 
 .grid-item {
-  width: 200px;
+  width: 210px;
   margin-bottom: 10px; }
   .grid-item:hover figcaption {
     display: block; }

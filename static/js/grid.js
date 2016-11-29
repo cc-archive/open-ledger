@@ -1,7 +1,7 @@
 import Masonry from 'masonry-layout'
 var imagesLoaded = require('imagesloaded')
 
-const columnWidth = 200
+const columnWidth = 210
 const gutter = 10
 
 const init = () => {
