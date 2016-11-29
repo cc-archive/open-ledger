@@ -10,7 +10,6 @@ from imageledger import models, search
 
 console = logging.StreamHandler()
 log = logging.getLogger(__name__)
-log.addHandler(console)
 log.setLevel(logging.INFO)
 
 
@@ -41,6 +40,7 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         if options['verbose']:
+            log.addHandler(console)
             log.setLevel(logging.DEBUG)
         self.sync_all_images(chunk_size=options['chunk_size'], with_fingerprinting=options['with_fingerprinting'])
 
