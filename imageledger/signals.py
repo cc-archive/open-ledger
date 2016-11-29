@@ -30,7 +30,7 @@ def _update_search_index(img):
     search_obj = search.db_image_to_index(img)
     if (search_obj.removed_from_source):
         log.debug("Removing image %s from search index", img.identifier)
-        search_obj.delete()
+        search_obj.delete(ignore=404)
     else:
         log.debug("Indexing image %s", img.identifier)
         search_obj.save()

@@ -19,7 +19,7 @@ MAX_CONNECTION_RETRIES = 10
 RETRY_WAIT = 5  # Number of sections to wait before retrying
 
 DEFAULT_CHUNK_SIZE = 1000
-
+DEFAULT_NUM_ITERATIONS = 100
 
 class Command(BaseCommand):
     can_import_settings = True
@@ -40,19 +40,27 @@ class Command(BaseCommand):
                             action="store_true",
                             help="Whether to run the expensive perceptual hash routine as part of syncing")
 
+        parser.add_argument("--num-iterations",
+                            dest="num_iterations",
+                            default=DEFAULT_NUM_ITERATIONS,
+                            type=int,
+                            help="The number of times to loop through `chunk_size` records")
+
     def handle(self, *args, **options):
         if options['verbose']:
             log.addHandler(console)
             log.setLevel(logging.DEBUG)
-        self.sync_all_images(chunk_size=options['chunk_size'], with_fingerprinting=options['with_fingerprinting'])
+        self.sync_all_images(chunk_size=options['chunk_size'],
+                             with_fingerprinting=options['with_fingerprinting'],
+                             num_iterations=options['num_iterations'])
 
-    def sync_all_images(self, chunk_size=DEFAULT_CHUNK_SIZE, with_fingerprinting=False, num_iterations=1000):
+    def sync_all_images(self, chunk_size=DEFAULT_CHUNK_SIZE, with_fingerprinting=False, num_iterations=DEFAULT_NUM_ITERATIONS):
         """Sync all of the images, sorting from least-recently-synced"""
         with ThreadPool(4) as pool:
             starts = [i * chunk_size for i in range(0, num_iterations)]
             pool.starmap(do_sync, zip(starts,
-                                      itertools.repeat(chunk_size, num_iterations),
-                                      itertools.repeat(with_fingerprinting, num_iterations)))
+                                      itertools.repeat(chunk_size, len(starts)),
+                                      itertools.repeat(with_fingerprinting, len(starts))))
 
 def do_sync(start, chunk_size, with_fingerprinting):
     end = start + chunk_size

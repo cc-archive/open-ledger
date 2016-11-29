@@ -8,6 +8,7 @@ from elasticsearch import helpers
 from django.conf import settings
 from imageledger import models, signals, search
 from django.db.utils import IntegrityError
+from django.utils import timezone
 
 BASE_URL = 'https://www.rijksmuseum.nl'
 ENDPOINT_PHOTOS = BASE_URL + '/api/en/collection'
@@ -70,6 +71,7 @@ def serialize(result):
     image.height = result['webImage']['height']
     image.title = result['longTitle']
     image.identifier = signals.create_identifier(image.url)
+    image.last_synced_with_source = timezone.now()
     return image
 
 def walk(page=1, per_page=200):
