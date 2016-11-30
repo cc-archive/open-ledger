@@ -163,3 +163,11 @@ class Tag(OpenLedgerModel):
 
     class Meta:
         db_table = 'tag'
+
+class Favorite(OpenLedgerModel):
+    image = models.ForeignKey(Image, on_delete=models.CASCADE, related_name="favorites")
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+
+    class Meta:
+        unique_together = (('user', 'image'))
+        db_table = 'favorite'

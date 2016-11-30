@@ -297,3 +297,55 @@ class TestAPIViews(TestImageledgerApp):
         """The List autocomplete should return a 403 on anonymous users"""
         resp = self.req.get('/api/v1/autocomplete/lists', {'title': 'title'})
         self.assertEqual(403, resp.status_code)
+
+    def test_favorite_view_logged_in(self):
+        """The Favorite view should require that a user be logged in"""
+        img = models.Image.objects.create(url="example.com", license="CC0")
+        resp = self.req.post('/api/v1/images/favorite/' + img.identifier)
+        self.assertEqual(403, resp.status_code)
+
+    def test_favorite_view_post(self):
+        """The Favorite POST view should create a new Favorite object when a user requests it"""
+        self.req.force_login(self.user)
+        img = models.Image.objects.create(url="example.com", license="CC0")
+        self.assertEqual(0, models.Favorite.objects.filter(user=self.user, image=img).count())
+        resp = self.req.post('/api/v1/images/favorite/' + img.identifier)
+        self.assertEqual(201, resp.status_code)
+        self.assertEqual(1, models.Favorite.objects.filter(user=self.user, image=img).count())
+
+    def test_favorite_view_put(self):
+        """The Favorite PUT view should create a new Favorite object when a user
+        requests it if it doesn't already exist"""
+        self.req.force_login(self.user)
+        img = models.Image.objects.create(url="example.com", license="CC0")
+        self.assertEqual(0, models.Favorite.objects.filter(user=self.user, image=img).count())
+        resp = self.req.put('/api/v1/images/favorite/' + img.identifier)
+        self.assertEqual(201, resp.status_code)
+        self.assertEqual(1, models.Favorite.objects.filter(user=self.user, image=img).count())
+
+    def test_favorite_view_create_twice(self):
+        """The Favorite view should be a no-op if a favorite is created twice via PUT"""
+        self.req.force_login(self.user)
+        img = models.Image.objects.create(url="example.com", license="CC0")
+        self.assertEqual(0, models.Favorite.objects.filter(user=self.user, image=img).count())
+        resp = self.req.put('/api/v1/images/favorite/' + img.identifier)
+        self.assertEqual(201, resp.status_code)
+        resp = self.req.put('/api/v1/images/favorite/' + img.identifier)
+        self.assertEqual(200, resp.status_code)
+        self.assertEqual(1, models.Favorite.objects.filter(user=self.user, image=img).count())
+
+    def test_favorite_view_delete(self):
+        """The Favorite DELETE view should remove a favorite"""
+        self.req.force_login(self.user)
+        img = models.Image.objects.create(url="example.com", license="CC0")
+        fave = models.Favorite.objects.create(image=img, user=self.user)
+        self.assertEqual(1, models.Favorite.objects.filter(user=self.user, image=img).count())
+        resp = self.req.delete('/api/v1/images/favorite/' + img.identifier)
+        self.assertEqual(204, resp.status_code)
+        self.assertEqual(0, models.Favorite.objects.filter(user=self.user, image=img).count())
+
+    def test_favorite_view_delete_not_found(self):
+        """The Favorite DELETE view should return a 404 if the image doesn't exist"""
+        self.req.force_login(self.user)
+        resp = self.req.delete('/api/v1/images/favorite/fake')
+        self.assertEqual(404, resp.status_code)

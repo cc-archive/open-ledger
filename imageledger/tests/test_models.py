@@ -1,5 +1,6 @@
 import os
 
+from django.contrib.auth import get_user_model
 from django.test import TestCase
 from psycopg2.extensions import new_array_type
 import responses
@@ -193,3 +194,10 @@ class TestModels(TestCase):
         #old_hash = img.generate_hash()
         #new_hash = img.generate_hash()
         #self.assertEqual(new_hash, old_hash)
+
+
+    def test_favorite(self):
+        """Images can be added as favorites by users"""
+        img = models.Image.objects.create(url="http://example.com/image", title='exists', license='CC0')
+        user = get_user_model().objects.create_user('username', password='password')
+        models.Favorite.objects.create(image=img, user=user)

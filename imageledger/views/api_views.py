@@ -91,6 +91,12 @@ class ListSerializer(serializers.ModelSerializer):
         fields = ('title', 'slug', 'created_on', 'updated_on', 'description',
                   'creator_displayname', 'owner')
 
+class FavoriteSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = models.Favorite
+        fields = ('image', 'user', 'created_on', 'updated_on')
+
 # Views
 
 class ListList(mixins.ListModelMixin,
@@ -181,3 +187,35 @@ class ListDetail(mixins.RetrieveModelMixin,
                 lst.delete()
             return Response(status=status.HTTP_204_NO_CONTENT)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+class FavoriteDetail(mixins.RetrieveModelMixin,
+                     mixins.UpdateModelMixin,
+                     mixins.DestroyModelMixin,
+                     mixins.CreateModelMixin,
+                     generics.GenericAPIView):
+    queryset = models.Favorite.objects.all()
+    serializer_class = FavoriteSerializer
+    permission_classes = (permissions.IsAuthenticated,)
+
+    def post(self, request, *args, **kwargs):
+        img = models.Image.objects.get(identifier=self.kwargs.get('identifier'))
+        serializer = FavoriteSerializer(data={'image': img.pk, 'user': request.user.pk})
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def put(self, request, *args, **kwargs):
+        img = models.Image.objects.get(identifier=self.kwargs.get('identifier'))
+        instance, created = models.Favorite.objects.get_or_create(image=img, user=request.user)
+        serializer = FavoriteSerializer(instance, data={'image': img.pk, 'user': request.user.pk})
+        if serializer.is_valid():
+            status_code = status.HTTP_201_CREATED if created else status.HTTP_200_OK
+            return Response(serializer.data, status=status_code)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def delete(self, request, *args, **kwargs):
+        fave = get_object_or_404(models.Favorite, image__identifier=self.kwargs.get('identifier'))
+        fave.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+        
