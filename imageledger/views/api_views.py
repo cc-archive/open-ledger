@@ -197,6 +197,17 @@ class FavoriteDetail(mixins.RetrieveModelMixin,
     serializer_class = FavoriteSerializer
     permission_classes = (permissions.IsAuthenticated,)
 
+    def get(self, request, *args, **kwargs):
+        """Check if an image/user pair has a favorite or not."""
+        fave = models.Favorite.objects.filter(image__identifier=self.kwargs.get('identifier'),
+                                              user=request.user)
+        if fave.count() == 1:
+            serializer = FavoriteSerializer(fave.first())
+            return Response(serializer.data)
+        else:
+            return Response(status=status.HTTP_204_NO_CONTENT)
+
+
     def post(self, request, *args, **kwargs):
         img = models.Image.objects.get(identifier=self.kwargs.get('identifier'))
         serializer = FavoriteSerializer(data={'image': img.pk, 'user': request.user.pk})
@@ -218,4 +229,3 @@ class FavoriteDetail(mixins.RetrieveModelMixin,
         fave = get_object_or_404(models.Favorite, image__identifier=self.kwargs.get('identifier'))
         fave.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
-        

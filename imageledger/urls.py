@@ -34,11 +34,8 @@ apipatterns = [
     url(r'^api/v1/autocomplete/lists$', api_views.ListAutocomplete.as_view()),
     url(r'^api/v1/lists/(?P<slug>[^/]+)$', api_views.ListDetail.as_view()),
 
-    # Image API
+    # Favorite API
     url(r'^api/v1/images/favorite/(?P<identifier>[^/]+)$', api_views.FavoriteDetail.as_view()),
-
-
-
 ]
 
 apipatterns = format_suffix_patterns(apipatterns)

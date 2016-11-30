@@ -345,7 +345,21 @@ class TestAPIViews(TestImageledgerApp):
         self.assertEqual(0, models.Favorite.objects.filter(user=self.user, image=img).count())
 
     def test_favorite_view_delete_not_found(self):
-        """The Favorite DELETE view should return a 404 if the image doesn't exist"""
+        '''The Favorite delete view should return a 404 if the image doesn't exist'''
         self.req.force_login(self.user)
         resp = self.req.delete('/api/v1/images/favorite/fake')
         self.assertEqual(404, resp.status_code)
+
+    def test_favorite_view_get(self):
+        '''The Favorite get view should return 200 if the favorite exists'''
+        self.req.force_login(self.user)
+        img = models.Image.objects.create(url="example.com", license="CC0")
+        fave = models.Favorite.objects.create(image=img, user=self.user)
+        resp = self.req.get('/api/v1/images/favorite/' + img.identifier)
+        self.assertEqual(200, resp.status_code)
+
+    def test_favorite_view_get(self):
+        '''The Favorite get view should return 204 if the favorite does not exist because Chrome'''
+        self.req.force_login(self.user)
+        resp = self.req.get('/api/v1/images/favorite/fake')
+        self.assertEqual(204, resp.status_code)
