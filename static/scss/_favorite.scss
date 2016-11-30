@@ -1,0 +1,16 @@
+/* Favorite buttons */
+.add-to-favorite-container {
+
+  button.tiny {
+    font-size: 20px;
+    padding: 3px;
+    margin: 0 0 0 2px;
+  }
+}
+
+.image-result {
+  .add-to-favorite-container {
+    display: inline-block;
+    vertical-align: middle;
+  }
+}

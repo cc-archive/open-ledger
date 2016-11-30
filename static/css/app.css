@@ -127,11 +127,6 @@ h5 {
   max-height: 25px; }
 
 /* List buttons */
-button.tiny, .add-to-list-container {
-  font-size: 1rem;
-  padding: .5rem;
-  margin: 0; }
-
 /* List detail page */
 .list-detail {
   margin-top: 2rem; }
@@ -157,6 +152,10 @@ button.tiny, .add-to-list-container {
       font-style: italic; }
 
 /* List creation features */
+.add-to-list-container button.tiny {
+  font-size: 20px;
+  padding: 3px;
+  margin: 0 0 0 2px; }
 .add-to-list-container .add-to-list {
   position: absolute;
   width: 400px;
@@ -206,6 +205,19 @@ button.tiny, .add-to-list-container {
     color: #969696; }
     .autocomplete li.hover {
       background-color: #e6e6e6; }
+
+/* Favorite buttons */
+.add-to-favorite-container button.tiny {
+  font-size: 20px;
+  padding: 3px;
+  margin: 0 0 0 2px; }
+
+.image-result .add-to-favorite-container {
+  display: inline-block;
+  vertical-align: middle; }
+
+.image-result a, .image-result a:hover {
+  text-decoration: none; }
 
 figure {
   margin: 0;
