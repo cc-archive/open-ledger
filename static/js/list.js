@@ -2,12 +2,8 @@ import 'whatwg-fetch'
 var _ = require('underscore')
 import * as Cookies from "js-cookie"
 
-
-const API_BASE = '/api/v1/'
-
-const HOST_PORT = window.location.port === 80 ? '' : `:${window.location.port}`
-const HOST_URL = `${window.location.protocol}//${window.location.hostname}${HOST_PORT}`
-
+import {API_BASE, HOST_PORT, HOST_URL} from './api'
+ 
 /* Bring up a form to capture a list title from a user */
 export const addToListForm = function (e) {
 

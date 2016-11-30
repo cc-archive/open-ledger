@@ -4,6 +4,7 @@ import attributions from './attributions'
 import * as list from './list'
 import * as form from './form'
 import * as grid from './grid'
+import * as favorite from './favorite'
 
 const init = () => {
   var clipboardText = new Clipboard('.clipboard-sel-text')
@@ -25,3 +26,4 @@ window.openledger = {}
 window.openledger.list = list
 window.openledger.form = form
 window.openledger.grid = grid
+window.openledger.favorite = favorite
