@@ -1,15 +1,17 @@
 {% macro add(identifier, request, size) -%}
 <div class="add-to-favorite-container">
 
-  <form class="add-to-favorite animated" action="#" method="POST" data-logged-in="{{ request.user.is_authenticated() }}">
+  <form class="add-to-favorite animated" action="#" method="POST"
+    data-is-favorite="undefined"
+    data-logged-in="{{ request.user.is_authenticated() }}">
     <input type="hidden" name="identifier" value="{{ identifier }}" />
     <button onClick="openledger.favorite.toggleFavorite(event)" title="Save as a Favorite" alt="Save as a Favorite"
         {% if size == "large" %}
-        class="button fi-star">
+        class="button secondary fi-star favorite-button">
         Favorite
 
         {% else %}
-        class="button tiny fi-star">
+        class="button secondary tiny fi-star favorite-button">
 
         {% endif %}
     </button>

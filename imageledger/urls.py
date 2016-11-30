@@ -36,6 +36,7 @@ apipatterns = [
 
     # Favorite API
     url(r'^api/v1/images/favorite/(?P<identifier>[^/]+)$', api_views.FavoriteDetail.as_view()),
+    url(r'^api/v1/images/favorites', api_views.FavoriteList.as_view()),
 ]
 
 apipatterns = format_suffix_patterns(apipatterns)

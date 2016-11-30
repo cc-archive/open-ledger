@@ -363,3 +363,29 @@ class TestAPIViews(TestImageledgerApp):
         self.req.force_login(self.user)
         resp = self.req.get('/api/v1/images/favorite/fake')
         self.assertEqual(204, resp.status_code)
+
+    def test_favorite_list(self):
+        """The logged-in user should be able to see a list of their Favorites"""
+        self.req.force_login(self.user)
+        img = models.Image.objects.create(url="example.com", license="CC0")
+        fave = models.Favorite.objects.create(image=img, user=self.user)
+        resp = self.req.get('/api/v1/images/favorites')
+        self.assertEqual(200, resp.status_code)
+        self.assertEqual(1, len(resp.json()))
+
+    def test_favorite_list_only_own(self):
+        """The logged-in user should only see their own favorites"""
+        img = models.Image.objects.create(url="example.com", license="CC0")
+        fave = models.Favorite.objects.create(image=img, user=self.user)
+        user2 = get_user_model().objects.create_user('user2', password='user2')
+        self.req.force_login(user2)
+        resp = self.req.get('/api/v1/images/favorites')
+        self.assertEqual(200, resp.status_code)
+        self.assertEqual(0, len(resp.json()))
+
+    def test_favorite_list_logged_in_only(self):
+        """The favorites endpoint should not be displayed to unauthenticated users"""
+        img = models.Image.objects.create(url="example.com", license="CC0")
+        fave = models.Favorite.objects.create(image=img, user=self.user)
+        resp = self.req.get('/api/v1/images/favorites')
+        self.assertEqual(403, resp.status_code)

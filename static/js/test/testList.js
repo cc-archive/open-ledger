@@ -2,7 +2,6 @@ import 'jsdom-global/register'
 import sinon from 'sinon'
 import { assert } from 'chai'
 
-
 import * as list from '../list'
 
 require( "./util" )
@@ -76,7 +75,4 @@ describe('clearForm', () => {
     list.clearForm(form)
     assert(0 === form.classList.length)
   })
-
-
-
 })

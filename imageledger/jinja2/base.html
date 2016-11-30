@@ -12,7 +12,7 @@
 
 {% block head %}{% endblock head %}
 
-<body>
+<body data-logged-in="{{ 'true' if request.user.is_authenticated() else 'false' }}">
   <div class="page-wrap">
 
     <header>

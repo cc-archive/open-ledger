@@ -47,6 +47,12 @@ class ListPermissions(permissions.BasePermission):
         else:
             return request.user == obj.owner
 
+class FavoritePermissions(permissions.IsAuthenticated):
+    """You can only see your own favorites"""
+
+    def has_object_permission(self, request, view, obj):
+        return request.user == obj.user
+
 class ImageSerializer(serializers.Serializer):
     identifier = serializers.CharField()
     title = serializers.CharField()
@@ -91,8 +97,13 @@ class ListSerializer(serializers.ModelSerializer):
         fields = ('title', 'slug', 'created_on', 'updated_on', 'description',
                   'creator_displayname', 'owner')
 
-class FavoriteSerializer(serializers.ModelSerializer):
+class FavoriteReadSerializer(serializers.ModelSerializer):
+    image = ImageSerializer()
+    class Meta:
+        model = models.Favorite
+        fields = ('image', 'user', 'created_on', 'updated_on')
 
+class FavoriteSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.Favorite
         fields = ('image', 'user', 'created_on', 'updated_on')
@@ -188,6 +199,18 @@ class ListDetail(mixins.RetrieveModelMixin,
             return Response(status=status.HTTP_204_NO_CONTENT)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+class FavoriteList(mixins.ListModelMixin,
+                  generics.GenericAPIView):
+
+    serializer_class = FavoriteReadSerializer
+    permission_classes = (FavoritePermissions,)
+
+    def get_queryset(self):
+        return models.Favorite.objects.filter(user=self.request.user)
+
+    def get(self, request, *args, **kwargs):
+        return self.list(request, *args, **kwargs)
+
 class FavoriteDetail(mixins.RetrieveModelMixin,
                      mixins.UpdateModelMixin,
                      mixins.DestroyModelMixin,
@@ -195,14 +218,14 @@ class FavoriteDetail(mixins.RetrieveModelMixin,
                      generics.GenericAPIView):
     queryset = models.Favorite.objects.all()
     serializer_class = FavoriteSerializer
-    permission_classes = (permissions.IsAuthenticated,)
+    permission_classes = (FavoritePermissions,)
 
     def get(self, request, *args, **kwargs):
         """Check if an image/user pair has a favorite or not."""
         fave = models.Favorite.objects.filter(image__identifier=self.kwargs.get('identifier'),
                                               user=request.user)
         if fave.count() == 1:
-            serializer = FavoriteSerializer(fave.first())
+            serializer = FavoriteReadSerializer(fave.first())
             return Response(serializer.data)
         else:
             return Response(status=status.HTTP_204_NO_CONTENT)
@@ -223,6 +246,7 @@ class FavoriteDetail(mixins.RetrieveModelMixin,
         if serializer.is_valid():
             status_code = status.HTTP_201_CREATED if created else status.HTTP_200_OK
             return Response(serializer.data, status=status_code)
+        log.warn(serializer.errors)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     def delete(self, request, *args, **kwargs):
