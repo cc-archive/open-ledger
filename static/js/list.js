@@ -43,6 +43,8 @@ export const addToListForm = function (e) {
   // Add cancel handler last, as bubbling
   document.body.addEventListener('keydown', cancelListModals, false)
 
+  e.stopPropagation()
+  e.preventDefault()
 }
 
 /* DELETE an image from a List */
