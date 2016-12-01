@@ -142,6 +142,9 @@ class ImageTags(OpenLedgerModel):
         db_table = 'image_tags'
 
 class List(OpenLedgerModel):
+    # The label applied to a list which is auto-created from favorites
+    FAVORITE_LABEL = "Favorites"
+
     title = models.CharField(max_length=2000)
     creator_displayname = models.CharField(max_length=2000, blank=True, null=True)
     description = models.TextField(blank=True, null=True)

@@ -3,7 +3,8 @@ import hashlib
 import logging
 import uuid
 
-from django.db.models.signals import pre_save, post_save
+from django.db.models.signals import pre_save, post_save, post_delete
+from django.contrib.auth import get_user_model
 from django.dispatch import receiver
 from django.utils.text import slugify
 from django.conf import settings
@@ -35,7 +36,6 @@ def _update_search_index(img):
         log.debug("Indexing image %s", img.identifier)
         search_obj.save()
 
-
 def create_identifier(key):
     """Create a unique, stable identifier for a key"""
     m = hashlib.md5()
@@ -51,3 +51,22 @@ def set_slug(sender, instance, **kwargs):
 def create_slug(el):
     """For the list of items el, create a unique slug out of them"""
     return '-'.join([slugify(str(i)) for i in el])
+
+@receiver(post_save, sender=models.Favorite)
+def add_to_favorite_list(sender, instance, created, **kwargs):
+    """Add to the Favorites list when a Favorite is added"""
+    if created:
+        lst, created = models.List.objects.get_or_create(title=models.List.FAVORITE_LABEL, owner=instance.user)
+        lst.images.add(instance.image)
+
+@receiver(post_delete, sender=models.Favorite)
+def remove_From_favorite_list(sender, instance, **kwargs):
+    """Remove from the Favorites list when a Favorite is removed"""
+    lst = models.List.objects.filter(title=models.List.FAVORITE_LABEL, owner=instance.user).first()
+    if lst:
+        lst.images.remove(instance.image)
+
+@receiver(post_save, sender=settings.AUTH_USER_MODEL)
+def create_favorites_list(sender, instance, created, **kwargs):
+    if created:
+        models.List.objects.create(title=models.List.FAVORITE_LABEL, owner=instance)

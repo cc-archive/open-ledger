@@ -30,7 +30,9 @@
             <form method="POST">
               <input type="hidden" name="identifier" value="{{ image.identifier }}" />
               <input type="hidden" name="slug" value="{{ lst.slug }}" />
-              <button class="button alert tiny fi-page-delete" title="Remove from List" alt="Remove from List" onClick="openledger.list.deleteImageFromList(event)"  />
+              <button class="button alert tiny fi-page-delete"
+                      title="Remove from List" alt="Remove from List"
+                      onClick="openledger.list.deleteImageFromList(event)" />
             </form>
           {% endcall %}
         {% endfor %}

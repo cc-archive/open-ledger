@@ -152,10 +152,6 @@ h5 {
       font-style: italic; }
 
 /* List creation features */
-.add-to-list-container button.tiny {
-  font-size: 20px;
-  padding: 3px;
-  margin: 0 0 0 2px; }
 .add-to-list-container .add-to-list {
   position: absolute;
   width: 400px;
@@ -216,6 +212,10 @@ h5 {
   display: inline-block;
   vertical-align: middle; }
 
+.image-result button.tiny {
+  font-size: 20px;
+  padding: 3px;
+  margin: 0 0 0 2px; }
 .image-result a, .image-result a:hover {
   text-decoration: none; }
 

@@ -18,34 +18,26 @@
 }
 /* List listing page */
 .list-iterator {
-    margin-top: 2rem;
+  margin-top: 2rem;
 
-    .list-iterable {
-      border-bottom: 1px solid rgb(200, 200, 200);
-      padding: 1rem 0;
+  .list-iterable {
+    border-bottom: 1px solid rgb(200, 200, 200);
+    padding: 1rem 0;
 
-      .list-description {
-        text-size: smaller;
-      }
-      .list-dates {
-        font-size: smaller;
-        font-style: italic;
-      }
-
+    .list-description {
+      text-size: smaller;
     }
-
+    .list-dates {
+      font-size: smaller;
+      font-style: italic;
+    }
+  }
 }
+
 
 /* List creation features */
 
 .add-to-list-container {
-
-  button.tiny {
-    font-size: 20px;
-    padding: 3px;
-    margin: 0 0 0 2px;
-  }
-
 
   .add-to-list {
     position: absolute;

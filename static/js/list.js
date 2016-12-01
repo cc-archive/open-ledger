@@ -3,7 +3,7 @@ var _ = require('underscore')
 import * as Cookies from "js-cookie"
 
 import {API_BASE, HOST_PORT, HOST_URL} from './api'
- 
+
 /* Bring up a form to capture a list title from a user */
 export const addToListForm = function (e) {
 
@@ -69,7 +69,7 @@ export const deleteImageFromList = function (e) {
     .then(checkStatus)
     .then((response) => {
       // If we were successful, delete this item out of the DOM
-      var result = form.parentNode.parentNode
+      var result = form.parentNode.parentNode.parentNode.parentNode
       result.classList.add('animated')
       result.classList.add('zoomOut')
     })
