@@ -66,7 +66,40 @@ class Command(BaseCommand):
                     #yield obj
 
     def index_all_images(self, chunk_size=DEFAULT_CHUNK_SIZE):
-        """Index every record in the database as efficiently as possible"""
+        """Index every record in the database with a server-side cursory"""
+        es = search.init()
+        search.Image.init()
+        mapping = search.Image._doc_type.mapping
+        mapping.save('openledger')
+        connection.cursor()
+
+        batches = []
+        retries = 0
+        completed = 0
+
+        qs = models.Image.objects.filter(removed_from_source=False).order_by('-last_synced_with_source')
+        for db_image in self.server_cursor_query(qs, chunk_size):
+             log.debug("Indexing database record %s", db_image.identifier)
+             image = search.db_image_to_index(db_image)
+             try:
+                 if len(batches) > chunk_size:
+                     helpers.bulk(es, batches)
+                     log.debug("Pushed batch of %d records to ES", len(batches))
+                     batches = []  # Clear the batch size
+                 else:
+                     batches.append(image.to_dict(include_meta=True))
+             except ConnectionError as e:
+                 if retries < MAX_CONNECTION_RETRIES:
+                     log.warn("Got timeout, retrying with %d retries remaining", MAX_CONNECTION_RETRIES - retries)
+                     es = init()
+                     retries += 1
+                     time.sleep(RETRY_WAIT)
+                 else:
+                     raise
+        helpers.bulk(es, batches)
+
+    def index_all_images_pk_version(self, chunk_size=DEFAULT_CHUNK_SIZE):
+        """Index every record in the database by dumbly incrementing primary keys"""
         es = search.init()
         search.Image.init()
         mapping = search.Image._doc_type.mapping
@@ -85,7 +118,7 @@ class Command(BaseCommand):
         for chunk in grouper_it(chunk_size, rng):
             for pk in chunk:
                 try:
-                    db_image = models.Image.objects.get(pk=pk)
+                    db_image = models.Image.objects.get(pk=pk, removed_from_source=False)
                 except models.Image.DoesNotExist:
                     continue
                 log.debug("Indexing database record %s", db_image.identifier)
