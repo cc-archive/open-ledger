@@ -126,6 +126,15 @@ class Image(OpenLedgerModel):
 #            return str(imagehash.average_hash(im))
 
 
+    @property
+    def displayable_provider(self):
+        """Return a value that's displayable for a provider, including property capitalization
+        and a URL"""
+        if self.provider == 'flickr':
+            return '<a href="https://flickr.com/">Flickr</a>'
+        if self.provider == 'rijksmuseum':
+            return '<a href="https://rijksmuseum.nl/">Rijksmuseum</a>'
+
     def __str__(self):
         return '<Image %r found at %r by %r>' % (self.identifier, self.url, self.creator)
 

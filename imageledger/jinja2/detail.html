@@ -37,6 +37,7 @@
       </li>
       <li>
         <a href="{{ image.foreign_landing_url }}">Original source</a>
+        {% if image.provider %} via {{ image.displayable_provider|safe }} {% endif %}
       </li>
     </ul>
     {% if image.tags %}
