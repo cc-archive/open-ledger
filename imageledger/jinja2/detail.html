@@ -1,6 +1,7 @@
 {% extends "base.html" %}
 {% import "includes/license-logo.html" as license_logo %}
 {% import "includes/lists.html" as lists %}
+{% import "includes/favorite.html" as favorite %}
 
 {% block body %}
 
@@ -71,8 +72,17 @@
       Copy credit as HTML
     </button>
 
-    {% if image.tags %} {# Local objects only for now #}
+    {% if image.identifier %} {# Local objects only for now #}
+    <div class="row">
+      <div class="column shrink">
       {{ lists.add(image.identifier, request, size="large") }}
+      </div>
+      <div class="column shrink">
+      {{ favorite.add(image, request, size="large") }}
+      </div>
+    </div>
+
+
     {% endif %}
   </div>
 

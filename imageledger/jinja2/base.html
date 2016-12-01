@@ -12,7 +12,7 @@
 
 {% block head %}{% endblock head %}
 
-<body data-logged-in="{{ 'true' if request.user.is_authenticated() else 'false' }}">
+<body data-logged-in="{{ request.user.is_authenticated() }}">
   <div class="page-wrap">
 
     <header>
@@ -23,7 +23,6 @@
           <a class="cc-site-logo-link" href="https://creativecommons.org/" rel="home">
             <img class="cc-site-logo" alt="Creative Commons" width="240" height="57" src="{{ static('images/cc.logo.white.svg')}}" scale="0" data-pin-nopin="true">
           </a>
-
         </div>
 
         <div class="top-bar-right">

@@ -15,12 +15,12 @@ export const toggleFavorite = function (e) {
   const csrf = Cookies.get('csrftoken')
 
   // If they aren't logged in, tell them to do so. We can improve the UI here later.
-  if (form.dataset.loggedIn != 'True') {
+  if (document.body.dataset.loggedIn != 'True') {
     alert("Please sign in to save this image to a list.")
     return
   }
 
-  if (form.dataset.isFavorite === true) {
+  if (form.dataset.isFavorite === 'True') {
     method = 'DELETE'
   }
 
@@ -43,16 +43,15 @@ export const toggleFavorite = function (e) {
   })
 }
 
-
 export const setAsFavorite = (form) => {
   form.querySelector('button').classList.remove('secondary')
   form.querySelector('button').classList.add('success')
-  form.dataset.isFavorite = true
+  form.dataset.isFavorite = 'True'
 }
 export const removeAsFavorite = (form) => {
   form.querySelector('button').classList.remove('success')
   form.querySelector('button').classList.add('secondary')
-  form.dataset.isFavorite = false
+  form.dataset.isFavorite = 'False'
 }
 
 
@@ -60,7 +59,7 @@ document.addEventListener('DOMContentLoaded', () => {
   var results = document.querySelector('.results')
   let url = API_BASE + 'images/favorites'
 
-  if (results && document.body.dataset.loggedIn === 'true') {
+  if (results && document.body.dataset.loggedIn === 'True') {
     // Get the list of the users' favorites if they're logged in
 
     fetch(url, {
@@ -89,6 +88,8 @@ document.addEventListener('DOMContentLoaded', () => {
           let favoriteButton = img.querySelector('.favorite-button')
           favoriteButton.classList.remove('secondary')
           favoriteButton.classList.add('success')
+          let form = img.querySelector('.add-to-favorite-container form')
+          form.dataset.isFavorite = 'True'
         }
       }
     })

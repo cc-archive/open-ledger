@@ -22,22 +22,18 @@
           </p>
 
         <a href="{{ detail_url }}">
+          <div class="figure-metadata">
+            {{ license_logo.license(image.license) }}
+            {% if image.identifier %}
+              {{ lists.add(image.identifier, request, size="small") }}
+              {{ favorite.add(image, request, size="small") }}
+            {% endif %}
 
-        <div class="figure-metadata">
-
-          {{ license_logo.license(image.license) }}
-
-          {% if image.identifier %}
-            {{ lists.add(image.identifier, request, size="small") }}
-            {{ favorite.add(image.identifier, request, size="small") }}
-          {% endif %}
-
-          {% if caller %}
-           {{ caller() }}
-          {% endif %}
-        </div>
-      </a>
-
+            {% if caller %}
+             {{ caller() }}
+            {% endif %}
+          </div>
+        </a>
       </figcaption>
     </figure>
   </a>
