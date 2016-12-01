@@ -22,7 +22,7 @@ WORK_TYPES = (
     ('cultural', 'Cultural works'),
 )
 WORK_TYPE_DEFAULT = [wt[0] for wt in WORK_TYPES]
-FIELD_DEFAULT = [field[0] for field in FIELD_CHOICES]
+FIELD_DEFAULT = ['title', 'tags',]
 
 PROVIDER_CHOICES = (
     ('fpx', '500px'),
@@ -36,7 +36,7 @@ PROVIDERS_ALL = [p[0] for p in PROVIDER_CHOICES if p[0]]
 class SearchForm(forms.Form):
     initial_data = {'page': 1,
                      'per_page': PER_PAGE,
-                     'search_fields': ['title', 'tags', 'creator'],
+                     'search_fields': FIELD_DEFAULT,
                      'work_types': ['photos', 'cultural'],
                      'licenses': [licenses.DEFAULT_LICENSE],
                      'providers': PROVIDERS_ALL}
