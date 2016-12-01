@@ -155,9 +155,11 @@ class List(OpenLedgerModel):
 
     class Meta:
         db_table = 'list'
+        ordering = ['-updated_on']
 
     def get_absolute_url(self):
         return reverse('my-list-update', kwargs={'slug': self.slug})
+
 
 class Tag(OpenLedgerModel):
     foreign_identifier = models.CharField(max_length=255, blank=True, null=True)
@@ -174,3 +176,4 @@ class Favorite(OpenLedgerModel):
     class Meta:
         unique_together = (('user', 'image'))
         db_table = 'favorite'
+        ordering = ['-updated_on']
