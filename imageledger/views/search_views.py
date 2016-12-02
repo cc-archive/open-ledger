@@ -46,9 +46,16 @@ def index(request):
 
         # Work types must match
         if 'photos' in form.cleaned_data.get('work_types'):
-            and_queries.append(Q("term", provider=WORK_TYPES['photos'][0]))  # FIXME make this an OR
+            and_queries.append(
+                            Q('bool',
+                            should=[Q("term", provider=provider) for provider in WORK_TYPES['photos']]
+                            ))
         if 'cultural' in form.cleaned_data.get('work_types'):
-            and_queries.append(Q("term", provider=WORK_TYPES['cultural'][0]))
+            and_queries.append(
+                            Q('bool',
+                            should=[Q("term", provider=provider) for provider in WORK_TYPES['cultural']]
+                            ))
+
 
         if len(or_queries) > 0 or len(and_queries) > 0:
 
