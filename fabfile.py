@@ -70,6 +70,10 @@ DATASOURCES = {
         'action': 'load-from-provider',
         'provider': 'rijks',
     },
+    'nypl': {
+        'action': 'load-from-provider',
+        'provider': 'nypl',
+    },
     'sync': {
         'action': 'sync'
     }

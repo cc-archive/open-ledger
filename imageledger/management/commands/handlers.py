@@ -59,7 +59,6 @@ class Command(BaseCommand):
             else:
                 file_dir = options['from_file']
             added = handler_nypl.insert_image(options['chunk_size'], options['max_results'], from_file=file_dir)
-#            handler_nypl.photos()
             added = 0
 
         log.info("Successfully added %d images out of max %d attempted", added, options['max_results'])
