@@ -16,7 +16,7 @@ log = logging.getLogger(__name__)
 # Search by source
 WORK_TYPES = {
     'photos': ['flickr'],
-    'cultural': ['rijksmuseum']
+    'cultural': ['rijksmuseum', 'nypl']
 }
 
 search_funcs = {

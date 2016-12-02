@@ -139,7 +139,6 @@ def grouper_it(n, iterable):
 def download_from_s3(filename, bucket_name, source):
     """Download the named file from the CC openledger bucket to begin processing it.
     Returns the name of the temporary file containing the data."""
-    # May need to change this to support getting the access key id from the OS env
     log.info("Getting file %s from S3 bucket %s for source %s", filename, bucket_name, source)
     try:
         session = boto3.Session(profile_name='cc-openledger')

@@ -29,6 +29,7 @@ API_500PX_SECRET = os.environ.get('API_500PX_SECRET')
 API_RIJKS = os.environ.get('API_RIJKS')
 FLICKR_KEY = os.environ.get('FLICKR_KEY')
 FLICKR_SECRET = os.environ.get('FLICKR_SECRET')
+NYPL_KEY = os.environ.get('NYPL_KEY')
 LOG_FILE = '/tmp/app.log'
 
 DATASOURCES = {
@@ -165,6 +166,7 @@ def load_data_from_instance(instance):
                 FLICKR_KEY=FLICKR_KEY,
                 FLICKR_SECRET=FLICKR_SECRET,
                 LOG_FILE=LOG_FILE,
+                NYPL_KEY=NYPL_KEY,
                 DJANGO_SECRET_KEY=os.environ.get('DJANGO_SECRET_KEY')
                 ):
 

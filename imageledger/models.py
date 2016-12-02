@@ -134,6 +134,8 @@ class Image(OpenLedgerModel):
             return '<a href="https://flickr.com/">Flickr</a>'
         if self.provider == 'rijksmuseum':
             return '<a href="https://rijksmuseum.nl/">Rijksmuseum</a>'
+        if self.provider == 'nypl':
+            return '<a href="http://digitalcollections.nypl.org/">New York Public Library</a>'
 
     def __str__(self):
         return '<Image %r found at %r by %r>' % (self.identifier, self.url, self.creator)

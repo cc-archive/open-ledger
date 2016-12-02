@@ -188,7 +188,8 @@ except ImportError:
     API_RIJKS = os.environ.get('API_RIJKS')
     FLICKR_KEY = os.environ.get('FLICKR_KEY')
     FLICKR_SECRET = os.environ.get('FLICKR_SECRET')
-
+    NYPL_KEY = os.environ.get('NYPL_KEY')
+    
     ELASTICSEARCH_URL = os.environ.get('ELASTICSEARCH_URL')
     ELASTICSEARCH_PORT = 80
     AWS_ACCESS_KEY_ID = os.environ.get('AWS_ACCESS_KEY_ID')
