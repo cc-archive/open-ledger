@@ -413,7 +413,8 @@ class TestAPIViews(TestImageledgerApp):
         img = models.Image.objects.create(url="example.com", license="CC0")
         tag = models.Tag.objects.create(name='tag')
         self.assertEqual(0, models.UserTags.objects.filter(user=self.user, image=img, tag=tag).count())
-        resp = self.req.post('/api/v1/images/tags/' + img.identifier + '/' + tag.name)
+        resp = self.req.post('/api/v1/images/tags', {'identifier':  img.identifier,
+                                                     'tag': tag.name})
         self.assertEqual(201, resp.status_code)
         self.assertEqual(1, models.UserTags.objects.filter(user=self.user, image=img, tag=tag).count())
 
@@ -423,7 +424,9 @@ class TestAPIViews(TestImageledgerApp):
         tagname = 'newtag'
         img = models.Image.objects.create(url="example.com", license="CC0")
         self.assertEqual(0, models.UserTags.objects.filter(user=self.user, image=img, tag__name=tagname).count())
-        resp = self.req.post('/api/v1/images/tags/' + img.identifier + '/' + tagname)
+        resp = self.req.post('/api/v1/images/tags', {'identifier':  img.identifier,
+                                                     'tag': tagname})
+
         self.assertEqual(201, resp.status_code)
         self.assertEqual(1, models.Tag.objects.filter(name=tagname, source='user').count())
         self.assertEqual(1, models.UserTags.objects.filter(user=self.user, image=img, tag__name=tagname).count())

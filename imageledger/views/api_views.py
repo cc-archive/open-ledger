@@ -284,8 +284,8 @@ class UserTagDetail(mixins.DestroyModelMixin,
     permission_classes = (permissions.IsAuthenticated,)
 
     def post(self, request, *args, **kwargs):
-        img = models.Image.objects.get(identifier=self.kwargs.get('identifier'))
-        tag, created = models.Tag.objects.get_or_create(name=self.kwargs.get('tag'))
+        img = models.Image.objects.get(identifier=request.data.get('identifier'))
+        tag, created = models.Tag.objects.get_or_create(name=request.data.get('tag'))
         # If this tag didn't exist, create is as a user tag
         if created:
             tag.source = 'user'

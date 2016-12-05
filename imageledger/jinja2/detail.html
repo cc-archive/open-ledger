@@ -6,7 +6,7 @@
 
 {% block body %}
 
-<div class="callout hero image-detail">
+<div class="callout hero image-detail" data-identifier="{{ image.identifier }}">
   <div class="column text-center">
     <figure>
       <img src="{{ image.url }}"  />
@@ -42,9 +42,12 @@
       </li>
     </ul>
     {% if image.tags %}
+    <div class="system-tags-container">
+      <h4>Tags</h4>
       {% for tag in image.tags.all() %}
         <span class="secondary label">{{ tag.name }}</span>
       {% endfor %}
+    </div>
     {% endif %}
   </div>
   <div class="column">
@@ -81,15 +84,17 @@
       </div>
 
       <div class="column shrink">
-      {{ lists.add(image.identifier, request, size="large") }}
+      {{ lists.add(image, request, size="large") }}
       </div>
       <div class="column shrink">
       {{ tags.add(image, request, size="large") }}
       </div>
 
     </div>
-
-
+    <h4>Your tags</h4>
+    <div class="user-tags-container">
+      <span>You have no tags for this image</span>
+    </div>
     {% endif %}
   </div>
 

@@ -1,4 +1,4 @@
-{% macro add(identifier, request, size) -%}
+{% macro add(image, request, size) -%}
 <div class="add-to-list-container">
   <button onClick="openledger.list.addToListForm(event)" title="Save to List" alt="Save to List"
       {% if size == "large" %}
@@ -14,7 +14,7 @@
   <form class="add-to-list animated" action="#" method="GET" data-logged-in="{{ request.user.is_authenticated() }}">
     <input type="text" name="title" value="" autocomplete="off"  placeholder="Save to new or existing list" size="40"/>
     <div class="autocomplete"></div>
-    <input type="hidden" name="identifier" value="{{ identifier }}" />
+    <input type="hidden" name="identifier" value="{{ image.identifier }}" />
   </form>
   <div class="add-to-list-response"></div>
 </div>

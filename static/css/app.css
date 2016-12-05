@@ -203,14 +203,14 @@ h5 {
       background-color: #e6e6e6; }
 
 /* Tag creation features */
-.add-to-tags-container .add-to-tags {
+.add-to-tags-container .add-tags {
   position: absolute;
   width: 400px;
   display: none;
   z-index: 99; }
-  .add-to-tags-container .add-to-tags input {
+  .add-to-tags-container .add-tags input {
     margin: 0; }
-.add-to-tags-container .add-to-tags-response {
+.add-to-tags-container .add-tags-response {
   display: none;
   position: absolute;
   background: white;
@@ -218,6 +218,19 @@ h5 {
   padding: 20px;
   min-width: 400px;
   z-index: 1; }
+
+.system-tags-container {
+  max-width: 70%; }
+  .system-tags-container h4 {
+    margin-bottom: .5rem; }
+
+.user-tags-container {
+  max-width: 70%; }
+  .user-tags-container h4 {
+    margin-bottom: .5rem; }
+  .user-tags-container .label {
+    margin: 5px 5px 0 0;
+    font-size: 1rem; }
 
 /* Favorite buttons */
 .add-to-favorite-container button.tiny {

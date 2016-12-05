@@ -4,7 +4,7 @@ import * as Cookies from "js-cookie"
 
 import {API_BASE, HOST_PORT, HOST_URL} from './api'
 
-import './utils'
+import * as utils from './utils'
 
 /* Bring up a form to capture a list title from a user */
 export const addToListForm = function (e) {
@@ -12,7 +12,7 @@ export const addToListForm = function (e) {
   var form = e.target.nextElementSibling
 
   // If they aren't logged in, tell them to do so. We can improve the UI here later.
-  if (form.dataset.loggedIn != 'True') {
+  if (document.body.dataset.loggedIn != 'True') {
     alert("Please sign in to save this image to a list.")
     return
   }
