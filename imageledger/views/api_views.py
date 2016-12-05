@@ -66,7 +66,7 @@ class ImageSerializer(serializers.Serializer):
 class TagSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.Tag
-        fields = ('name', 'created_on', 'updated_on', 'source')
+        fields = ('name', 'created_on', 'updated_on', 'source', 'slug')
 
 class ListImageSerializer(serializers.Serializer):
     images = ImageSerializer(many=True)

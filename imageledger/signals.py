@@ -42,11 +42,14 @@ def create_identifier(key):
     m.update(bytes(key.encode('utf-8')))
     return base64.urlsafe_b64encode(m.digest()).decode('utf-8')
 
+@receiver(pre_save, sender=models.Tag)
 @receiver(pre_save, sender=models.List)
 def set_slug(sender, instance, **kwargs):
     if instance.slug is None:
         uniquish = str(uuid.uuid4())[:8]
-        instance.slug = create_slug([instance.title, uniquish])
+        title_field = instance.title if hasattr(instance, 'title') else instance.name
+        slug = create_slug([title_field, uniquish])
+        instance.slug = slug
 
 def create_slug(el):
     """For the list of items el, create a unique slug out of them"""
@@ -60,7 +63,7 @@ def add_to_favorite_list(sender, instance, created, **kwargs):
         lst.images.add(instance.image)
 
 @receiver(post_delete, sender=models.Favorite)
-def remove_From_favorite_list(sender, instance, **kwargs):
+def remove_from_favorite_list(sender, instance, **kwargs):
     """Remove from the Favorites list when a Favorite is removed"""
     lst = models.List.objects.filter(title=models.List.FAVORITE_LABEL, owner=instance.user).first()
     if lst:

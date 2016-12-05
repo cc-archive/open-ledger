@@ -27,7 +27,7 @@ class OLListDetail(DetailView):
         return super().render_to_response(context)
 
     def get_queryset(self):
-        """Public lists only, or the user's own list FIXME"""
+        """Public lists only, or the user's own list"""
         qs = super().get_queryset()
 
         if self.request.user.is_anonymous():

@@ -219,18 +219,37 @@ h5 {
   min-width: 400px;
   z-index: 1; }
 
+/* Tag listing page */
+.tag-iterator {
+  margin-top: 2rem; }
+  .tag-iterator .tag-iterable {
+    border-bottom: 1px solid #c8c8c8;
+    padding: 1rem 0; }
+    .tag-iterator .tag-iterable .tag-description {
+      text-size: smaller; }
+    .tag-iterator .tag-iterable .tag-dates {
+      font-size: smaller;
+      font-style: italic; }
+
 .system-tags-container {
   max-width: 70%; }
   .system-tags-container h4 {
     margin-bottom: .5rem; }
 
+.user-tags-header {
+  margin-bottom: .5rem; }
+  .user-tags-header a {
+    font-size: 1rem;
+    text-decoration: underline;
+    text-transform: uppercase; }
+
 .user-tags-container {
   max-width: 70%; }
-  .user-tags-container h4 {
-    margin-bottom: .5rem; }
   .user-tags-container .label {
     margin: 5px 5px 0 0;
     font-size: 1rem; }
+    .user-tags-container .label.fi-x:before {
+      content: "\f217\00a0"; }
 
 /* Favorite buttons */
 .add-to-favorite-container button.tiny {

@@ -3,7 +3,7 @@ from django.conf.urls import url, include
 from rest_framework.urlpatterns import format_suffix_patterns
 from django_cas_ng.views import login as cas_login, logout as cas_logout, callback as cas_callback
 
-from imageledger.views import search_views, api_views, list_views, favorite_views
+from imageledger.views import search_views, api_views, list_views, favorite_views, tag_views
 
 urlpatterns = [
     url(r'^$', search_views.index, name='index'),
@@ -23,11 +23,15 @@ urlpatterns = [
     # Lists (user admin)
     url(r'list/add/$', list_views.OLListCreate.as_view(), name='my-list-add'),
     url(r'list/mine/(?P<slug>[^/]+)$', list_views.OLListUpdate.as_view(), name='my-list-update'),
-    url(r'list/mine(?P<slug>[^/]+)/delete$', list_views.OLListDelete.as_view(), name='my-list-delete'),
+    url(r'list/mine/(?P<slug>[^/]+)/delete$', list_views.OLListDelete.as_view(), name='my-list-delete'),
     url(r'lists/mine', list_views.OLOwnedListList.as_view(), name="my-lists"),
 
-    # favorites
+    # Favorites
     url(r'favorites/mine$', favorite_views.FavoriteList.as_view(), name='my-favorites'),
+
+    # User tags
+    url(r'tags/mine$', tag_views.UserTagsList.as_view(), name='my-tags'),
+    url(r'tags/mine/(?P<slug>[^/]+)$', tag_views.UserTagsDetail.as_view(), name='my-tags-detail'),
 ]
 
 apipatterns = [

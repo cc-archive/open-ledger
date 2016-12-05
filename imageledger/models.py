@@ -153,7 +153,7 @@ class ImageTags(OpenLedgerModel):
         db_table = 'image_tags'
 
 class UserTags(OpenLedgerModel):
-    tag = models.ForeignKey('Tag', on_delete=models.CASCADE)
+    tag = models.ForeignKey('Tag', on_delete=models.CASCADE, related_name="user_tags")
     image = models.ForeignKey(Image, on_delete=models.CASCADE, related_name="user_tags")
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
 
@@ -187,6 +187,7 @@ class Tag(OpenLedgerModel):
     name = models.CharField(max_length=1000, blank=True, null=True)
     # Source can be a provider/source (like 'openimages', or 'user')
     source = models.CharField(max_length=255, blank=True, null=True)
+    slug = models.SlugField(blank=True, null=True, max_length=255)
 
     class Meta:
         db_table = 'tag'

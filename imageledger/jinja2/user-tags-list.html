@@ -1,0 +1,38 @@
+{% import "includes/image-result.html" as image_result %}
+
+{% extends "base.html" %}
+
+{% block body %}
+<div class="row column tags-my-tags tags-iterator">
+
+
+  <h2>My Tags</h2>
+  {% if object_list %}
+    <p>
+        Tags you've added to images:
+    </p>
+
+    {% for tag in object_list %}
+      <div class="tag-iterable">
+        <h3><a href="{{ url('my-tags-detail', tag.slug)}}">{{ tag.name }}</a></h3>
+        <p class="tag-dates">
+          Created on {{ tag.created_on.strftime('%a, %d %b %Y') }}, last updated {{ tag.updated_on.strftime('%d %b %Y')}}
+        </p>
+        <div class="row">
+        {% for ut in tag.user_tags.all() %}
+          {% set detail_url = url('detail', ut.image.identifier) %}
+          {% call image_result.show(detail_url, ut.image, request) %}
+          {% endcall %}
+        {% endfor %}
+        </div>
+      </div>
+
+    {% endfor %}
+ {% else %}
+ <p>
+   You have no tags at the moment. <a href="{{ url('index') }}">Search for images</a> and tag them for later reference.
+ </p>
+ {% endif %}
+</div>
+
+{% endblock body %}

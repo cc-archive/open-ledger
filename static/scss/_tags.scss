@@ -23,6 +23,24 @@
   }
 
 }
+/* Tag listing page */
+.tag-iterator {
+  margin-top: 2rem;
+
+  .tag-iterable {
+    border-bottom: 1px solid rgb(200, 200, 200);
+    padding: 1rem 0;
+
+    .tag-description {
+      text-size: smaller;
+    }
+    .tag-dates {
+      font-size: smaller;
+      font-style: italic;
+    }
+  }
+}
+
 
 .system-tags-container {
   h4 {
@@ -31,13 +49,22 @@
   max-width: 70%;
 }
 
-.user-tags-container {
-  h4 {
-    margin-bottom: .5rem;
+.user-tags-header {
+  margin-bottom: .5rem;
+  a {
+    font-size: 1rem;
+    text-decoration: underline;
+    text-transform: uppercase;
   }
+}
+
+.user-tags-container {
   max-width: 70%;
   .label {
     margin: 5px 5px 0 0;
     font-size: 1rem;
+    &.fi-x:before {
+      content: "\f217\00a0";
+    }
   }
 }

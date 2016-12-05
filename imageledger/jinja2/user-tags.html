@@ -1,0 +1,23 @@
+{% import "includes/image-result.html" as image_result %}
+
+{% extends "base.html" %}
+
+{% block body %}
+
+<div class="row column tag-detail">
+    <h2 class="t-tag-name">
+      {{ tag.name }}
+    </h2>
+
+  <div class="row">
+  {% for image in object_list %}
+    {% set detail_url = url('detail', image.identifier) %}
+    {% call image_result.show(detail_url, image, request) %}
+    {% endcall %}
+  {% endfor %}
+  </div>
+
+
+</div>
+
+{% endblock body %}

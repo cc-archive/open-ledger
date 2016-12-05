@@ -93,6 +93,58 @@ export const addTags = function(e) {
   })
 }
 
+export const deleteTag = function(e) {
+  e.preventDefault()
+  const tag = e.target
+  const url = API_BASE + 'images/tags/' + tag.dataset.identifier + '/' + tag.dataset.name
+
+  var csrf = Cookies.get('csrftoken')
+
+  fetch(url, {
+    method: 'DELETE',
+    body: JSON.stringify({}),
+    credentials: "include",
+    headers: {
+      "X-CSRFToken": csrf,
+      "Content-Type": "application/json"
+    }
+  })
+  .then(utils.checkStatus)
+  .then((response) => {
+    tag.classList.add('animated')
+    tag.classList.add('zoomOut')
+    setTimeout(() => tag.classList.add('hide'), 100)
+  })
+}
+
+/* Toggle the delete functionality for tags */
+export const toggleDelete = function (e) {
+  e.preventDefault()
+  var a = e.target
+  // Toggle the label
+  if (a.innerHTML === '[Remove tags]') {
+    a.innerHTML = '[Cancel]'
+  }
+  else {
+    a.innerHTML = '[Remove tags]'
+  }
+
+  var container = document.querySelectorAll('.user-tags-container span')
+  for (let tag of container) {
+    let a = tag.parentNode
+
+    tag.classList.toggle('primary')
+    tag.classList.toggle('alert')
+    tag.classList.toggle('fi-x')
+    if (tag.dataset.mode === 'delete') {
+      tag.dataset.mode = 'read'
+    }
+    else {
+      tag.dataset.mode = 'delete'
+      a.addEventListener('click', deleteTag, false)
+    }
+  }
+}
 
 /* Close any open models -- this is called last in the event bubbling chain if no autocomplete actions are in-progress */
 const cancelTagsModals = function (e) {
@@ -121,16 +173,27 @@ export const getUserTagsForImage = (identifier) => {
   .then((json) => {
     var userTagsContainer = document.querySelector('.user-tags-container')
 
-    while (userTagsContainer.firstChild) {
-      userTagsContainer.removeChild(userTagsContainer.firstChild);
+    if (json.length > 0) {
+      document.querySelector('.user-tags-header a').classList.remove('hide')
+      while (userTagsContainer.firstChild) {
+        userTagsContainer.removeChild(userTagsContainer.firstChild);
+      }
+
+    }
+    else {
+      document.querySelector('.user-tags-header a').classList.add('hide')
     }
     for (let usertag of json) {
-      console.log(usertag)
       let t = document.createElement('span')
       t.innerHTML = usertag.tag.name
       t.classList.add('primary')
       t.classList.add('label')
-      userTagsContainer.appendChild(t)
+      t.dataset.identifier = identifier
+      t.dataset.name = usertag.tag.name
+      let a = document.createElement('a')
+      a.href = '/tags/mine/' + usertag.tag.slug
+      a.appendChild(t)
+      userTagsContainer.appendChild(a)
     }
   })
 }
