@@ -4,7 +4,7 @@ import { assert } from 'chai'
 
 import * as favorite from '../favorite'
 
-require( "./util" )
+require( "./test-utils" )
 
 describe('setAsFavorite', () => {
   var form

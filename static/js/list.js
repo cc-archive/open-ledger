@@ -4,6 +4,8 @@ import * as Cookies from "js-cookie"
 
 import {API_BASE, HOST_PORT, HOST_URL} from './api'
 
+import './utils'
+
 /* Bring up a form to capture a list title from a user */
 export const addToListForm = function (e) {
 
@@ -19,7 +21,7 @@ export const addToListForm = function (e) {
 
   // Clear any old messages
   for (var msg of document.querySelectorAll('.add-to-list-response')) {
-    clearResponse(msg)
+    utils.clearResponse(msg)
   }
 
   form.style.display = 'block'
@@ -66,7 +68,7 @@ export const deleteImageFromList = function (e) {
         "Content-Type": "application/json"
       }
     })
-    .then(checkStatus)
+    .then(utils.checkStatus)
     .then((response) => {
       // If we were successful, delete this item out of the DOM
       var result = form.parentNode.parentNode.parentNode.parentNode
@@ -86,8 +88,8 @@ export const navigateAutocomplete = function (e) {
     // If so, did the user hit ESC? They were probably trying to close the
     // whole modal, if so
     if (e.keyCode === 27) {
-      clearForm(this.parentNode)
-      clearResponse(this.parentNode.nextElementSibling)
+      utils.clearForm(this.parentNode)
+      utils.clearResponse(this.parentNode.nextElementSibling)
       e.stopPropagation()
     }
     return
@@ -155,7 +157,7 @@ export const completeListTitle = function (e) {
     method: 'GET',
     credentials: 'include'
   })
-  .then(checkStatus)
+  .then(utils.checkStatus)
   .then((response) => {
     return response.json()
   })
@@ -204,8 +206,8 @@ export const selectAndAddToList = function(slug) {
 
   var msg = form.nextElementSibling
 
-  showUpdateMessage(msg)
-  clearForm(form)
+  utils.showUpdateMessage(msg)
+  utils.clearForm(form)
 
   var csrf = Cookies.get('csrftoken')
 
@@ -218,7 +220,7 @@ export const selectAndAddToList = function(slug) {
       "Content-Type": "application/json"
     }
   })
-  .then(checkStatus)
+  .then(utils.checkStatus)
   .then((response) => {
     return response.json()
   })
@@ -258,8 +260,8 @@ export const addToList = function(e) {
 
   var msg = form.nextElementSibling
 
-  showUpdateMessage(msg)
-  clearForm(form)
+  utils.showUpdateMessage(msg)
+  utils.clearForm(form)
 
   var csrf = Cookies.get('csrftoken')
 
@@ -296,41 +298,6 @@ export const addToList = function(e) {
   })
 }
 
-export const showUpdateMessage = (msg) => {
-  msg.style.display = 'block'
-  msg.innerHTML = "Saving..."
-}
-
-export const clearForm = (form) => {
-  var autocomplete = form.querySelector('.autocomplete')
-  clearAutocomplete(autocomplete)
-  form.reset()
-  form.style.display = 'none'
-  form.classList.remove('pulse')
-  var input = form.querySelector('input[type=text]')
-  input.dataset.sel = -1  // Reset the autocomplete pointer
-
-}
-
-export const clearAutocomplete = (autocomplete) => {
-  autocomplete.innerHTML = ''
-}
-
-export const clearResponse = (response) => {
-  response.style.display = 'none'
-  response.innerHTML = ''
-}
-
-export const checkStatus = (response) => {
-  if (response.status >= 200 && response.status < 300) {
-    return response
-  }
-  else {
-    var error = new Error(response.statusText)
-    error.response = response
-    throw error
-  }
-}
 
 /* Show a message when the user has successfully added an image to a list */
 export const successMessage = (msg, slug, title) => {
@@ -352,8 +319,8 @@ export const deleteConfirm = function (e) {
 const cancelListModals = function (e) {
   if (e.keyCode === 27) {
     for (var form of document.querySelectorAll('.add-to-list')) {
-      clearForm(form)
-      clearResponse(form.nextElementSibling)
+      utils.clearForm(form)
+      utils.clearResponse(form.nextElementSibling)
     }
   }
 }

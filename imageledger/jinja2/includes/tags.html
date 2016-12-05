@@ -1,0 +1,21 @@
+{% macro add(identifier, request, size) -%}
+<div class="add-to-tags-container">
+  <button onClick="openledger.tags.addTagsForm(event)" title="Add Tags" alt="Add Tags"
+      {% if size == "large" %}
+      class="button success fi-price-tag">
+      Add Tags
+
+      {% else %}
+      class="button success tiny fi-price-tag">
+
+      {% endif %}
+  </button>
+
+  <form class="add-to-tags animated" action="#" method="GET" >
+    <input type="text" name="title" value="" autocomplete="off"  placeholder="Add new or existing tags" size="40"/>
+    <div class="autocomplete"></div>
+    <input type="hidden" name="identifier" value="{{ identifier }}" />
+  </form>
+  <div class="add-to-tags-response"></div>
+</div>
+{% endmacro -%}

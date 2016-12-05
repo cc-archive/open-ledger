@@ -1,0 +1,25 @@
+/* Tag creation features */
+
+.add-to-tags-container {
+
+  .add-to-tags {
+    position: absolute;
+    width: 400px;
+    display: none;
+    z-index: 99;
+
+    input {
+      margin: 0;
+    }
+  }
+  .add-to-tags-response {
+    display: none;
+    position: absolute;
+    background: white;
+    box-shadow: 0px 10px 36px -9px rgba(0,0,0,0.58);
+    padding: 20px;
+    min-width: 400px;
+    z-index: 1;
+  }
+
+}

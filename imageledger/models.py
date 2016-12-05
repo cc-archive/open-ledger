@@ -152,6 +152,16 @@ class ImageTags(OpenLedgerModel):
         unique_together = (('tag', 'image'))
         db_table = 'image_tags'
 
+class UserTags(OpenLedgerModel):
+    tag = models.ForeignKey('Tag', on_delete=models.CASCADE)
+    image = models.ForeignKey(Image, on_delete=models.CASCADE, related_name="user_tags")
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+
+    class Meta:
+        unique_together = (('tag', 'image', 'user'))
+        db_table = 'user_tags'
+
+
 class List(OpenLedgerModel):
     # The label applied to a list which is auto-created from favorites
     FAVORITE_LABEL = "Favorites"
@@ -175,6 +185,7 @@ class List(OpenLedgerModel):
 class Tag(OpenLedgerModel):
     foreign_identifier = models.CharField(max_length=255, blank=True, null=True)
     name = models.CharField(max_length=1000, blank=True, null=True)
+    # Source can be a provider/source (like 'openimages', or 'user')
     source = models.CharField(max_length=255, blank=True, null=True)
 
     class Meta:

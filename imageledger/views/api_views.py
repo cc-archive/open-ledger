@@ -11,9 +11,8 @@ from imageledger import models
 
 log = logging.getLogger(__name__)
 
-class ListAutocompletePermissions(permissions.BasePermission):
-    """Only a logged-in user can use this endpoint, and only a List owner can GET
-    List matches."""
+class AutocompletePermissions(permissions.BasePermission):
+    """Only a logged-in user can use this endpoint, and only an object owner can GET matches."""
 
     def has_permission(self, request, view):
         # POST requests require auth at this time
@@ -27,6 +26,11 @@ class ListAutocompletePermissions(permissions.BasePermission):
             return True
         return False
 
+class TagAutocompletePermissions(AutocompletePermissions):
+    pass
+
+class ListAutocompletePermissions(AutocompletePermissions):
+    pass
 
 class ListPermissions(permissions.BasePermission):
     """
@@ -58,6 +62,11 @@ class ImageSerializer(serializers.Serializer):
     title = serializers.CharField()
     url = serializers.URLField()
     creator = serializers.CharField()
+
+class TagSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = models.Tag
+        fields = ('name', 'created_on', 'updated_on', 'source')
 
 class ListImageSerializer(serializers.Serializer):
     images = ImageSerializer(many=True)
@@ -107,6 +116,18 @@ class FavoriteSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.Favorite
         fields = ('image', 'user', 'created_on', 'updated_on')
+
+class UserTagSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = models.UserTags
+        fields = ('image', 'user', 'tag', 'created_on', 'updated_on')
+
+class UserTagReadSerializer(serializers.ModelSerializer):
+    image = ImageSerializer()
+    tag = TagSerializer()
+    class Meta:
+        model = models.UserTags
+        fields = ('image', 'user', 'tag', 'created_on', 'updated_on')
 
 # Views
 
@@ -253,3 +274,67 @@ class FavoriteDetail(mixins.RetrieveModelMixin,
         fave = get_object_or_404(models.Favorite, image__identifier=self.kwargs.get('identifier'))
         fave.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
+
+class UserTagDetail(mixins.DestroyModelMixin,
+                    mixins.CreateModelMixin,
+                    generics.GenericAPIView):
+
+    queryset = models.UserTags.objects.all()
+    serializer_class = UserTagSerializer
+    permission_classes = (permissions.IsAuthenticated,)
+
+    def post(self, request, *args, **kwargs):
+        img = models.Image.objects.get(identifier=self.kwargs.get('identifier'))
+        tag, created = models.Tag.objects.get_or_create(name=self.kwargs.get('tag'))
+        # If this tag didn't exist, create is as a user tag
+        if created:
+            tag.source = 'user'
+            tag.save()
+        serializer = UserTagSerializer(data={'image': img.pk, 'user': request.user.pk, 'tag': tag.pk})
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def delete(self, request, *args, **kwargs):
+        user_tag = get_object_or_404(models.UserTags,
+                                     user=request.user,
+                                     image__identifier=self.kwargs.get('identifier'),
+                                     tag__name=self.kwargs.get('tag'))
+
+        user_tag.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+class UserTagsList(mixins.ListModelMixin,
+                   generics.GenericAPIView):
+
+    serializer_class = UserTagReadSerializer
+    permission_classes = (permissions.IsAuthenticated,)
+
+    def get_queryset(self):
+        return models.UserTags.objects.filter(user=self.request.user,
+                                              image__identifier=self.kwargs.get('identifier'))
+
+    def get(self, request, *args, **kwargs):
+        return self.list(request, *args, **kwargs)
+
+
+class UserTagsAutocomplete(mixins.ListModelMixin,
+                           generics.GenericAPIView):
+    """A view for the Tags autocomplete feature, which will match, by title, only
+    Tags which were created by the requestor."""
+    serializer_class = UserTagReadSerializer
+    permission_classes = (TagAutocompletePermissions, )
+    queryset = models.UserTags.objects.all()
+
+    def filter_queryset(self, queryset):
+        queryset = super().filter_queryset(queryset)
+        queryset = queryset.filter(user=self.request.user)
+        name = self.request.query_params.get('name', None)
+        if name is not None:
+            queryset = queryset.filter(tag__name__startswith=name)
+        return queryset
+
+    def get(self, request, *args, **kwargs):
+        return self.list(request, *args, **kwargs)

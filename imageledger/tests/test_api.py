@@ -405,3 +405,104 @@ class TestAPIViews(TestImageledgerApp):
         fave = models.Favorite.objects.create(image=img, user=self.user)
         resp = self.req.get('/api/v1/images/favorites')
         self.assertEqual(403, resp.status_code)
+
+    # User tags
+    def test_user_tags_post(self):
+        """The User Tags POST view should create a new UserTag object for an existing tag"""
+        self.req.force_login(self.user)
+        img = models.Image.objects.create(url="example.com", license="CC0")
+        tag = models.Tag.objects.create(name='tag')
+        self.assertEqual(0, models.UserTags.objects.filter(user=self.user, image=img, tag=tag).count())
+        resp = self.req.post('/api/v1/images/tags/' + img.identifier + '/' + tag.name)
+        self.assertEqual(201, resp.status_code)
+        self.assertEqual(1, models.UserTags.objects.filter(user=self.user, image=img, tag=tag).count())
+
+    def test_user_tags_post_new_tag(self):
+        """The User Tags POST view should create a new UserTag object for a new tag"""
+        self.req.force_login(self.user)
+        tagname = 'newtag'
+        img = models.Image.objects.create(url="example.com", license="CC0")
+        self.assertEqual(0, models.UserTags.objects.filter(user=self.user, image=img, tag__name=tagname).count())
+        resp = self.req.post('/api/v1/images/tags/' + img.identifier + '/' + tagname)
+        self.assertEqual(201, resp.status_code)
+        self.assertEqual(1, models.Tag.objects.filter(name=tagname, source='user').count())
+        self.assertEqual(1, models.UserTags.objects.filter(user=self.user, image=img, tag__name=tagname).count())
+
+    def test_user_tags_delete(self):
+        """The User Tags delete view should remove an existing UserTag object"""
+        self.req.force_login(self.user)
+        img = models.Image.objects.create(url="example.com", license="CC0")
+        tag = models.Tag.objects.create(name='tag')
+        user_tag = models.UserTags.objects.create(image=img, user=self.user, tag=tag)
+        self.assertEqual(1, models.UserTags.objects.filter(user=self.user, image=img, tag=tag).count())
+        resp = self.req.delete('/api/v1/images/tags/' + img.identifier + '/' + tag.name)
+        self.assertEqual(204, resp.status_code)
+        self.assertEqual(0, models.UserTags.objects.filter(user=self.user, image=img, tag=tag).count())
+
+    def test_get_user_tags_for_image(self):
+        """The User Tags list endpoint returns a list of tags for an image by the requesting user"""
+        self.req.force_login(self.user)
+        img = models.Image.objects.create(url="example.com", license="CC0")
+        tag = models.Tag.objects.create(name='tag')
+        user_tag = models.UserTags.objects.create(image=img, user=self.user, tag=tag)
+        resp = self.req.get('/api/v1/images/tags/' + img.identifier)
+        self.assertEqual(200, resp.status_code)
+        jresp = resp.json()
+        self.assertEqual(1, len(jresp))
+        self.assertEqual('tag', jresp[0]['tag']['name'])
+
+    def test_get_user_tags_for_image_only(self):
+        """The User Tags list endpoint returns a list of tags for an image only by the requesting user"""
+        self.req.force_login(self.user)
+        img = models.Image.objects.create(url="example.com", license="CC0")
+        tag = models.Tag.objects.create(name='tag')
+        user2 = get_user_model().objects.create(username='other user')
+        user_tag = models.UserTags.objects.create(image=img, user=user2, tag=tag)
+        resp = self.req.get('/api/v1/images/tags/' + img.identifier)
+        self.assertEqual(200, resp.status_code)
+        self.assertEqual(0, len(resp.json()))
+
+    def test_user_tags_autocomplete_list(self):
+        """The user tags autocomplete endpoint returns a list of tags created by that user"""
+        self.req.force_login(self.user)
+        img = models.Image.objects.create(url="example.com", license="CC0")
+        tag = models.Tag.objects.create(name='tag1')
+        user_tag = models.UserTags.objects.create(image=img, user=self.user, tag=tag)
+        tag2 = models.Tag.objects.create(name='tag2')
+        user_tag2 = models.UserTags.objects.create(image=img, user=self.user, tag=tag2)
+        resp = self.req.get('/api/v1/autocomplete/tags')
+        self.assertEqual(200, resp.status_code)
+        self.assertEqual(2, len(resp.json()))
+
+    def test_user_tags_autocomplete_list_user_only(self):
+        """The user tags autocomplete endpoint only returns a list of tags created by that user"""
+        self.req.force_login(self.user)
+        img = models.Image.objects.create(url="example.com", license="CC0")
+        tag = models.Tag.objects.create(name='tag1', source='user')
+        models.UserTags.objects.create(image=img, user=self.user, tag=tag)
+
+        user2 = get_user_model().objects.create(username='other user')
+        tag2 = models.Tag.objects.create(name='tag2', source='user')
+        models.UserTags.objects.create(image=img, user=user2, tag=tag2)
+
+        resp = self.req.get('/api/v1/autocomplete/tags')
+        self.assertEqual(1, len(resp.json()))
+
+    def test_user_tags_autocomplete_filter_by_tagname(self):
+        """The user tags autocomplete endpoint only returns a list of matching tag names"""
+        self.req.force_login(self.user)
+        img = models.Image.objects.create(url="example.com", license="CC0")
+        tag = models.Tag.objects.create(name='first', source='user')
+        models.UserTags.objects.create(image=img, user=self.user, tag=tag)
+        tag2 = models.Tag.objects.create(name='second', source='user')
+        models.UserTags.objects.create(image=img, user=self.user, tag=tag2)
+
+        resp = self.req.get('/api/v1/autocomplete/tags')
+        self.assertEqual(2, len(resp.json()))
+
+        resp = self.req.get('/api/v1/autocomplete/tags', {'name': 'first'})
+        self.assertEqual(1, len(resp.json()))
+        self.assertEqual('first', resp.json()[0]['tag']['name'])
+
+        resp = self.req.get('/api/v1/autocomplete/tags', {'name': 'zero'})
+        self.assertEqual(0, len(resp.json()))

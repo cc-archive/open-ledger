@@ -39,7 +39,14 @@ apipatterns = [
     # Favorite API
     url(r'^api/v1/images/favorite/(?P<identifier>[^/]+)$', api_views.FavoriteDetail.as_view()),
     url(r'^api/v1/images/favorites', api_views.FavoriteList.as_view()),
+
+    # User Tags API
+    url(r'^api/v1/images/tags/(?P<identifier>[^/]+)/(?P<tag>[^/]+)$', api_views.UserTagDetail.as_view()),
+    url(r'^api/v1/images/tags/(?P<identifier>[^/]+)', api_views.UserTagsList.as_view()),
+    url(r'^api/v1/autocomplete/tags$', api_views.UserTagsAutocomplete.as_view()),
+
 ]
+
 
 apipatterns = format_suffix_patterns(apipatterns)
 
