@@ -66,7 +66,7 @@ def db_image_to_index(db_image):
                   tags=db_image.tags_list)
     return image
 
-def init_es():
+def init_es(timeout=TIMEOUT):
     log.info("connecting to %s %s", settings.ELASTICSEARCH_URL, settings.ELASTICSEARCH_PORT)
     auth = AWSRequestsAuth(aws_access_key=settings.AWS_ACCESS_KEY_ID,
                            aws_secret_access_key=settings.AWS_SECRET_ACCESS_KEY,
@@ -77,14 +77,14 @@ def init_es():
     es = Elasticsearch(host=settings.ELASTICSEARCH_URL,
                        port=settings.ELASTICSEARCH_PORT,
                        connection_class=RequestsHttpConnection,
-                       timeout=TIMEOUT,
+                       timeout=timeout,
                        max_retries=10, retry_on_timeout=True,
                        http_auth=auth)
     return es
 
-def init():
+def init(timeout=TIMEOUT):
     """Initialize all search objects"""
-    es = init_es()
+    es = init_es(timeout=timeout)
     connections.add_connection('default', es)
     log.debug("Initializing search objects for connection %s:%s", settings.ELASTICSEARCH_URL, settings.ELASTICSEARCH_PORT)
     return es

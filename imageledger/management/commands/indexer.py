@@ -1,11 +1,14 @@
 from collections import namedtuple
 import itertools
 import logging
+import time
 from multiprocessing.dummy import Pool as ThreadPool
 
 from elasticsearch import helpers
+import elasticsearch
 from django.core.management.base import BaseCommand, CommandError
 from django.db import connection, transaction
+import requests
 
 from imageledger import models, search
 
@@ -70,7 +73,7 @@ def do_index(start, chunk_size):
     batches = []
     retries = 0
     completed = 0
-    es = search.init()
+    es = search.init(timeout=200)
     search.Image.init()
     mapping = search.Image._doc_type.mapping
     mapping.save('openledger')
@@ -82,22 +85,21 @@ def do_index(start, chunk_size):
         #log.debug("Indexing database record %s", db_image.identifier)
         image = search.db_image_to_index(db_image)
         try:
-         if len(batches) >= chunk_size:
-             log.debug("Waiting for green status...")
-             es.cluster.health(wait_for_status='green', request_timeout=200)
-             helpers.bulk(es, batches)
-             log.debug("Pushed batch of %d records to ES", len(batches))
-             batches = []  # Clear the batch size
-         else:
-             batches.append(image.to_dict(include_meta=True))
-        except ConnectionError as e:
-         if retries < MAX_CONNECTION_RETRIES:
-             log.warn("Got timeout, retrying with %d retries remaining", MAX_CONNECTION_RETRIES - retries)
-             es = init()
-             retries += 1
-             time.sleep(RETRY_WAIT)
-         else:
-             raise
+            if len(batches) >= chunk_size:
+                log.debug("Waiting for green status...")
+                es.cluster.health(wait_for_status='green', request_timeout=2000)
+                helpers.bulk(es, batches)
+                log.debug("Pushed batch of %d records to ES", len(batches))
+                batches = []  # Clear the batch size
+            else:
+                batches.append(image.to_dict(include_meta=True))
+        except (requests.exceptions.ReadTimeout, elasticsearch.exceptions.TransportError) as e:
+            if retries < MAX_CONNECTION_RETRIES:
+                log.warn("Got timeout, retrying with %d retries remaining", MAX_CONNECTION_RETRIES - retries)
+                retries += 1
+                time.sleep(RETRY_WAIT)
+            else:
+                raise
     helpers.bulk(es, batches)
 
 def server_cursor_query(queryset, chunk_size=DEFAULT_CHUNK_SIZE):
