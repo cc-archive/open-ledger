@@ -72,20 +72,18 @@ def do_index(start, chunk_size):
     end = start + chunk_size + 1
     batches = []
     retries = 0
-    completed = 0
+
     try:
-        es = search.init(timeout=200)
+        es = search.init(timeout=2000)
         es.cluster.health(wait_for_status='green', request_timeout=2000)
         search.Image.init()
+        mapping = search.Image._doc_type.mapping
+        mapping.save('openledger')
+
     except (requests.exceptions.ReadTimeout, elasticsearch.exceptions.TransportError) as e:
-        if retries < MAX_CONNECTION_RETRIES:
-            log.warn("Got timeout, retrying with %d retries remaining", MAX_CONNECTION_RETRIES - retries)
-            retries += 1
-            time.sleep(RETRY_WAIT)
-        else:
-            raise
-    mapping = search.Image._doc_type.mapping
-    mapping.save('openledger')
+        log.warn("Skipping batch and retrying after wait")
+        time.sleep(RETRY_WAIT)
+        return
 
     log.info("Starting index in range from %d to %d...", start, end)
 
