@@ -100,7 +100,9 @@ def do_index(start, chunk_size):
                 batches = []  # Clear the batch size
             else:
                 batches.append(image.to_dict(include_meta=True))
-        except (requests.exceptions.ReadTimeout, elasticsearch.exceptions.TransportError) as e:
+        except (requests.exceptions.ReadTimeout,
+                elasticsearch.exceptions.TransportError,
+                elasticsearch.helpers.BulkIndexError) as e:
             if retries < MAX_CONNECTION_RETRIES:
                 log.warn("Got timeout: retrying with %d retries remaining", MAX_CONNECTION_RETRIES - retries)
                 retries += 1

@@ -8,7 +8,7 @@ import botocore
 
 from django.core.management.base import BaseCommand, CommandError
 
-from imageledger.handlers import handler_rijks, handler_nypl
+from imageledger.handlers import handler_rijks, handler_nypl, handler_500px
 
 log = logging.getLogger(__name__)
 log.setLevel(logging.INFO)
@@ -19,7 +19,7 @@ class Command(BaseCommand):
     can_import_settings = True
     requires_migrations_checks = True
 
-    current_handlers = ('rijks', 'nypl')
+    current_handlers = ('rijks', 'nypl', '500px')
 
     def add_arguments(self, parser):
         parser.add_argument("handler",
@@ -52,7 +52,15 @@ class Command(BaseCommand):
         if options['handler'] not in self.current_handlers:
             raise CommandError("Handler must be one of the values in `current_handlers`")
         if options['handler'] == 'rijks':
-            added = handler_rijks.insert_image(options['chunk_size'], options['max_results'])
+            added = handler_rijks.insert_image(walk_func=handler_rijks.walk,
+                                               serialize_func=handler_rijks.serialize,
+                                               chunk_size=options['chunk_size'],
+                                               max_results=options['max_results'])
+        elif options['handler'] == '500px':
+            added = handler_500px.insert_image(walk_func=handler_500px.walk,
+                                               serialize_func=handler_500px.serialize,
+                                               chunk_size=options['chunk_size'],
+                                               max_results=options['max_results'])
         elif options['handler'] == 'nypl':
             if options.get('bucket_name'):
                 file_dir = download_from_s3(options['from_file'], options['bucket_name'])

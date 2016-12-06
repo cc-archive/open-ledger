@@ -4,7 +4,6 @@ import time
 
 import requests
 
-from elasticsearch import helpers
 from django.conf import settings
 from imageledger import models, signals, search
 from django.db.utils import IntegrityError

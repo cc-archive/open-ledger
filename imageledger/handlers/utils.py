@@ -1,3 +1,14 @@
+import itertools
+import logging
+import time
+
+from django.db.utils import IntegrityError
+from elasticsearch import helpers
+
+from imageledger import models, signals, search
+
+log = logging.getLogger(__name__)
+
 def grouper_it(n, iterable):
     it = iter(iterable)
     while True:
@@ -8,7 +19,7 @@ def grouper_it(n, iterable):
             return
         yield itertools.chain((first_el,), chunk_it)
 
-def insert_image(chunk_size, max_results=5000):
+def insert_image(walk_func, serialize_func, chunk_size, max_results=5000):
     count = 0
     success_count = 0
     es = search.init()
@@ -16,13 +27,13 @@ def insert_image(chunk_size, max_results=5000):
     mapping = search.Image._doc_type.mapping
     mapping.save('openledger')
 
-    for chunk in grouper_it(chunk_size, walk()):
+    for chunk in grouper_it(chunk_size, walk_func()):
         if count >= max_results:
             break
         else:
             images = []
             for result in chunk:
-                image = serialize(result)
+                image = serialize_func(result)
                 images.append(image)
             if len(images) > 0:
                 try:
