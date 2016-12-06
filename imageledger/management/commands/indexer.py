@@ -83,6 +83,8 @@ def do_index(start, chunk_size):
         image = search.db_image_to_index(db_image)
         try:
          if len(batches) >= chunk_size:
+             log.debug("Waiting for green status...")
+             es.cluster.health(wait_for_status='green', request_timeout=200)
              helpers.bulk(es, batches)
              log.debug("Pushed batch of %d records to ES", len(batches))
              batches = []  # Clear the batch size
