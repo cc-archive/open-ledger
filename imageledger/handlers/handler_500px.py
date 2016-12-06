@@ -40,7 +40,7 @@ LICENSE_LOOKUP = {v: k for k, v in LICENSES.items()}
 def auth():
     return OAuth1(settings.API_500PX_KEY, client_secret=settings.API_500PX_SECRET)
 
-def photos(search=None, licenses=["ALL"], page=1, per_page=20, **kwargs):
+def photos(search=None, licenses=["ALL"], page=1, per_page=20, extra={}, **kwargs):
     params = {
         'license_type': license_match(licenses, LICENSES),
         'term': search,
@@ -49,6 +49,7 @@ def photos(search=None, licenses=["ALL"], page=1, per_page=20, **kwargs):
         'nsfw': False,
         'image_size': "%s,%s" % (IMAGE_SIZE_THUMBNAIL, IMAGE_SIZE_FULL)
     }
+    params.update(extra)
     r = requests.get(ENDPOINT_PHOTOS, params=params, auth=auth())
     return r.json()
 
@@ -69,12 +70,12 @@ def serialize(result):
     image.last_synced_with_source = timezone.now()
     return image
 
-def walk(page=1, per_page=200):
+def walk(page=1, per_page=100):
     """Walk through a set of search results and collect items to serialize"""
 
     has_more = True
     while has_more:
-        results = photos(page=page, per_page=per_page)
+        results = photos(page=page, per_page=per_page, extra={'sort': 'created_at'})
         for result in results['photos']:
             yield result
         page += 1

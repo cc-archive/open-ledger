@@ -61,8 +61,6 @@ class Command(BaseCommand):
     def index_all_images(self, chunk_size=DEFAULT_CHUNK_SIZE, num_iterations=DEFAULT_NUM_ITERATIONS,
                          num_threads=DEFAULT_NUM_THREADS):
         """Index every record in the database with a server-side cursor"""
-
-
         with ThreadPool(num_threads) as pool:
             starts = [i * chunk_size for i in range(0, num_iterations)]
             pool.starmap(do_index, zip(starts, itertools.repeat(chunk_size, len(starts))))
