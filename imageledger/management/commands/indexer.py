@@ -73,9 +73,9 @@ def do_index(start, chunk_size):
     batches = []
     retries = 0
     completed = 0
-    es = search.init(timeout=200)
-    es.cluster.health(wait_for_status='green', request_timeout=2000)
     try:
+        es = search.init(timeout=200)
+        es.cluster.health(wait_for_status='green', request_timeout=2000)
         search.Image.init()
     except (requests.exceptions.ReadTimeout, elasticsearch.exceptions.TransportError) as e:
         if retries < MAX_CONNECTION_RETRIES:
