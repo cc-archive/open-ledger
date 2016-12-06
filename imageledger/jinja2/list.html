@@ -6,12 +6,12 @@
 
 <div class="row column list-detail">
 
-  <form action="{{ url('my-list-update', object.slug) }}" method="POST">
+  <form action="{{ url('my-list-update', object.slug) }}" method="POST" class="list-edit-form">
    {{ csrf_input }}
     <h2>
       <div class="form-readonly t-list-title">
         {{ object.title }}
-        <a onClick="openledger.form.showForm(event)" class="fi-page-edit" title="Edit this List" alt="Edit this list"></a>
+        <a onClick="openledger.form.showFormElements(event)" class="fi-page-edit" title="Edit this List" alt="Edit this list"></a>
       </div>
       <label for="title">{{ form.title.label }}</label>
       {{ form.title }}
@@ -38,6 +38,10 @@
 
   </form>
 
+  <form action="{{ url('my-list-delete', object.slug) }}" method="POST" class="list-delete">
+    {{ csrf_input }}
+    <input type="submit"  value="Delete this list" class="alert button" onClick="openledger.list.deleteConfirm(event)" />
+  </form>
 
   <div class="row">
   {% for image in object.images.all() %}
@@ -53,11 +57,6 @@
   </div>
 
 
-
-    <form action="{{ url('my-list-delete', object.slug) }}" method="POST" class="list-delete">
-      {{ csrf_input }}
-      <input type="submit"  value="Delete this list" class="alert button" onClick="openledger.list.deleteConfirm(event)" />
-    </form>
 
 </div>
 
