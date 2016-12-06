@@ -17,7 +17,7 @@ log = logging.getLogger(__name__)
 log.addHandler(console)
 log.setLevel(logging.INFO)
 
-MAX_CONNECTION_RETRIES = 10
+MAX_CONNECTION_RETRIES = 50
 RETRY_WAIT = 5  # Number of sections to wait before retrying
 
 DEFAULT_CHUNK_SIZE = 1000
@@ -74,7 +74,16 @@ def do_index(start, chunk_size):
     retries = 0
     completed = 0
     es = search.init(timeout=200)
-    search.Image.init()
+    es.cluster.health(wait_for_status='green', request_timeout=2000)
+    try:
+        search.Image.init()
+    except (requests.exceptions.ReadTimeout, elasticsearch.exceptions.TransportError) as e:
+        if retries < MAX_CONNECTION_RETRIES:
+            log.warn("Got timeout, retrying with %d retries remaining", MAX_CONNECTION_RETRIES - retries)
+            retries += 1
+            time.sleep(RETRY_WAIT)
+        else:
+            raise
     mapping = search.Image._doc_type.mapping
     mapping.save('openledger')
 
