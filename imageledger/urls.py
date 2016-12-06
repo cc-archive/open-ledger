@@ -3,7 +3,7 @@ from django.conf.urls import url, include
 from rest_framework.urlpatterns import format_suffix_patterns
 from django_cas_ng.views import login as cas_login, logout as cas_logout, callback as cas_callback
 
-from imageledger.views import search_views, api_views, list_views, favorite_views, tag_views
+from imageledger.views import search_views, api_views, list_views, favorite_views, tag_views, site_views
 
 urlpatterns = [
     url(r'^$', search_views.index, name='index'),
@@ -32,6 +32,9 @@ urlpatterns = [
     # User tags
     url(r'tags/mine$', tag_views.UserTagsList.as_view(), name='my-tags'),
     url(r'tags/mine/(?P<slug>[^/]+)$', tag_views.UserTagsDetail.as_view(), name='my-tags-detail'),
+
+    # About and other static pages
+    url(r'about$', site_views.about, name='about'),
 ]
 
 apipatterns = [

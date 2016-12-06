@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+
+{% block body %}
+
+<div class="row column site-page about">
+
+  <h2>About the Open Ledger</h2>
+
+  <table>
+    <tr>
+      <th>
+        Partner
+      </th>
+      <th>
+        Number of works
+      </th>
+    </tr>
+    {% for provider in providers %}
+    <tr>
+      <td>
+        {{ provider['display_name'] }}
+      </td>
+      <td>
+        {{ provider['hits']}}
+      </td>
+    </tr>
+    {% endfor %}
+  </table>
+
+  <p>
+    Ryan's wisdom goes here.
+  </p>
+</div>
+
+{% endblock body %}

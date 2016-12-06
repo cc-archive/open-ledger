@@ -33,6 +33,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django.contrib.humanize',
     'django_cas_ng',
     'imageledger',
     'rest_framework',
@@ -177,6 +178,23 @@ CAS_SERVER_URL = "https://login.creativecommons.org"
 CAS_LOGOUT_COMPLETELY = False
 CAS_CREATE_USER = True
 
+
+# These providers are current loaded
+PROVIDERS = ('flickr', 'rijksmuseum', 'nypl',)
+WORK_TYPES = {
+    'photos': ['flickr'],
+    'cultural': ['rijksmuseum', 'nypl']
+}
+PROVIDERS = {
+    'flickr': {'display_name': 'Flickr',
+               'url': 'https://flickr.com',},
+    'rijksmuseum': {'display_name': 'Rijksmuseum',
+                    'url': 'https://rijksmuseum.nl/',
+                    },
+    'nypl': {'display_name': 'New York Public Library',
+             'url': 'http://digitalcollections.nypl.org/'}
+}
+
 try:
     from openledger.local import *
 
@@ -189,7 +207,7 @@ except ImportError:
     FLICKR_KEY = os.environ.get('FLICKR_KEY')
     FLICKR_SECRET = os.environ.get('FLICKR_SECRET')
     NYPL_KEY = os.environ.get('NYPL_KEY')
-    
+
     ELASTICSEARCH_URL = os.environ.get('ELASTICSEARCH_URL')
     ELASTICSEARCH_PORT = 80
     AWS_ACCESS_KEY_ID = os.environ.get('AWS_ACCESS_KEY_ID')

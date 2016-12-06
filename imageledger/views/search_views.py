@@ -1,5 +1,6 @@
 import logging
 
+from django.conf import settings
 from django.shortcuts import render, get_object_or_404
 from django.views.decorators.csrf import ensure_csrf_cookie
 from elasticsearch_dsl import Search, Q
@@ -14,10 +15,7 @@ from imageledger.handlers.handler_wikimedia import photos as search_wikimedia
 log = logging.getLogger(__name__)
 
 # Search by source
-WORK_TYPES = {
-    'photos': ['flickr'],
-    'cultural': ['rijksmuseum', 'nypl']
-}
+
 
 search_funcs = {
     "fpx": search_500,
@@ -48,12 +46,12 @@ def index(request):
         if 'photos' in form.cleaned_data.get('work_types'):
             and_queries.append(
                             Q('bool',
-                            should=[Q("term", provider=provider) for provider in WORK_TYPES['photos']]
+                            should=[Q("term", provider=provider) for provider in settings.WORK_TYPES['photos']]
                             ))
         if 'cultural' in form.cleaned_data.get('work_types'):
             and_queries.append(
                             Q('bool',
-                            should=[Q("term", provider=provider) for provider in WORK_TYPES['cultural']]
+                            should=[Q("term", provider=provider) for provider in settings.WORK_TYPES['cultural']]
                             ))
 
 

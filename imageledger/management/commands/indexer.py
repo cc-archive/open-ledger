@@ -66,7 +66,7 @@ class Command(BaseCommand):
                     #yield obj
 
     def index_all_images(self, chunk_size=DEFAULT_CHUNK_SIZE):
-        """Index every record in the database with a server-side cursory"""
+        """Index every record in the database with a server-side cursor"""
         es = search.init()
         search.Image.init()
         mapping = search.Image._doc_type.mapping
@@ -77,9 +77,9 @@ class Command(BaseCommand):
         retries = 0
         completed = 0
 
-        qs = models.Image.objects.filter(removed_from_source=False).order_by('-last_synced_with_source')
+        qs = models.Image.objects.filter(removed_from_source=False).order_by('-id')
         for db_image in self.server_cursor_query(qs, chunk_size):
-             log.debug("Indexing database record %s", db_image.identifier)
+             # log.debug("Indexing database record %s", db_image.identifier)
              image = search.db_image_to_index(db_image)
              try:
                  if len(batches) > chunk_size:

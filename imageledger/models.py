@@ -130,12 +130,11 @@ class Image(OpenLedgerModel):
     def displayable_provider(self):
         """Return a value that's displayable for a provider, including property capitalization
         and a URL"""
-        if self.provider == 'flickr':
-            return '<a href="https://flickr.com/">Flickr</a>'
-        if self.provider == 'rijksmuseum':
-            return '<a href="https://rijksmuseum.nl/">Rijksmuseum</a>'
-        if self.provider == 'nypl':
-            return '<a href="http://digitalcollections.nypl.org/">New York Public Library</a>'
+        p = settings.PROVIDERS.get(self.provider)
+        if p:
+            return '<a href="{}">{}</a>'.format(p['url'], p['display_name'])
+        else:
+            return ''
 
     def __str__(self):
         return '<Image %r found at %r by %r>' % (self.identifier, self.url, self.creator)

@@ -47,6 +47,9 @@ h5 {
     transform: scale3d(0.3, 0.3, 0.3); }
   to {
     opacity: 0; } }
+.about table th {
+  text-align: left; }
+
 .metadata h4 {
   font-size: 1rem;
   font-weight: bold;

@@ -33,7 +33,6 @@
         </div>
 
         <div class="top-bar-right">
-
           <ul class="login">
             {% if request.user.is_anonymous %}
               <li>
@@ -55,6 +54,10 @@
             <li>
               <a href="{{ url ('provider-apis')}}">Provider API search</a>
             </li>
+            <li>
+              <a href="{{ url('about')}}">About</a>
+            </li>
+
             {% if not request.user.is_anonymous %}
             <li>
               <a href="{{ url('my-lists')}}">Your Lists</a>
