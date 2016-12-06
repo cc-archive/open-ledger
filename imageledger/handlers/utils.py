@@ -3,7 +3,8 @@ import logging
 import time
 
 from django.db.utils import IntegrityError
-from elasticsearch import helpers
+import elasticsearch
+import requests
 
 from imageledger import models, signals, search
 
@@ -38,12 +39,16 @@ def insert_image(walk_func, serialize_func, chunk_size, max_results=5000):
             if len(images) > 0:
                 try:
                     # Bulk update the search engine too
+                    es.cluster.health(wait_for_status='green', request_timeout=2000)
                     search_objs = [search.db_image_to_index(img).to_dict(include_meta=True) for img in images]
-                    helpers.bulk(es, search_objs)
+                    elasticsearch.helpers.bulk(es, search_objs)
                     models.Image.objects.bulk_create(images)
                     log.debug("*** Committed set of %d images", len(images))
                     success_count += len(images)
-                except IntegrityError as e:
+                except (requests.exceptions.ReadTimeout,
+                        elasticsearch.exceptions.TransportError,
+                        elasticsearch.helpers.BulkIndexError,
+                        IntegrityError) as e:
                     log.warn("Got one or more integrity errors on batch: %s", e)
                 finally:
                     count += len(images)
