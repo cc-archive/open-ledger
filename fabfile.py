@@ -74,6 +74,10 @@ DATASOURCES = {
         'action': 'load-from-provider',
         'provider': 'nypl',
     },
+    '500px': {
+        'action': 'load-from-provider',
+        'provider': '500px',
+    },
     'sync': {
         'action': 'sync'
     }
