@@ -22,7 +22,7 @@ try:
     local_ip = str(socket.gethostbyname(socket.gethostname()))
 except socket.gaierror:
     local_ip = 'localhost'
-    
+
 ALLOWED_HOSTS = [local_ip,
                  '.creativecommons.org',
                  '.elasticbeanstalk.com',]
@@ -183,9 +183,8 @@ CAS_CREATE_USER = True
 
 
 # These providers are current loaded
-PROVIDERS = ('flickr', 'rijksmuseum', 'nypl',)
 WORK_TYPES = {
-    'photos': ['flickr'],
+    'photos': ['flickr', '500px'],
     'cultural': ['rijksmuseum', 'nypl']
 }
 PROVIDERS = {
@@ -195,7 +194,9 @@ PROVIDERS = {
                     'url': 'https://rijksmuseum.nl/',
                     },
     'nypl': {'display_name': 'New York Public Library',
-             'url': 'http://digitalcollections.nypl.org/'}
+             'url': 'http://digitalcollections.nypl.org/'},
+    '500px': {'display_name': '500px',
+              'url': 'https://500px.com/'},
 }
 
 try:
