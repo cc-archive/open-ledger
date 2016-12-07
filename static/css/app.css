@@ -49,22 +49,26 @@ h5 {
     opacity: 0; } }
 /* Floating Feedback bar */
 .feedback-bar {
-  position: fixed;
-  right: -20px;
-  top: 50%;
-  background: #049bce;
-  transform: rotate(270deg);
-  transform-origin: top;
-  border-top: 5px solid white;
-  border-left: 5px solid white;
-  border-right: 5px solid white;
-  border-radius: 20px 20px 0 0;
-  box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.8); }
-  .feedback-bar h3 {
-    padding: .5rem 1rem;
-    color: white;
-    font-size: 25px; }
+  display: none; }
 
+@media (min-width: 600px) {
+  .feedback-bar {
+    display: block;
+    position: fixed;
+    right: -20px;
+    top: 50%;
+    background: #049bce;
+    transform: rotate(270deg);
+    transform-origin: top;
+    border-top: 5px solid white;
+    border-left: 5px solid white;
+    border-right: 5px solid white;
+    border-radius: 20px 20px 0 0;
+    box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.8); }
+    .feedback-bar h3 {
+      padding: .5rem 1rem;
+      color: white;
+      font-size: 25px; } }
 .about table th {
   text-align: left; }
 
