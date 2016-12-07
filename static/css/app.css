@@ -107,8 +107,7 @@ h5 {
 
 .search-form {
   margin-top: 1rem;
-  border: none;
-  /* Visually hide the providers list */ }
+  border: none; }
   .search-form ul, .search-form li {
     display: inline-block;
     margin: 0;
@@ -142,7 +141,7 @@ h5 {
     .search-form .search-field-container i {
       padding: 0 1rem; }
     .search-form .search-field-container input[type=text] {
-      width: 80%;
+      max-width: 50%;
       border: none;
       box-shadow: none;
       margin: 0;
@@ -150,10 +149,6 @@ h5 {
     .search-form .search-field-container input[type=submit] {
       margin: 0;
       float: right; }
-  .search-form ul#id_providers {
-    position: absolute;
-    visibility: hidden;
-    left: -99999; }
 
 .license-logo {
   max-width: 25px;
@@ -325,11 +320,13 @@ figcaption {
 .results {
   visibility: hidden; }
 
-.grid-item {
-  width: 210px;
-  margin-bottom: 10px; }
-  .grid-item:hover figcaption {
-    display: block; }
+.grid {
+  margin: 0 auto; }
+  .grid .grid-item {
+    margin: 0 auto 10px auto;
+    width: 210px; }
+    .grid .grid-item:hover figcaption {
+      display: block; }
 
 nav.top-bar {
   padding: .5rem 2rem;

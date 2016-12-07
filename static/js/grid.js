@@ -11,7 +11,8 @@ const init = () => {
     new Masonry(grid, {
       itemSelector: '.grid-item',
       columnWidth: columnWidth,
-      gutter: gutter
+      gutter: gutter,
+      fitWidth: true
     })
   }
 

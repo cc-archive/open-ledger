@@ -41,13 +41,15 @@ figcaption {
 .results {
   visibility: hidden;
 }
-.grid-item {
-  width: 210px;
-  margin-bottom: 10px;
-  &:hover {
-    figcaption {
-      display: block;
-
+.grid {
+  margin: 0 auto;
+  .grid-item {
+    margin: 0 auto 10px auto;
+    width: 210px;
+    &:hover {
+      figcaption {
+        display: block;
+      }
     }
   }
 }

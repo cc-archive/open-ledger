@@ -2,17 +2,19 @@
   <div class="row">
     <div class="column medium-8 small-12">
 
-      {% if not endpoint.endswith('provider-apis') %}
+
         <p>
           Find images to use or remix from organizations and individuals
           supporting open content:
         </p>
-      {% endif %}
+
       <div class="search-field-container">
         <i class="fi-magnifying-glass"></i>
         {{ form.search }}
         {{ form.page }}
-        {{ form.providers }}
+        {% if endpoint.endswith('provider-apis') %}
+          {{ form.providers }}
+        {% endif %}
         {{ form.per_page }}
         <input type="submit" class="button" value="GO" />
       </div>
