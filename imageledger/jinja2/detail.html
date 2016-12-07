@@ -14,7 +14,7 @@
   </div>
 </div>
 <div class="row">
-  <div class="column metadata">
+  <div class="column metadata small-12 medium-6">
     <h3>About this photo</h3>    <ul>
       <li>
         <h4>Title</h4>
@@ -41,7 +41,7 @@
         {% if image.provider %} via {{ image.displayable_provider|safe }} {% endif %}
       </li>
     </ul>
-    {% if image.tags %}
+    {% if image.tags.count() > 0 %}
     <div class="system-tags-container">
       <h4>Tags</h4>
       {% for tag in image.tags.all() %}
