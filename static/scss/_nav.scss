@@ -3,22 +3,38 @@ nav.top-bar {
   background-image: linear-gradient(90deg,#EE5B32,#FB7928,#EE5B32);
   color: $white;
 
+  .top-bar-title img.cc-site-logo {
+    width: 200px;
+
+    @include for-size(tablet-portrait-up) {
+      width: 240px;
+      height: 57px;
+    }
+  }
   a {
     color: $white;
   }
   ul {
+    margin: 1rem auto;
     list-style-type: none;
     background: none;
+    display: inline-block;
+    @include for-size(tablet-portrait-up) {
+      margin: 0;
+      display: block;
+      text-align: right;
+    }
   }
   li {
     font-weight: 700;
-    font-size: 28px;
     display: inline-block;
     border-left: 1px solid $white;
     padding: 0 .8em;
+    @include for-size(tablet-portrait-up) {
+      font-size: 28px;
+    }
   }
   ul.login {
-    text-align: right;
     li {
       font-size: 1rem;
       border: none;
@@ -27,10 +43,8 @@ nav.top-bar {
       }
     }
   }
-  ul.subnav {
-    text-align: right;
-  }
 }
+
 header {
   box-shadow: 0 0 10px 0 rgba(0,0,0,.8);
   margin-bottom: 2rem;

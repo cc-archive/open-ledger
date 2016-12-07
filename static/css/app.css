@@ -327,26 +327,37 @@ nav.top-bar {
   padding: .5rem 2rem;
   background-image: linear-gradient(90deg, #EE5B32, #FB7928, #EE5B32);
   color: white; }
+  nav.top-bar .top-bar-title img.cc-site-logo {
+    width: 200px; }
+    @media (min-width: 600px) {
+      nav.top-bar .top-bar-title img.cc-site-logo {
+        width: 240px;
+        height: 57px; } }
   nav.top-bar a {
     color: white; }
   nav.top-bar ul {
+    margin: 1rem auto;
     list-style-type: none;
-    background: none; }
+    background: none;
+    display: inline-block; }
+    @media (min-width: 600px) {
+      nav.top-bar ul {
+        margin: 0;
+        display: block;
+        text-align: right; } }
   nav.top-bar li {
     font-weight: 700;
-    font-size: 28px;
     display: inline-block;
     border-left: 1px solid white;
     padding: 0 .8em; }
-  nav.top-bar ul.login {
-    text-align: right; }
-    nav.top-bar ul.login li {
-      font-size: 1rem;
-      border: none; }
-      nav.top-bar ul.login li.username {
-        border-right: 1px solid white; }
-  nav.top-bar ul.subnav {
-    text-align: right; }
+    @media (min-width: 600px) {
+      nav.top-bar li {
+        font-size: 28px; } }
+  nav.top-bar ul.login li {
+    font-size: 1rem;
+    border: none; }
+    nav.top-bar ul.login li.username {
+      border-right: 1px solid white; }
 
 header {
   box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.8);
