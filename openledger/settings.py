@@ -18,8 +18,11 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 DEBUG = False
 
 import socket
-local_ip = str(socket.gethostbyname(socket.gethostname()))
-
+try:
+    local_ip = str(socket.gethostbyname(socket.gethostname()))
+except socket.gaierror:
+    local_ip = 'localhost'
+    
 ALLOWED_HOSTS = [local_ip,
                  '.creativecommons.org',
                  '.elasticbeanstalk.com',]
