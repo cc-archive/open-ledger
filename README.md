@@ -101,6 +101,18 @@ postgres=# GRANT ALL PRIVILEGES ON DATABASE openledger to XXX;
 GRANT
 ```
 
+Per usual Django instructions, install the database tables:
+
+```
+python manage.py migrate
+```
+
+Open Ledger uses the database for caching at this time, so install those tables as well (migration don't install them automatically):
+
+```
+python manage.py createcachetable
+```
+
 ## Instance configuration
 
 ### Elastic Beanstalk deployment

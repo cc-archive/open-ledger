@@ -118,6 +118,14 @@ h5 {
     display: block; }
   .search-form input {
     margin: 0; }
+  @media (max-width: 599px) {
+    .search-form .search-filters {
+      /* In small viewports add top-margin */
+      margin-top: 1rem; }
+      .search-form .search-filters .column, .search-form .search-filters label {
+        font-size: .8rem; }
+      .search-form .search-filters li {
+        display: block; } }
   .search-form .search-filters .column {
     margin-bottom: 1rem; }
   .search-form .search-filters legend {

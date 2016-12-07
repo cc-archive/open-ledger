@@ -46,6 +46,17 @@
   }
 
   .search-filters {
+    @include for-size(phone-only) {
+      /* In small viewports add top-margin */
+      margin-top: 1rem;
+      .column, label {
+        font-size: .8rem;
+      }
+      li {
+        display: block;
+      }
+    }
+
     .column {
       margin-bottom: 1rem;
     }
