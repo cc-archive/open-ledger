@@ -87,14 +87,13 @@ def do_index(start, chunk_size):
         time.sleep(RETRY_WAIT)
         return
 
-    log.info("Starting index in range from %d to %d...", start, end)
+    log.debug("Starting index in range from %d to %d...", start, end)
 
     qs = models.Image.objects.filter(removed_from_source=False, id__gt=start).order_by('id')[0:chunk_size]
     #qs = models.Image.objects.filter(removed_from_source=False).order_by('id')[start:end]
     for db_image in server_cursor_query(qs, chunk_size=chunk_size):
         log.debug("Indexing database record %s", db_image.identifier)
         image = search.db_image_to_index(db_image)
-        continue
         try:
             if len(batches) >= chunk_size:
                 if not settings.DEBUG:
