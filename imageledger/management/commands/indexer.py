@@ -1,11 +1,15 @@
 from collections import namedtuple
 import itertools
 import logging
+import os
 import time
-from multiprocessing.dummy import Pool as ThreadPool
+from multiprocessing.dummy import Pool
+import multiprocessing
+import uuid
 
 from elasticsearch import helpers
 import elasticsearch
+from django.conf import settings
 from django.core.management.base import BaseCommand, CommandError
 from django.db import connection, transaction
 import requests
@@ -61,7 +65,7 @@ class Command(BaseCommand):
     def index_all_images(self, chunk_size=DEFAULT_CHUNK_SIZE, num_iterations=DEFAULT_NUM_ITERATIONS,
                          num_threads=DEFAULT_NUM_THREADS):
         """Index every record in the database with a server-side cursor"""
-        with ThreadPool(num_threads) as pool:
+        with Pool(num_threads) as pool:
             starts = [i * chunk_size for i in range(0, num_iterations)]
             pool.starmap(do_index, zip(starts, itertools.repeat(chunk_size, len(starts))))
 
@@ -70,10 +74,10 @@ def do_index(start, chunk_size):
     end = start + chunk_size + 1
     batches = []
     retries = 0
-
     try:
         es = search.init(timeout=2000)
-        es.cluster.health(wait_for_status='green', request_timeout=2000)
+        if not settings.DEBUG:
+            es.cluster.health(wait_for_status='green', request_timeout=2000)
         search.Image.init()
         mapping = search.Image._doc_type.mapping
         mapping.save('openledger')
@@ -85,14 +89,17 @@ def do_index(start, chunk_size):
 
     log.info("Starting index in range from %d to %d...", start, end)
 
-    qs = models.Image.objects.filter(removed_from_source=False).order_by('id')[start:end]
-    for db_image in server_cursor_query(qs, chunk_size):
-        #log.debug("Indexing database record %s", db_image.identifier)
+    qs = models.Image.objects.filter(removed_from_source=False, id__gt=start).order_by('id')[0:chunk_size]
+    #qs = models.Image.objects.filter(removed_from_source=False).order_by('id')[start:end]
+    for db_image in server_cursor_query(qs, chunk_size=chunk_size):
+        log.debug("Indexing database record %s", db_image.identifier)
         image = search.db_image_to_index(db_image)
+        continue
         try:
             if len(batches) >= chunk_size:
-                log.debug("Waiting for green status...")
-                es.cluster.health(wait_for_status='green', request_timeout=2000)
+                if not settings.DEBUG:
+                    log.debug("Waiting for green status...")
+                    es.cluster.health(wait_for_status='green', request_timeout=2000)
                 helpers.bulk(es, batches)
                 log.debug("Pushed batch of %d records to ES", len(batches))
                 batches = []  # Clear the batch size
@@ -109,7 +116,7 @@ def do_index(start, chunk_size):
                 raise
     helpers.bulk(es, batches)
 
-def server_cursor_query(queryset, chunk_size=DEFAULT_CHUNK_SIZE):
+def server_cursor_query(queryset, cursor_id=0, chunk_size=DEFAULT_CHUNK_SIZE):
     connection.cursor()
 
     compiler = queryset.query.get_compiler(using=queryset.db)
@@ -120,7 +127,8 @@ def server_cursor_query(queryset, chunk_size=DEFAULT_CHUNK_SIZE):
     fields = [field[0].target.attname
               for field in compiler.select[select_fields[0]:select_fields[-1] + 1]]
 
-    cursor = connection.connection.cursor(name='gigantic_cursor')
+    cursor_name = 'cursor-large-%d' % cursor_id
+    cursor = connection.connection.cursor(name=cursor_name)
     with transaction.atomic(savepoint=False):
         cursor.execute(sql, params)
 
