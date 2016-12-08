@@ -35,7 +35,8 @@ def insert_image(walk_func, serialize_func, chunk_size, max_results=5000):
             images = []
             for result in chunk:
                 image = serialize_func(result)
-                images.append(image) if image
+                if image:
+                    images.append(image)
             if len(images) > 0:
                 try:
                     # Bulk update the search engine too
