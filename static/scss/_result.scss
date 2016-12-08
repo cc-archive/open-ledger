@@ -1,5 +1,13 @@
 
 .image-result {
+  margin: 10px;
+  width: 210px;
+  &:hover {
+    figcaption {
+      display: block;
+    }
+  }
+
   button.tiny {
     font-size: 20px;
     padding: 3px;
@@ -41,6 +49,7 @@ figcaption {
 .results {
   visibility: hidden;
 }
+
 .grid {
   margin: 0 auto;
   .grid-item {

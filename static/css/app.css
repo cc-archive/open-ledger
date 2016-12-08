@@ -289,12 +289,17 @@ h5 {
   display: inline-block;
   vertical-align: middle; }
 
-.image-result button.tiny {
-  font-size: 20px;
-  padding: 3px;
-  margin: 0 0 0 2px; }
-.image-result a, .image-result a:hover {
-  text-decoration: none; }
+.image-result {
+  margin: 10px;
+  width: 210px; }
+  .image-result:hover figcaption {
+    display: block; }
+  .image-result button.tiny {
+    font-size: 20px;
+    padding: 3px;
+    margin: 0 0 0 2px; }
+  .image-result a, .image-result a:hover {
+    text-decoration: none; }
 
 figure {
   margin: 0;
