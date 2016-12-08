@@ -61,7 +61,11 @@ def serialize(result):
     image.provider = PROVIDER_NAME
     image.source = SOURCE_NAME
     image.creator = result['user']['username']
-    image.license = LICENSE_LOOKUP[result['license_type']].lower(),
+    try:
+        image.license = LICENSE_LOOKUP[result['license_type']].lower()
+    except KeyError:
+        # We got an unknown license, so just skip this
+        return None
     image.license_version = LICENSE_VERSION
     image.foreign_landing_url = "https://500px.com/" + result['url']
     image.foreign_identifier = result['id']
