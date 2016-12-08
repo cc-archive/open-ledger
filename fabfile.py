@@ -35,51 +35,61 @@ LOG_FILE = '/tmp/app.log'
 DATASOURCES = {
     'openimages-full': {
         'action': 'load-from-file',
+        'name': 'openimages-full',
         'source': 'openimages',
         'filesystem': 's3',
         'filepath': 'openimages/images_2016_08/train/images.csv',
         'datatype': 'images'},
     'openimages-small': {
         'action': 'load-from-file',
+        'name': 'openimages-small',
         'source': 'openimages',
         'filesystem': 's3',
         'filepath': 'openimages/images_2016_08/validation/images.csv',
         'datatype': 'images'},
     'openimages-tags': {
         'action': 'load-from-file',
+        'name': 'openimages-tags',
         'source': 'openimages',
         'filesystem': 's3',
         'filepath': 'openimages/dict.csv',
         'datatype': 'tags'},
     'openimages-human-image-tags': {
         'action': 'load-from-file',
+        'name': 'openimages-human-image-tags',
         'source': 'openimages',
         'filesystem': 's3',
         'filepath': 'openimages/human_ann_2016_08/validation/labels.csv',
         'datatype': 'image-tags'},
     'openimages-machine-image-tags': {
         'action': 'load-from-file',
+        'name': 'openimages-machine-image-tags',
         'source': 'openimages',
         'filesystem': 's3',
         'filepath': 'openimages/machine_ann_2016_08/validation/labels.csv',
         'datatype': 'image-tags'},
     'searchindex': {
         'action': 'reindex',
+        'name': 'searchindex',
         },
     'rijks': {
         'action': 'load-from-provider',
+        'name': 'load-rijks',
         'provider': 'rijks',
     },
     'nypl': {
         'action': 'load-from-provider',
+        'name': 'load-nypl',
         'provider': 'nypl',
     },
     '500px': {
+        'name': 'load-500px',
         'action': 'load-from-provider',
         'provider': '500px',
     },
     'sync': {
-        'action': 'sync'
+        'action': 'sync',
+        'name': 'sync',
     }
 }
 
@@ -137,6 +147,8 @@ def launchloader():
             instance = _start_new_instance(resource, client)
         else:
             instance = _get_running_instance(resource, client)
+        # Name the instance after the datasource
+        instance.create_tags(Tags=[{'Key': 'Name', 'Value': env.datasource['name']}])
         deploy_code(instance.public_ip_address)
         load_data_from_instance(instance)
     except LoaderException as e:
@@ -223,22 +235,6 @@ def terminate_loaders():
     instance_ids, resource = _get_running_instances()
     [resource.Instance(i).terminate() for i in instance_ids]
     log.info("Terminated instances %s", ", ".join(instance_ids)) if len(instance_ids) > 0 else None
-
-def get_named_database(identifier=env.database_id):
-    """Get a single RDS instance by DB Instance ID. Adds the VPC security groups as a side effect"""
-    client = _init_rds()
-    _, ec2 = _init_ec2()
-    group_id = ec2.describe_security_groups(GroupNames=['default'])['SecurityGroups'][0]['GroupId']
-    log.info("DB instance identifier: %s", identifier)
-    r = client.modify_db_instance(DBInstanceIdentifier=identifier,
-                                  VpcSecurityGroupIds=[group_id])['DBInstance']
-    database = {}
-    database['host'] = r['Endpoint']['Address']
-    database['port'] = r['Endpoint']['Port']
-    database['name'] = r['DBName']
-    database['user'] = r['MasterUsername']
-    log.info("Returning database at {}".format(database['host']))
-    return database
 
 def _get_running_instances():
     resource, client = _init_ec2()
