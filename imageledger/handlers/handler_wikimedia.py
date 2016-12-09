@@ -6,13 +6,20 @@ from pprint import pprint
 import requests
 from string import Template
 
+from django.utils import timezone
+
 log = logging.getLogger(__name__)
 
 BASE_URL = 'https://www.wikidata.org/w/api.php'
 WIKIDATA_URL = 'https://query.wikidata.org/sparql'
 
+PROVIDER_NAME = 'wikimedia'
+SOURCE_NAME = 'wikimedia'
+
 LICENSE_VERSION = "1.0"
 LICENSE_URL = "https://creativecommons.org/publicdomain/zero/1.0/"
+
+from imageledger.handlers.utils import *
 
 # TODO: Cache these results since we're paginating ourselves
 MAX_LIMIT = 100  # The total number of results we'll ever ask for
@@ -35,9 +42,8 @@ def entity_search(search):
 def prepare_sparql_query(entity_id, limit):
     return image_query.substitute(entity_id=entity_id, limit=MAX_LIMIT)
 
-def photos(search=None, page=1, per_page=20, **kwargs):
+def photos(search=None, page=1, per_page=200, **kwargs):
     r = entity_search(search)
-
     if r.get('search') and len(r.get('search')) > 0:
         # Take the first representation, as that's likely to be the best
         entity = r.get('search')[0]
@@ -58,6 +64,39 @@ def photos(search=None, page=1, per_page=20, **kwargs):
         results['results'] = results['results'][offset:offset + per_page]
         return results
 
+def walk(page=1, per_page=100):
+    """Walk through a set of search results and collect items to serialize"""
+
+    has_more = True
+    while has_more:
+        for tag in models.Tag.objects.all():
+            log.debug("Searching for results for tag %s", tag.name)
+            results = photos(search=tag.name, page=page, per_page=per_page)
+            if results:
+                for result in results['results']:
+                    yield result
+                time.sleep(2)
+
+def serialize(result):
+    url = result['pic']['value']
+    thumbnail = url
+    image = models.Image(url=url)
+    image.provider = PROVIDER_NAME
+    image.source = SOURCE_NAME
+    if not result.get('creatorLabel'):
+        return
+    image.creator = result['creatorLabel']['value']
+    image.license = "CC0"
+    image.license_version = "1.0"
+    image.foreign_landing_url = result['item']['value']
+    image.foreign_identifer = result['itemLabel']['value']
+    image.title = result['itemLabel']['value']
+    if result.get('creator') and result['creator']['type'] == 'uri':
+        image.creator_url = result['creator']['value']
+    image.identifier = signals.create_identifier(image.url)
+    image.last_synced_with_source = timezone.now()
+    log.debug("Returning image with url %s", url)
+    return image
 
 # Q146 is the identifier for 'cat', we have to look that up first
 # Paris: Q90 (doesn't work as an 'instance of' search, since it's already an entity)
@@ -73,12 +112,12 @@ PREFIX pq: <http://www.wikidata.org/prop/qualifier/>
 PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 PREFIX bd: <http://www.bigdata.com/rdf#>
 
-SELECT ?item ?itemLabel ?pic
+SELECT ?item ?itemLabel ?creatorLabel ?pic ?creator
 WHERE
 {
     # Select either "instance of" (for general categories like animals...)
-	{?item wdt:P31 wd:$entity_id .}
-    UNION
+	#{?item wdt:P31 wd:$entity_id .}
+    #UNION
     # Or "depictions of", as in art
 	{?item wdt:P180 wd:$entity_id .}
 
@@ -90,6 +129,10 @@ WHERE
 
     # Get the date this is from ...
     OPTIONAL { ?item wdt:P571 ?_inception. }
+
+    # Creator, optional
+    OPTIONAL { ?item wdt:P170 ?creator}
+
 }
 # Then order by it, most recent first (this gives best results)
 ORDER BY DESC(?_inception)

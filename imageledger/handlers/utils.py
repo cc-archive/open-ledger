@@ -2,6 +2,8 @@ import itertools
 import logging
 import time
 
+from django.conf import settings
+
 from django.db.utils import IntegrityError
 import elasticsearch
 import requests
@@ -40,7 +42,8 @@ def insert_image(walk_func, serialize_func, chunk_size, max_results=5000):
             if len(images) > 0:
                 try:
                     # Bulk update the search engine too
-                    es.cluster.health(wait_for_status='green', request_timeout=2000)
+                    if not settings.DEBUG:
+                        es.cluster.health(wait_for_status='green', request_timeout=2000)
                     search_objs = [search.db_image_to_index(img).to_dict(include_meta=True) for img in images]
                     elasticsearch.helpers.bulk(es, search_objs)
                     models.Image.objects.bulk_create(images)
