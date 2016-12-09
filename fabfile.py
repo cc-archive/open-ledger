@@ -87,6 +87,11 @@ DATASOURCES = {
         'action': 'load-from-provider',
         'provider': '500px',
     },
+    'wikimedia': {
+        'name': 'load-wikimedia',
+        'action': 'load-from-provider',
+        'provider': 'wikimedia',
+    },
     'sync': {
         'action': 'sync',
         'name': 'sync',
