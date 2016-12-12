@@ -185,7 +185,7 @@ CAS_CREATE_USER = True
 # These providers are current loaded
 WORK_TYPES = {
     'photos': ['flickr', '500px'],
-    'cultural': ['rijksmuseum', 'nypl']
+    'cultural': ['rijksmuseum', 'nypl', 'wikimedia']
 }
 PROVIDERS = {
     'flickr': {'display_name': 'Flickr',
@@ -197,6 +197,9 @@ PROVIDERS = {
              'url': 'http://digitalcollections.nypl.org/'},
     '500px': {'display_name': '500px',
               'url': 'https://500px.com/'},
+    'wikimedia': {'display_name': 'Wikimedia Commons',
+                  'url': 'https://commons.wikimedia.org'
+                  },
 }
 
 try:
