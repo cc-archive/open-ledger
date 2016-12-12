@@ -1,5 +1,6 @@
 import logging
 from urllib.parse import parse_qs
+from pprint import pprint
 
 import requests
 from requests_oauthlib import OAuth1Session, OAuth1
@@ -51,6 +52,7 @@ def photos(search=None, licenses=["ALL"], page=1, per_page=20, extra={}, **kwarg
     }
     params.update(extra)
     r = requests.get(ENDPOINT_PHOTOS, params=params, auth=auth())
+    assert r.status_code == 200
     return r.json()
 
 def serialize(result):
@@ -80,7 +82,7 @@ def walk(page=1, per_page=100):
     has_more = True
     while has_more:
         results = photos(page=page, per_page=per_page, extra={'sort': 'created_at'})
-        for result in results['photos']:
+        for result in results.get('photos'):
             yield result
         page += 1
         time.sleep(2)
