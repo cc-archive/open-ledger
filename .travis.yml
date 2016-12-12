@@ -9,5 +9,9 @@ install:
 script: python manage.py test
 services:
   - postgresql
+  - elasticsearch
 before_script:
   - psql -c 'create user deploy with superuser;' -U postgres
+  - sleep 10
+before_install:
+  - curl -O https://download.elastic.co/elasticsearch/release/org/elasticsearch/distribution/deb/elasticsearch/2.3.0/elasticsearch-2.3.0.deb && sudo dpkg -i --force-confnew elasticsearch-2.3.0.deb && sudo service elasticsearch restart

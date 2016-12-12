@@ -2,6 +2,21 @@ from openledger.settings import *
 
 STATICFILES_STORAGE = 'django.contrib.staticfiles.storage.StaticFilesStorage'
 SECRET_KEY = 'SECRET_KEY_FOR_TESTING'
+
+API_500PX_KEY = 'TESTING'
+API_500PX_SECRET = 'TESTING'
+
+API_RIJKS = 'TESTING'
+NYPL_KEY = 'TESTING'
+FLICKR_KEY = 'TESTING'
+FLICKR_SECRET = 'TESTING'
+
+ELASTICSEARCH_URL = 'localhost'
+ELASTICSEARCH_PORT = 9200
+
+AWS_ACCESS_KEY_ID = "TESTING"
+AWS_SECRET_ACCESS_KEY = "TESTING"
+
 ALLOWED_HOSTS = ['localhost']
 DATABASES = {
     'default': {

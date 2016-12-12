@@ -122,10 +122,9 @@ class TestSearch(TestCase):
 
     def test_search_no_results(self):
         """It should be possible to get a no-results page"""
-
         resp = self.client.get(self.url, {'search': 'nothing'})
         p = select_node(resp, '.t-no-results')
-        assert p is not ()
+        assert p is not None
 
     def test_search_results(self):
         """If indexed, a single result should be returned from the search engine"""
@@ -201,3 +200,11 @@ class TestSearch(TestCase):
         s = self.s.query(Q("match", title="removed"))
         r = s.execute()
         assert 0 == r.hits.total
+
+    def test_search_with_punctuation(self):
+        """[#39] Searches with punctuation should not error"""
+        self._index_img(self.img1)
+        resp = self.client.get(self.url, {'search': 'A+'})
+        self.assertEqual(200, resp.status_code)
+        p = select_node(resp, '.t-no-results')
+        assert p is not None
