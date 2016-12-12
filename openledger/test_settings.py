@@ -3,6 +3,16 @@ from openledger.settings import *
 STATICFILES_STORAGE = 'django.contrib.staticfiles.storage.StaticFilesStorage'
 SECRET_KEY = 'SECRET_KEY_FOR_TESTING'
 ALLOWED_HOSTS = ['localhost']
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'openledger',
+        'USER': 'deploy',
+        'PASSWORD': 'deploy',
+        'HOST': 'localhost',
+        'PORT': 5432,
+    }
+}
 LOGGING = {
      'version': 1,
      'disable_existing_loggers': False,
