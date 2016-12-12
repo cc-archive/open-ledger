@@ -9,3 +9,5 @@ install:
 script: python manage.py test
 services:
   - postgresql
+before_script:
+  - psql -c 'create user deploy with superuser;' -U postgres
