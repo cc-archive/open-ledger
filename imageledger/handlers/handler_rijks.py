@@ -64,7 +64,7 @@ def serialize(result):
     image.source = SOURCE_NAME
     image.creator = result['principalOrFirstMaker']
     image.thumbnail = thumbnail
-    image.license = "CC0"
+    image.license = "cc0"
     image.license_version = '1.0'
     image.foreign_landing_url = result['links']['web']
     image.foreign_identifier = result['webImage']['guid']

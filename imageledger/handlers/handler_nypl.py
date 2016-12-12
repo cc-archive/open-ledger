@@ -63,7 +63,7 @@ def import_from_file(from_file):
                 if 'contributorName' in result.get('contributor')[0]:
                     image.creator = result['contributor'][0]['contributorName']
             image.thumbnail = thumbnail
-            image.license = "CC0"
+            image.license = "cc0"
             image.license_version = '1.0'
             image.foreign_landing_url = result['digitalCollectionsURL']
             image.foreign_identifier = result['UUID']

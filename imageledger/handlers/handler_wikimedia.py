@@ -86,7 +86,7 @@ def serialize(result):
     if not result.get('creatorLabel'):
         return
     image.creator = result['creatorLabel']['value']
-    image.license = "CC0"
+    image.license = "cc0"
     image.license_version = "1.0"
     image.foreign_landing_url = result['item']['value']
     image.foreign_identifer = result['itemLabel']['value']
