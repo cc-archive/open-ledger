@@ -46,7 +46,7 @@ class Image(DocType):
     removed_from_source = Boolean()
 
     class Meta:
-        index = "openledger"
+        index = settings.ELASTICSEARCH_INDEX
 
 def db_image_to_index(db_image):
     """Map an Image record to a record in the ESL DSL."""

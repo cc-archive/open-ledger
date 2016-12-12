@@ -3,7 +3,6 @@ import logging
 import time
 
 from django.conf import settings
-
 from django.db.utils import IntegrityError
 import elasticsearch
 import requests
@@ -28,7 +27,7 @@ def insert_image(walk_func, serialize_func, chunk_size, max_results=5000):
     es = search.init()
     search.Image.init()
     mapping = search.Image._doc_type.mapping
-    mapping.save('openledger')
+    mapping.save(settings.ELASTICSEARCH_INDEX)
 
     for chunk in grouper_it(chunk_size, walk_func()):
         if count >= max_results:

@@ -26,7 +26,7 @@ search_funcs = {
 
 @ensure_csrf_cookie
 def index(request):
-    s = Search()
+    s = Search(index=settings.ELASTICSEARCH_INDEX)
     form = forms.SearchForm(request.GET)
     results = search.Results(page=1)
 

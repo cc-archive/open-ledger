@@ -80,7 +80,7 @@ def do_index(start, chunk_size):
             es.cluster.health(wait_for_status='green', request_timeout=2000)
         search.Image.init()
         mapping = search.Image._doc_type.mapping
-        mapping.save('openledger')
+        mapping.save(settings.ELASTICSEARCH_INDEX)
 
     except (requests.exceptions.ReadTimeout, elasticsearch.exceptions.TransportError) as e:
         log.warn("Skipping batch and retrying after wait")

@@ -181,6 +181,7 @@ CAS_SERVER_URL = "https://login.creativecommons.org"
 CAS_LOGOUT_COMPLETELY = False
 CAS_CREATE_USER = True
 
+ELASTICSEARCH_INDEX = "openledger"
 
 # These providers are current loaded
 WORK_TYPES = {

@@ -113,7 +113,7 @@ def insert_image(chunk_size, max_results=5000, from_file=None):
     es = search.init()
     search.Image.init()
     mapping = search.Image._doc_type.mapping
-    mapping.save('openledger')
+    mapping.save(settings.ELASTICSEARCH_INDEX)
 
     for chunk in grouper_it(chunk_size, import_from_file(from_file)):
         if not from_file and count >= max_results:  # Load everything if loading from file

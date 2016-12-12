@@ -9,7 +9,6 @@ from elasticsearch import Elasticsearch
 from elasticsearch.client import ClusterClient
 from elasticsearch_dsl import Search, Q, Index
 from elasticsearch_dsl.connections import connections
-from testing.elasticsearch import ElasticSearchServer
 import responses
 
 from imageledger import search, forms, signals
@@ -29,31 +28,12 @@ class TestSearch(TestCase):
     es_host = None
     es_port = None
 
-    @classmethod
-    def setUpClass(cls):
-        super().setUpClass()
-        cls.search_server = ElasticSearchServer(config={
-            'logger.level': 'ERROR',
-            'index.store.type': 'mmapfs',
-            'index.number_of_shards': 1,
-            'index.number_of_replicas': 0,
-        })
-        cls.search_server.start()
-        cls.es_host = cls.search_server._bind_host
-        cls.es_port = cls.search_server._bind_port
-
-    @classmethod
-    def tearDownClass(cls):
-        cls.search_server.stop()
-
     def setUp(self):
         super().setUp()
-        with self.settings(ELASTICSEARCH_URL=TestSearch.es_host,
-                           ELASTICSEARCH_PORT=TestSearch.es_port):
-
-                           self.es = search.init_es()
-                           connections.add_connection('default', self.es)
-                           self.s = Search()
+        self.es = search.init_es()
+        connections.add_connection('default', self.es)
+        self.s = Search(index=settings.ELASTICSEARCH_INDEX)
+        search.Image.init()
 
         self.img1 = models.Image(title='greyhounds are fast',
                                  creator="Rashid",
@@ -76,12 +56,11 @@ class TestSearch(TestCase):
 
 
     def tearDown(self):
-        index = Index('openledger')
+        index = Index(settings.ELASTICSEARCH_INDEX)
         index.delete(ignore=404)
 
     def _index_img(self, img):
         """Index a single img and ensure that it's been propagated to the search engine"""
-        search.Image.init()
         image = search.db_image_to_index(img)
         image.save()
         self.es.indices.refresh(force=True)
@@ -91,17 +70,15 @@ class TestSearch(TestCase):
         q = Q("match", title="greyhounds")
         s = self.s.query(q)
         r = s.execute()
-        assert 0 == r.hits.total  # We haven't indexed anything, so no results are expected
+        self.assertEqual(0, r.hits.total)  # We haven't indexed anything, so no results are expected
 
     def test_store(self):
         """It should be possible to index a database item"""
-        search.Image.init()
         image = search.db_image_to_index(self.img1)
         image.save()
 
     def test_retrieve(self):
         """It should be possible to retrieve a database item by auto-id"""
-        search.Image.init()
         image = search.db_image_to_index(self.img1)
         image.save()
         id_ = image.meta.id
@@ -113,7 +90,7 @@ class TestSearch(TestCase):
         self._index_img(self.img1)
         s = self.s.query(Q("match", title="greyhounds"))
         r = s.execute()
-        assert 1 == r.hits.total
+        self.assertEquals(1, r.hits.total)
 
     def test_search_view(self):
         """It should be possible to load the search view"""
@@ -131,7 +108,7 @@ class TestSearch(TestCase):
         self._index_img(self.img1)
         resp = self.client.get(self.url, {'search': 'greyhounds', 'search_fields': 'title'})
         p = select_nodes(resp, '.t-image-result')
-        assert 1 == len(p)
+        self.assertEquals(1, len(p))
         assert select_node(resp, '.t-no-results') is None
 
 
@@ -191,7 +168,7 @@ class TestSearch(TestCase):
         self._index_img(self.removed)
         s = self.s.query(Q("match", title="removed"))
         r = s.execute()
-        assert 1 == r.hits.total
+        self.assertEquals(1, r.hits.total)
         with responses.RequestsMock() as rsps:
             rsps.add(responses.HEAD, FOREIGN_URL + TEST_IMAGE_REMOVED, status=404)
             self.removed.sync()
@@ -199,7 +176,7 @@ class TestSearch(TestCase):
         self.es.indices.refresh(force=True)
         s = self.s.query(Q("match", title="removed"))
         r = s.execute()
-        assert 0 == r.hits.total
+        self.assertEquals(0, r.hits.total)
 
     def test_search_with_punctuation(self):
         """[#39] Searches with punctuation should not error"""
