@@ -41,7 +41,7 @@
         {% if image.provider %} via {{ image.displayable_provider|safe }} {% endif %}
       </li>
     </ul>
-    {% if image.tags.count() > 0 %}
+    {% if image.tags and image.tags.count() > 0 %}
     <div class="system-tags-container">
       <h4>Tags</h4>
       {% for tag in image.tags.all() %}
