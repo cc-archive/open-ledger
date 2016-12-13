@@ -12,3 +12,4 @@ django
 django-cas-ng
 djangorestframework
 django-filter
+newrelic
