@@ -192,7 +192,8 @@ def load_data_from_instance(instance):
                 FLICKR_SECRET=FLICKR_SECRET,
                 LOG_FILE=LOG_FILE,
                 NYPL_KEY=NYPL_KEY,
-                DJANGO_SECRET_KEY=os.environ.get('DJANGO_SECRET_KEY')
+                DJANGO_SECRET_KEY=os.environ.get('DJANGO_SECRET_KEY'),
+                NEW_RELIC_LICENSE_KEY=os.environ.get('NEW_RELIC_LICENSE_KEY'),
                 ):
 
                 env.datasource['flags'] = env.flags
