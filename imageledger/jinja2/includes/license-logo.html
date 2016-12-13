@@ -4,9 +4,7 @@
 {% endif %}
 {# Temporary fix for data bug #112 #}
 {% for license in l.split('-') %}
-  {% if license.startswith("('") %}
-    {% set license = license.replace("('", "").replace("',)", "") %}
-  {% endif %}
+  {% set license = license.replace("('", "").replace("',)", "") %}
   <img src="{{ static ('images/' + license.lower() + '.svg') }}" alt="{{ license.upper() }}" title="{{ license }}" class="license-logo" />
 {% endfor %}
 
