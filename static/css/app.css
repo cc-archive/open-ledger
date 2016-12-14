@@ -154,8 +154,7 @@ h5 {
       font-size: 1rem;
       line-height: 1rem;
       box-shadow: none;
-      margin: 0;
-      padding: 0; }
+      margin: 0; }
       @media (min-width: 1200px) {
         .search-form .search-field-container input[type=text] {
           border-left: none; } }
