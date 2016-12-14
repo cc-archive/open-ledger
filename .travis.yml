@@ -1,25 +1,25 @@
 language: python
 python:
-  - "3.4"
+- '3.4'
 sudo: false
 addons:
   apt:
     sources:
-      - elasticsearch-2.x
+    - elasticsearch-2.x
     packages:
-      - elasticsearch
-cache:
-  bundler
-# command to install dependencies
+    - elasticsearch
+cache: bundler
 install:
-  - pip install -r requirements.txt
-  - pip install -r requirements-test.txt
-# command to run tests
+- pip install -r requirements.txt
+- pip install -r requirements-test.txt
 script:
-  - elasticsearch -d --default.path.conf=imageledger/tests/elasticsearch
-  - sleep 20
-  - python manage.py test
+- elasticsearch -d --default.path.conf=imageledger/tests/elasticsearch
+- sleep 20
+- python manage.py test
 services:
-  - postgresql
+- postgresql
 before_script:
-  - psql -c 'create user deploy with superuser;' -U postgres
+- psql -c 'create user deploy with superuser;' -U postgres
+notifications:
+  slack:
+    secure: o4VCZ5u1KPvm+1HwL5vWAFCVv57u5ILNOIqUUwUpfiLuItwcObindwHBKeBMYmXC3J5hSz/pwRT1jR1dT58PfIVnAau5v10uadVNL1s01Gy/2VfYun4oBZRRuhMOAIDmIMSemx16FgbY08IabcHqt+rZQ4dfezXN2Jr82xNrnFeS5dqMNMx/YiFstdJ7jYOYzM0qGYKOvk74AxZWGnc9FsJgnxHkGybjEtE9tlkA4+rPHylQ5zoo3B4KX6N/9XYVONzwqIGRJl2Uv1G1i5bwKXiENEzwRX9FLB1kXyFyTZ1C0P1s+yMx6KnE6rv4XkstNbeOwMSbis0hDWgoYIp2A1vdd5FHF21DlH1pXRf+xA/hs4dfXfKC22OK1MvEO8eOQ71rBO/TD0Jf4ZsEtIH/SysTGRyDWyBEacPHUG+od2E5A3sLsF1HGEerInZNvjIndBRgMUoSBx0Qwm5YYssURNQ+o7jc6hqf+DdVsfXx9QMpGKPrpEpg8WbA9r/43zp4TeR7bLknxrV7Ef/dQbio5ucxfbemfDdXaubff6i3ZYftyP+MxIguCE8de51CzXqWNZgy/8WKzIpflOyrWyM6WRLbZjOYOyH0nI1dxyktx4kFkbXMd9t/p/nygMREWVK6R1OLi4Wl1oPjiu96sA2trwwa9NzPEsf1J7K3mBrRS2s=

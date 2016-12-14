@@ -17,6 +17,10 @@ urlpatterns = [
     url(r'^accounts/logout$', cas_logout, name='cas_ng_logout'),
     url(r'^accounts/callback$', cas_callback, name='cas_ng_proxy_callback'),
 
+    # Other auth-related pages
+    url(r'^accounts/profile$', site_views.profile, name="profile"),
+    url(r'^accounts/delete$', site_views.delete_account, name="delete-account"),
+
     # Lists (public)
     url(r'list/(?P<slug>[^/]+)$', list_views.OLListDetail.as_view(), name='list-detail'),
 
@@ -35,6 +39,8 @@ urlpatterns = [
 
     # About and other static pages
     url(r'about$', site_views.about, name='about'),
+
+
 ]
 
 apipatterns = [

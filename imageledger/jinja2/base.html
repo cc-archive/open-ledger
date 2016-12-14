@@ -49,7 +49,7 @@
               </li>
             {% else %}
               <li class="username">
-                {{ request.user.username }}
+                <a href="{{ url('profile') }}">Your account</a>
               </li>
               <li>
                 <a href="{{ url('cas_ng_logout') }}">Sign out</a>

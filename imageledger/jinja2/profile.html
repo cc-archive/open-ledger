@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+
+{% block body %}
+
+<div class="row column profile">
+
+  <h3>Your account</h3>
+  <p>
+    You have
+    <a href="{{ url('my-lists') }}">{{ counts.lists }} list{{ counts.lists|pluralize}}</a>,
+    <a href="{{ url('my-tags') }}">{{ counts.tags }} tag{{ counts.tags|pluralize}}</a>, and
+    {{ counts.favorites }} favorite{{ counts.favorites|pluralize }}</a>.
+  </p>
+
+  <div class="callout alert">
+    <p>
+      If you'd like to delete your account and all of your personal information:
+    </p>
+
+    <form action="{{ url('delete-account') }}" method="post">
+        {{ csrf_input }}
+        <input type="submit" name="submit" value="Delete my account" class="button alert"
+        onClick="return confirm('Are you sure your want to permanently delete your account?')" />
+    </form>
+    <p>
+      Deleting your account cannot be undone. All Lists, Favorites, and user-created Tags will be
+      destructively deleted.
+    </p>
+  </div>
+</div>
+
+{% endblock body %}
