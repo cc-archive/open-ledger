@@ -1,5 +1,7 @@
 # Open Ledger prototype
 
+<img src="https://travis-ci.org/creativecommons/open-ledger.svg?branch=master" alt="build-status" />
+
 This is an in-progress prototype for a consolidated "front-door" to the
 Commons of visual imagery. The project has two near-term goals:
 
