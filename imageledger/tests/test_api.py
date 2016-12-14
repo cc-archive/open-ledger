@@ -509,3 +509,16 @@ class TestAPIViews(TestImageledgerApp):
 
         resp = self.req.get('/api/v1/autocomplete/tags', {'name': 'zero'})
         self.assertEqual(0, len(resp.json()))
+
+    def test_remove_trailing_whitespace_from_tags(self):
+        """[#110] Trailing whitespace should not be included in tags"""
+        self.req.force_login(self.user)
+        tagname = 'newtag'
+        img = models.Image.objects.create(url="example.com", license="CC0")
+        self.assertEqual(0, models.UserTags.objects.filter(user=self.user, image=img, tag__name=tagname).count())
+        resp = self.req.post('/api/v1/images/tags', {'identifier':  img.identifier,
+                                                     'tag': " " + tagname + " "})
+
+        self.assertEqual(201, resp.status_code)
+        self.assertEqual(1, models.Tag.objects.filter(name=tagname, source='user').count())
+        self.assertEqual(1, models.UserTags.objects.filter(user=self.user, image=img, tag__name=tagname).count())

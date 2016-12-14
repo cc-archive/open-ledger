@@ -91,6 +91,12 @@ Install header files and other dependencies. On Ubuntu:
 sudo apt install libpq-dev python3-dev postgresql-client-common postgresql-contrib
 ```
 
+On macOS:
+
+```
+brew install postgres
+```
+
 Database setup should be similar to:
 ```
 $ sudo -u postgres psql
@@ -101,6 +107,15 @@ postgres=# create database openledger;
 CREATE DATABASE
 postgres=# GRANT ALL PRIVILEGES ON DATABASE openledger to XXX;
 GRANT
+```
+
+For a development account, you'll want a `deploy` user with superuser privileges, so that
+it can create and destroy test tables.  Example on macOS:
+
+```
+$ psql -t template1
+postgres=# CREATE USER deploy WITH SUPERUSER;
+postgres=# CREATE DATABASE openledger;
 ```
 
 Per usual Django instructions, install the database tables:
