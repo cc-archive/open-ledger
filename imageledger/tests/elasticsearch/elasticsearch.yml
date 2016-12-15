@@ -138,3 +138,4 @@ path.logs: /tmp/elasticsearch-logs/
 # Require explicit names when deleting indices:
 #
 # action.destructive_requires_name: true
+max_query_size: 10000

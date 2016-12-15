@@ -35,6 +35,7 @@ class TestSearch(TestCase):
         self.s = Search(index=settings.ELASTICSEARCH_INDEX)
         search.Image.init()
 
+        self.es.cluster.health(wait_for_status='yellow', request_timeout=2000)
         self.img1 = models.Image(title='greyhounds are fast',
                                  creator="Rashid",
                                  url='http://example.com/1',
