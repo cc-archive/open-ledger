@@ -234,8 +234,7 @@ a.license-link, a.license-link:hover {
   position: absolute;
   left: -10px;
   padding: 10px;
-  background: white;
-  box-shadow: 0px 10px 36px -9px rgba(0, 0, 0, 0.58); }
+  background: white; }
 .image-result form {
   display: inline-block; }
 
@@ -247,7 +246,9 @@ a.license-link, a.license-link:hover {
     list-style-type: none;
     border-bottom: 1px solid #e6e6e6;
     padding: .5rem;
-    color: #969696; }
+    color: #969696;
+    background-color: white;
+    box-shadow: 0px 10px 36px -9px rgba(0, 0, 0, 0.58); }
     .autocomplete li.hover {
       background-color: #e6e6e6; }
 
