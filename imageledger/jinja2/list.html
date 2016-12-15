@@ -9,8 +9,8 @@
   <form action="{{ url('my-list-update', object.slug) }}" method="POST" class="list-edit-form">
    {{ csrf_input }}
     <h2 class="list-title">
-      <div class="form-readonly">
-        <a class="t-list-title" onClick="openledger.form.showFormElements(event)" title="Edit this List">{{ object.title }}</a>
+      <div class="form-readonly t-list-title">
+        {{ object.title }}
         <a onClick="openledger.form.showFormElements(event)" class="fi-page-edit" title="Edit this List"></a>
       </div>
       <label for="title">{{ form.title.label }}</label>

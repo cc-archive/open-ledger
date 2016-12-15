@@ -197,6 +197,8 @@ a.license-link, a.license-link:hover {
     .list-iterator .list-iterable .list-dates {
       font-size: smaller;
       font-style: italic; }
+    .list-iterator .list-iterable .list-title a, .list-iterator .list-iterable .list-title a:hover {
+      text-decoration: none !important; }
 
 /* List creation features */
 .add-to-list-container .add-to-list {

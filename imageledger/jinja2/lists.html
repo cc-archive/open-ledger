@@ -14,8 +14,9 @@
 
     {% for lst in object_list %}
       <div class="list-iterable">
-        <h3>{{ lst.title }}
-          <a href="{{ lst.get_absolute_url() }}" class="fi-page-edit" title="Edit this List" alt="Edit this list"></a>
+        <h3 class="list-title">
+          <a href="{{ lst.get_absolute_url() }}" title="Edit this List">{{ lst.title }}</a>
+          <a href="{{ lst.get_absolute_url() }}" class="fi-page-edit" title="Edit this List"></a>
         </h3>
         <p class="list-dates">
           Created on {{ lst.created_on.strftime('%a, %d %b %Y') }}, last updated {{ lst.updated_on.strftime('%d %b %Y')}}
@@ -33,7 +34,7 @@
               <button class="button alert tiny fi-page-delete"
                       title="Remove from List" alt="Remove from List"
                       onClick="openledger.list.deleteImageFromList(event)" />
-            </form> 
+            </form>
           {% endcall %}
         {% endfor %}
         </div>
