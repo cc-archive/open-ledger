@@ -344,6 +344,9 @@ figcaption {
   max-height: 200px;
   overflow: hidden; }
 
+.figure-metadata {
+  cursor: pointer; }
+
 .results {
   visibility: hidden; }
 

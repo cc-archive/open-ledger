@@ -9,6 +9,7 @@ export const showFormElements = function(e) {
 }
 
 const showForm = (form) => {
+  console.log("Calilng showform")
   for (var el of form.querySelectorAll('input')) {
     el.style.display = 'inherit'
   }

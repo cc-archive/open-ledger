@@ -3,9 +3,13 @@
 {% import "includes/favorite.html" as favorite %}
 
 {% macro show(detail_url, image, request) -%}
-<div class="grid-item image-result t-image-result" data-identifier="{{ image.identifier }}">
+<div class="grid-item image-result t-image-result" data-identifier="{{ image.identifier }}"
+      onClick="if (event.target === this) { location.href='{{ detail_url }}' } "
+      >
+
     <figure>
       <div class="figure-wrapper">
+
         <a href="{{ detail_url }}" class="t-detail-link">
           <img src="{{ image.thumbnail }}" />
         </a>
@@ -21,8 +25,9 @@
           {% endif %}
           </p>
 
-        <a href="{{ detail_url }}">
-          <div class="figure-metadata">
+          <div class="figure-metadata"
+              onClick="if (event.target === this) { location.href='{{ detail_url }}' } ">
+
             {{ license_logo.license(image.license) }}
             {% if image.identifier %}
               {{ lists.add(image, request, size="small") }}
@@ -34,7 +39,7 @@
             {% endif %}
 
           </div>
-        </a>
+
       </figcaption>
     </figure>
   </a>
