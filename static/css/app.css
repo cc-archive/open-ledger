@@ -183,6 +183,8 @@ a.license-link, a.license-link:hover {
   .list-detail .list-public {
     margin: 2rem 0;
     font-style: italic; }
+  .list-detail .list-title a, .list-detail .list-title a:hover {
+    text-decoration: none; }
 
 /* List listing page */
 .list-iterator {

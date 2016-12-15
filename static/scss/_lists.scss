@@ -15,7 +15,14 @@
     margin: 2rem 0;
     font-style: italic;
   }
+  .list-title {
+    a, a:hover {
+      text-decoration: none;
+    }
+
+  }
 }
+
 /* List listing page */
 .list-iterator {
   margin-top: 2rem;
