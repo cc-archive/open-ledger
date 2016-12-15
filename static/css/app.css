@@ -89,6 +89,9 @@ h5 {
 .attribution-button {
   width: 200px; }
 
+a.license-link, a.license-link:hover {
+  text-decoration: none; }
+
 .button {
   background-color: #049bce; }
   .button:hover {
