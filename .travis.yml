@@ -12,10 +12,12 @@ cache: bundler
 install:
 - pip install -r requirements.txt
 - pip install -r requirements-test.txt
+- npm install
 script:
 - elasticsearch -d --default.path.conf=imageledger/tests/elasticsearch
 - sleep 20
 - python manage.py test
+- npm test
 services:
 - postgresql
 before_script:
