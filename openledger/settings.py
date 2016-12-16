@@ -198,9 +198,10 @@ PROVIDERS = {
              'url': 'http://digitalcollections.nypl.org/'},
     '500px': {'display_name': '500px',
               'url': 'https://500px.com/'},
-    'wikimedia': {'display_name': 'Wikimedia Commons',
-                  'url': 'https://commons.wikimedia.org'
-                  },
+# Uncomment when ready
+#    'wikimedia': {'display_name': 'Wikimedia Commons',
+#                  'url': 'https://commons.wikimedia.org'
+#                  },
 }
 
 try:

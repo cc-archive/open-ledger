@@ -27,7 +27,7 @@ WORK_TYPES_DEFAULT = [wt[0] for wt in WORK_TYPES]
 
 # Providers (e.g. 'flickr')
 PROVIDER_CHOICES = sorted([(p, settings.PROVIDERS[p]['display_name'],) for p in settings.PROVIDERS])
-PROVIDER_DEFAULT = [p[0] for p in PROVIDER_CHOICES]
+PROVIDER_DEFAULT = []
 
 class SearchForm(forms.Form):
     initial_data = {'page': 1,
