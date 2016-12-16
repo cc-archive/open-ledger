@@ -40,6 +40,9 @@ const init = () => {
 document.addEventListener('DOMContentLoaded', () => {
   var results = document.querySelector('.results')
   if (results) {
+    var spinner = document.querySelector('.loading-spinner')
+    spinner.style.display = 'block'
+
     var imgLoad = imagesLoaded('.results')
     imgLoad.on('always', () => {
       // detect which image is broken
@@ -50,6 +53,7 @@ document.addEventListener('DOMContentLoaded', () => {
           parent.style.display = 'none'
         }
       }
+      spinner.style.display = 'none'
       results.style.visibility = 'visible'
       init()
     })

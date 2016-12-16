@@ -350,6 +350,12 @@ figcaption {
 .results {
   visibility: hidden; }
 
+.loading-spinner {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  display: none; }
+
 .grid {
   margin: 0 auto; }
   .grid .grid-item {

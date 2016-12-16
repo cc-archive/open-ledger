@@ -22,9 +22,11 @@
     {% endif %}
 
     {% if results.items %}
+
      {{ pagination.paginate_openledger(results.page, results.pages, form) }}
 
       <div class="grid">
+
         {% for result in results.items %}
 
           {% set detail_url = url('detail', result.identifier) %}
@@ -35,7 +37,8 @@
       {{ pagination.paginate_openledger(results.page, results.pages, form) }}
       {% endif %}
     {% endif %}
-  </div>
+</div>
 
+<img class="loading-spinner" src="{{ static('images/loading.svg') }}" />
 
 {% endblock %}
