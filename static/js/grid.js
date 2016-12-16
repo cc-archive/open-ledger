@@ -41,7 +41,10 @@ document.addEventListener('DOMContentLoaded', () => {
   var results = document.querySelector('.results')
   if (results) {
     var spinner = document.querySelector('.loading-spinner')
-    spinner.style.display = 'block'
+    if (document.querySelector('.image-result')) {
+      spinner.style.display = 'block'
+    }
+
 
     var imgLoad = imagesLoaded('.results')
     imgLoad.on('always', () => {
