@@ -183,6 +183,9 @@ CAS_CREATE_USER = True
 
 ELASTICSEARCH_INDEX = "openledger"
 
+# Search results per page
+RESULTS_PER_PAGE = 100
+
 # These providers are current loaded
 WORK_TYPES = {
     'photos': ['flickr', '500px'],

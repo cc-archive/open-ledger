@@ -55,7 +55,7 @@ def load_json_data(datafile):
 
 def select_node(resp, selector):
     """Give a response from the app, return just the HTML fragment defined by `selector`.
-    Guaranteed to return one node or an empty set."""
+    Guaranteed to return one node or None"""
     r = select_nodes(resp, selector)
     if r and len(r) > 0:
         return r[0]

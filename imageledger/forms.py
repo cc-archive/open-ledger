@@ -3,7 +3,6 @@ from django.conf import settings
 
 from imageledger import licenses, models
 
-PER_PAGE = 100
 PROVIDER_PER_PAGE = 20
 
 LICENSE_CHOICES = (
@@ -31,7 +30,7 @@ PROVIDER_DEFAULT = []
 
 class SearchForm(forms.Form):
     initial_data = {'page': 1,
-                    'per_page': PER_PAGE,
+                    'per_page': settings.RESULTS_PER_PAGE,
                     'search_fields': FIELD_DEFAULT,
                     'work_types': WORK_TYPES_DEFAULT,
                     'licenses': [licenses.DEFAULT_LICENSE],

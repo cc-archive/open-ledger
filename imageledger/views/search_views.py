@@ -27,6 +27,7 @@ search_funcs = {
 @ensure_csrf_cookie
 def index(request):
     s = Search(index=settings.ELASTICSEARCH_INDEX)
+    s = s.sort({'_score': {'order': 'desc'}})
     form = forms.SearchForm(request.GET)
     results = search.Results(page=1)
 
@@ -66,11 +67,11 @@ def index(request):
                   minimum_should_match=1)
             s = s.query(q)
             response = s.execute()
-            results.pages = int(int(response.hits.total) / forms.PER_PAGE)
+            results.pages = int(int(response.hits.total) / settings.RESULTS_PER_PAGE)
             results.page = form.cleaned_data['page'] or 1
-            start = results.page
-            end = start + forms.PER_PAGE - 1
-            for r in s[start - 1:end]:
+            start = (results.page - 1) * settings.RESULTS_PER_PAGE
+            end = start + settings.RESULTS_PER_PAGE
+            for r in s[start:end]:
                 results.items.append(r)
     else:
         form = forms.SearchForm(initial=forms.SearchForm.initial_data)
