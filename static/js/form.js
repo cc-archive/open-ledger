@@ -1,3 +1,7 @@
+/* When a new search is initiated, reset the page counter */
+export const resetSearchOnSubmit = (form) => {
+  form.elements["page"].value = 1
+}
 
 export const showFormElements = function(e) {
   var form = e.target.parentNode.parentNode.parentNode
@@ -9,7 +13,7 @@ export const showFormElements = function(e) {
 }
 
 const showForm = (form) => {
-  console.log("Calilng showform")
+
   for (var el of form.querySelectorAll('input')) {
     el.style.display = 'inherit'
   }

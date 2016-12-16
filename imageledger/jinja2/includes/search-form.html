@@ -1,4 +1,5 @@
-<form method="GET" action="{{ endpoint }}" class="search-form">
+<form method="GET" action="{{ endpoint }}" class="search-form"
+      onSubmit="openledger.form.resetSearchOnSubmit(this)">
   <div class="row">
     <div class="column medium-6 small-12">
       <p>
