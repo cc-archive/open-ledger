@@ -116,7 +116,7 @@ a.license-link, a.license-link:hover {
     margin: 0;
     line-height: 1rem;
     font-size: 0.5rem; }
-  .search-form .search-filters-license li {
+  .search-form .search-filters-license li, .search-form .search-filters-source li {
     display: block; }
   .search-form input {
     margin: 0; }

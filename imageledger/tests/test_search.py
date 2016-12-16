@@ -186,3 +186,45 @@ class TestSearch(TestCase):
         self.assertEqual(200, resp.status_code)
         p = select_node(resp, '.t-no-results')
         assert p is not None
+
+    def test_provider_selector_no_provider(self):
+        """[#122] All results should be returned if no providers are selected"""
+        img1 = models.Image.objects.create(url='example.com/1', title='hello', provider='flickr')
+        img2 = models.Image.objects.create(url='example.com/2', title='hello', provider='nypl')
+        self._index_img(img1)
+        self._index_img(img2)
+        resp = self.client.get(self.url, {'search_fields': 'title', 'search': 'hello'})
+        # Two results
+        self.assertEqual(2, len(select_nodes(resp, '.t-image-result')))
+        self.assertEqual(1, len(select_nodes(resp, '[data-identifier="' + img1.identifier + '"]')))
+        self.assertEqual(1, len(select_nodes(resp, '[data-identifier="' + img2.identifier + '"]')))
+
+    def test_provider_selector_with_provider(self):
+        """[#122] Filtering by providers should return only results from that provider"""
+        img1 = models.Image.objects.create(url='example.com/1', title='hello', provider='flickr')
+        img2 = models.Image.objects.create(url='example.com/2', title='hello', provider='nypl')
+        self._index_img(img1)
+        self._index_img(img2)
+        resp = self.client.get(self.url, {'search_fields': 'title', 'search': 'hello', 'providers': 'flickr'})
+        # One result, the correct one
+        self.assertEqual(1, len(select_nodes(resp, '.t-image-result')))
+        self.assertEqual(1, len(select_nodes(resp, '[data-identifier="' + img1.identifier +'"]')))
+        self.assertEqual(0, len(select_nodes(resp, '[data-identifier="' + img2.identifier +'"]')))
+
+    def test_work_types_dont_override_provider(self):
+        """[#122] Selecting work types should be a subset of providers, not override them"""
+        img1 = models.Image.objects.create(url='example.com/1', title='hello', provider='flickr')
+        img2 = models.Image.objects.create(url='example.com/2', title='hello', provider='nypl')
+        self._index_img(img1)
+        self._index_img(img2)
+
+        # Search by provider=flickr but work type=cultural should limit by Flickr first
+        resp = self.client.get(self.url, {'search_fields': 'title',
+                                          'search': 'hello',
+                                          'providers': 'flickr',
+                                          'work_types': 'cultural'})
+
+        # One result, the correct one
+        self.assertEqual(1, len(select_nodes(resp, '.t-image-result')))
+        self.assertEqual(1, len(select_nodes(resp, '[data-identifier="' + img1.identifier +'"]')))
+        self.assertEqual(0, len(select_nodes(resp, '[data-identifier="' + img2.identifier +'"]')))

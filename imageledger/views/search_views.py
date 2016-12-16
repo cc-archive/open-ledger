@@ -42,21 +42,24 @@ def index(request):
         if 'creator' in form.cleaned_data.get('search_fields'):
             or_queries.append(Q("match", creator=form.cleaned_data['search']))
 
-        # Work types must match
-        if 'photos' in form.cleaned_data.get('work_types'):
-            and_queries.append(
-                            Q('bool',
-                            should=[Q("term", provider=provider) for provider in settings.WORK_TYPES['photos']]
-                            ))
-        if 'cultural' in form.cleaned_data.get('work_types'):
-            and_queries.append(
-                            Q('bool',
-                            should=[Q("term", provider=provider) for provider in settings.WORK_TYPES['cultural']]
-                            ))
+        # Limit to explicit providers first, and then to work providers second, if provided.
+        # If provider is supplied, work providers is ignored. TODO revisit this logic as it
+        # could be confusing to end users
+        work_providers = set()
+        if form.cleaned_data.get('work_types'):
+            for t in form.cleaned_data.get('work_types'):
+                for p in settings.WORK_TYPES[t]:
+                    work_providers.add(p)
 
+        limit_to_providers = form.cleaned_data.get('providers') or work_providers
+
+        for provider in limit_to_providers:
+            and_queries.append(
+                            Q('bool',
+                            should=[Q("term", provider=provider)]
+                            ))
 
         if len(or_queries) > 0 or len(and_queries) > 0:
-
             q = Q('bool',
                   should=or_queries,
                   must=Q('bool', should=and_queries),
@@ -75,34 +78,6 @@ def index(request):
     return render(request, 'results.html',
                   {'form': form,
                    'results': results,})
-
-
-def provider_apis(request, provider=None):
-    """Search by passing queries through to provider apis"""
-    results = {}
-    form = forms.SearchForm(request.GET)
-    if form.is_valid():
-        for k in forms.SearchForm.initial_data:
-            if k not in form.cleaned_data or not form.cleaned_data[k]:
-                form.cleaned_data[k] = forms.SearchForm.initial_data[k]
-        for p in form.cleaned_data['providers']:
-            if p:
-                results[p] = search_funcs[p](search=form.cleaned_data['search'],
-                                             licenses=form.cleaned_data['licenses'],
-                                             page=form.cleaned_data['page'],
-                                             per_page=forms.PROVIDER_PER_PAGE)
-    else:
-        initial_data = forms.SearchForm.initial_data
-        form = forms.SearchForm(initial=initial_data)
-
-    return render(request, 'provider-results.html',
-                           {'form': form,
-                            'results': results,
-                            'license_map': licenses.license_map_from_partners()})
-
-
-def by_provider(request, provider):
-    return provider_apis(request, provider=provider)
 
 def by_image(request):
     """Load an image in detail view, passing parameters by query string so that

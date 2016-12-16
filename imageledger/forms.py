@@ -1,4 +1,5 @@
 from django import forms
+from django.conf import settings
 
 from imageledger import licenses, models
 
@@ -15,31 +16,26 @@ FIELD_CHOICES = (
     ('creator', 'Creator'),
     ('tags', 'Tags')
 )
+FIELD_DEFAULT = ['title', 'tags',]
 
-# Types of work
+# Types of works
 WORK_TYPES = (
     ('photos', 'Photographs'),
     ('cultural', 'Cultural works'),
 )
-WORK_TYPE_DEFAULT = [wt[0] for wt in WORK_TYPES]
-FIELD_DEFAULT = ['title', 'tags',]
+WORK_TYPES_DEFAULT = [wt[0] for wt in WORK_TYPES]
 
-PROVIDER_CHOICES = (
-    ('fpx', '500px'),
-    ('flickr', 'Flickr'),
-    ('rijks', 'Rijksmuseum'),
-    ('wikimedia', 'Wikimedia Commons'),
-)
-
-PROVIDERS_ALL = [p[0] for p in PROVIDER_CHOICES if p[0]]
+# Providers (e.g. 'flickr')
+PROVIDER_CHOICES = sorted([(p, settings.PROVIDERS[p]['display_name'],) for p in settings.PROVIDERS])
+PROVIDER_DEFAULT = [p[0] for p in PROVIDER_CHOICES]
 
 class SearchForm(forms.Form):
     initial_data = {'page': 1,
-                     'per_page': PER_PAGE,
-                     'search_fields': FIELD_DEFAULT,
-                     'work_types': ['photos', 'cultural'],
-                     'licenses': [licenses.DEFAULT_LICENSE],
-                     'providers': PROVIDERS_ALL}
+                    'per_page': PER_PAGE,
+                    'search_fields': FIELD_DEFAULT,
+                    'work_types': WORK_TYPES_DEFAULT,
+                    'licenses': [licenses.DEFAULT_LICENSE],
+                    'providers': PROVIDER_DEFAULT}
 
     search = forms.CharField(label='Search', max_length=1000)
     licenses = forms.MultipleChoiceField(label='License', choices=LICENSE_CHOICES, required=False,
@@ -49,7 +45,9 @@ class SearchForm(forms.Form):
     work_types = forms.MultipleChoiceField(label='Work type', choices=WORK_TYPES, required=False,
                                            widget=forms.CheckboxSelectMultiple)
     page = forms.IntegerField(widget=forms.HiddenInput, required=False)
-    providers = forms.MultipleChoiceField(widget=forms.CheckboxSelectMultiple, required=False, choices=PROVIDER_CHOICES)
+    providers = forms.MultipleChoiceField(widget=forms.CheckboxSelectMultiple,
+                                          required=False,
+                                          choices=PROVIDER_CHOICES)
     per_page = forms.IntegerField(widget=forms.HiddenInput, required=False)
 
 class ListForm(forms.ModelForm):

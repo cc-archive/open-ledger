@@ -1,29 +1,24 @@
 <form method="GET" action="{{ endpoint }}" class="search-form">
   <div class="row">
-    <div class="column medium-8 small-12">
-
-
-        <p>
-          Find images to use or remix from organizations and individuals
-          supporting open content:
-        </p>
+    <div class="column medium-6 small-12">
+      <p>
+        Find images to use or remix from organizations and individuals
+        supporting open content:
+      </p>
 
       <div class="search-field-container">
         <i class="fi-magnifying-glass"></i>
         {{ form.search }}
         {{ form.page }}
-        {% if endpoint.endswith('provider-apis') %}
-          {{ form.providers }}
-        {% endif %}
         {{ form.per_page }}
         <input type="submit" class="button" value="GO" />
       </div>
     </div>
-    <div class="column search-filters small-12 medium-4">
+    <div class="column search-filters small-12 medium-6">
 
       <div class="row">
 
-        <div class="column shrink search-filters-license">
+        <div class="column search-filters-license small-6">
           <fieldset>
             <legend>
               Find images I can...
@@ -31,23 +26,29 @@
             {{ form.licenses }}
           </fieldset>
         </div>
-        <div class="column shrink">
-          {% if not endpoint.endswith('provider-apis') %}
-            <fieldset>
-              <legend style="margin-right: 1rem">
-                Search within:
+        <div class="column small-6">
+          <fieldset>
+            <legend style="margin-right: 1rem">
+              Find these types of works:
+            </legend>
+            {{ form.work_types }}
+          </fieldset>
+        </div>
+        <div class="column small-6">
+          <fieldset>
+            <legend style="margin-right: 1rem">
+              Search within:
               </legend>
               {{ form.search_fields }}
             </fieldset>
-          </div>
-          <div class="column shrink">
-            <fieldset>
-              <legend style="margin-right: 1rem">
-                Find these types of works:
-              </legend>
-              {{ form.work_types }}
-            </fieldset>
-          {% endif %}
+        </div>
+        <div class="column small-6 search-filters-source">
+          <fieldset>
+            <legend>
+              From these sources:
+            </legend>
+            {{ form.providers }}
+          </fieldset>
         </div>
       </div>
     </div>
