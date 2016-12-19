@@ -1,6 +1,5 @@
 import Clipboard from 'clipboard'
 import attributions from './attributions'
-
 import * as list from './list'
 import * as form from './form'
 import * as grid from './grid'

@@ -3,15 +3,29 @@
 {% extends "base.html" %}
 
 {% block body %}
-<div class="row column list-my-lists list-iterator">
+<div class="row column list-my-lists list-iterator image-results">
 
 
-  <h2>My Lists</h2>
+  <h2>My Lists and Favorites</h2>
+  {% if favorites %}
+    <h3>Favorite images</h3>
+    <div class="row favorites-list">
+      {% for favorite in favorites %}
+        {% set detail_url = url('detail', favorite.image.identifier) %}
+        {% call image_result.show(detail_url, favorite.image, request) %}
+        {% endcall %}
+      {% endfor %}
+    </div>
+    <hr />
+  {% else %}
+  <p>
+    You haven't added any images as favorites.
+  </p>
+  {% endif %}
+
+
   {% if object_list %}
-    <p>
-        Lists of images that you've collected:
-    </p>
-
+    <h3>Lists</h3>
     {% for lst in object_list %}
       <div class="list-iterable">
         <h3 class="list-title">

@@ -70,3 +70,9 @@ class OLOwnedListList(LoginRequiredMixin, OwnedListMixin, ListView):
     model = models.List
     template_name = "lists.html"
     raise_exception = False
+
+    def get_context_data(self, **kwargs):
+        """Get the "list" of favorites as well"""
+        context = super().get_context_data(**kwargs)
+        context['favorites'] = models.Favorite.objects.filter(user=self.request.user)
+        return context

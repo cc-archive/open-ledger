@@ -137,18 +137,3 @@ class TestListViews(TestImageledgerApp):
         self.client.force_login(self.user)
         resp = self.client.get(reverse('my-list-update', kwargs={'slug': self.lst.slug}))
         self.assertRedirects(resp, reverse('list-detail', kwargs={'slug': self.lst.slug}))
-
-    def test_favorite_adds_to_list(self):
-        """[#75] When a Favorite is added, it should get or create a list for this user called Favorites"""
-        fave_list = models.List.objects.get(title=models.List.FAVORITE_LABEL, owner=self.user)
-        self.assertEquals(0, fave_list.images.count())
-        fave = models.Favorite.objects.create(image=self.img1, user=self.user)
-        self.assertEquals(1, fave_list.images.count())
-
-    def test_favorite_removed_from_list(self):
-        """[#75] When a Favorite is unfavorited, it should be removed from the Favorites list"""
-        fave_list = models.List.objects.get(title=models.List.FAVORITE_LABEL, owner=self.user)
-        fave = models.Favorite.objects.create(image=self.img1, user=self.user)
-        self.assertEquals(1, fave_list.images.count())
-        fave.delete()
-        self.assertEquals(0, fave_list.images.count())        

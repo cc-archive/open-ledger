@@ -45,8 +45,8 @@ document.addEventListener('DOMContentLoaded', () => {
       spinner.style.display = 'block'
     }
 
-
     var imgLoad = imagesLoaded('.results')
+
     imgLoad.on('always', () => {
       // detect which image is broken
       for (var i=0, len=imgLoad.images.length; i < len; i++) {

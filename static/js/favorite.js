@@ -1,8 +1,7 @@
 import 'whatwg-fetch'
-var _ = require('underscore')
 import * as Cookies from "js-cookie"
-
 import {API_BASE, HOST_PORT, HOST_URL} from './api'
+require('dom4') /* Activate polyfill for closest() */
 
 export const toggleFavorite = function (e) {
   e.stopPropagation()
@@ -16,7 +15,7 @@ export const toggleFavorite = function (e) {
 
   // If they aren't logged in, tell them to do so. We can improve the UI here later.
   if (document.body.dataset.loggedIn != 'True') {
-    alert("Please sign in to save this image to a list.")
+    alert("Please sign in to favorite this image.")
     return
   }
 
@@ -52,11 +51,17 @@ export const removeAsFavorite = (form) => {
   form.querySelector('button').classList.remove('success')
   form.querySelector('button').classList.add('secondary')
   form.dataset.isFavorite = 'False'
+
+  // If it's actually in the favorites list, also animate removing it
+  if (form.closest('.favorites-list')) {
+    form.closest('.image-result').classList.add('animated')
+    form.closest('.image-result').classList.add('zoomOut')
+  }
 }
 
 
 document.addEventListener('DOMContentLoaded', () => {
-  var results = document.querySelector('.results')
+  var results = document.querySelector('.image-results')
   let url = API_BASE + 'images/favorites'
 
   if (results && document.body.dataset.loggedIn === 'True') {

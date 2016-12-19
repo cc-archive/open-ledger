@@ -16,15 +16,10 @@ class TestAPIViews(TestImageledgerApp):
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
-        # Disconnect the special Favorites list signals
-        signals.post_save.disconnect(imageledger_signals.create_favorites_list, sender=settings.AUTH_USER_MODEL)
-        signals.post_save.disconnect(imageledger_signals.add_to_favorite_list, sender=models.Favorite)
 
     @classmethod
     def tearDownClass(cls):
         super().tearDownClass()
-        signals.post_save.connect(imageledger_signals.create_favorites_list, sender=settings.AUTH_USER_MODEL)
-        signals.post_save.connect(imageledger_signals.add_to_favorite_list, sender=models.Favorite)
 
     def setUp(self):
         self.req = APIClient()
