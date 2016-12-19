@@ -1,6 +1,6 @@
 import logging
 import re
-
+from django.core.cache import cache
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.http import require_POST
@@ -16,21 +16,21 @@ log = logging.getLogger(__name__)
 
 CACHE_STATS_DURATION = 60 * 60  # 1 hour
 
-@cache_page(CACHE_STATS_DURATION)
 def about(request):
     """Information about the current site, its goals, and what content is loaded"""
     # Provider counts
-    providers = []
-    for provider in sorted(settings.PROVIDERS.keys()):
-        s = Search()
-        q = Q('term', provider=provider)
-        s = s.query(q)
-        response = s.execute()
-        if response.hits.total > 0:
-            data = settings.PROVIDERS[provider]
-            total = intcomma(response.hits.total)
-            data.update({'hits': total})
-            providers.append(data)
+    providers = cache.get_or_set('providers-stats', [], CACHE_STATS_DURATION)
+    if not providers:
+        for provider in sorted(settings.PROVIDERS.keys()):
+            s = Search()
+            q = Q('term', provider=provider)
+            s = s.query(q)
+            response = s.execute()
+            if response.hits.total > 0:
+                data = settings.PROVIDERS[provider]
+                total = intcomma(response.hits.total)
+                data.update({'hits': total})
+                providers.append(data)
     return render(request, "about.html", {'providers': providers})
 
 @login_required
