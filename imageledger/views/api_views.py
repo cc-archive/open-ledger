@@ -144,10 +144,21 @@ class ListList(mixins.ListModelMixin,
         return self.list(request, *args, **kwargs)
 
     def post(self, request, *args, **kwargs):
-        serializer = ListSerializer(data=request.data)
+        data = request.data
+        data.update({'owner': request.user.pk})
+
+        # See if there's an existing one first
+        lst = models.List.objects.filter(title=request.data.get('title'),
+                                         owner=request.user).first()
+        if lst:
+            serializer = ListSerializer(lst, data=data)
+        else:
+            serializer = ListSerializer(data=data)
         if serializer.is_valid():
-            serializer.save(owner=request.user)
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
+            serializer.save()
+            status_code = status.HTTP_200_OK if lst else status.HTTP_201_CREATED
+            return Response(serializer.data, status=status_code)
+
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class ListAutocomplete(mixins.ListModelMixin,
@@ -187,7 +198,6 @@ class ListDetail(mixins.RetrieveModelMixin,
 
     def get(self, request, slug, **kwargs):
         lst = self.get_object()
-
         serializer = ListImageSerializer(lst, data=request.data, partial=True)
         if serializer.is_valid():
             return Response(serializer.data)

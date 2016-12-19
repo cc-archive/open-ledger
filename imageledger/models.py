@@ -162,9 +162,6 @@ class UserTags(OpenLedgerModel):
 
 
 class List(OpenLedgerModel):
-    # The label applied to a list which is auto-created from favorites
-    FAVORITE_LABEL = "Favorites"
-
     title = models.CharField(max_length=2000)
     creator_displayname = models.CharField(max_length=2000, blank=True, null=True)
     description = models.TextField(blank=True, null=True)
@@ -176,6 +173,7 @@ class List(OpenLedgerModel):
     class Meta:
         db_table = 'list'
         ordering = ['-updated_on']
+        unique_together = (('title', 'owner',))
 
     def get_absolute_url(self):
         return reverse('my-list-update', kwargs={'slug': self.slug})

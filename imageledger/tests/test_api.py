@@ -188,7 +188,7 @@ class TestAPIViews(TestImageledgerApp):
         self.assertEquals(200, resp.status_code)
         assert 2 == models.List.objects.filter(title='test').first().images.count()
 
-    def test_add_to_list_twice(self):
+    def test_add_image_to_list_twice(self):
         """The Lists/Image endpoint should gracefully ignore attempts to add the same image twice and return a 200"""
         lst = models.List.objects.create(title='test', owner=self.user)
         self.req.force_login(self.user)
@@ -201,6 +201,22 @@ class TestAPIViews(TestImageledgerApp):
 
         resp = self.req.put('/api/v1/lists/' + lst.slug, {'images': [{'identifier': img1.identifier}]})
         assert 1 == models.List.objects.filter(title='test').first().images.count()
+
+    def test_add_to_list_twice(self):
+        """[#125] The Lists/Image endpoint should collapse POST requests for the same List name"""
+        self.req.force_login(self.user)
+        img1 = models.Image.objects.create(title='image title', url='http://example.com/1', license='CC0')
+        img2 = models.Image.objects.create(title='image title', url='http://example.com/2', license='CC0')
+        title = 'test list'
+        resp = self.req.post('/api/v1/lists', {'title': title})
+        self.assertEquals(201, resp.status_code)
+        self.assertEquals(1, models.List.objects.filter(title=title).count())
+        lst = models.List.objects.get(title=title)
+
+        resp = self.req.post('/api/v1/lists', {'title': title})
+        self.assertEquals(200, resp.status_code)
+        self.assertEquals(1, models.List.objects.filter(title=title).count())
+
 
     def test_add_to_list_no_image(self):
         """The List/Image endpoint should return 404 if the user tries to add a nonexistent image"""
