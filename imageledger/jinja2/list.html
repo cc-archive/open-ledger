@@ -11,7 +11,7 @@
     <h2 class="list-title">
       <div class="form-readonly t-list-title">
         {{ object.title }}
-        <a onClick="openledger.form.showFormElements(event)" class="fi-page-edit" title="Edit this List"></a>
+        <a onClick="window.location.hash='#edit'" class="fi-page-edit" title="Edit this List"></a>
       </div>
       <label for="title">{{ form.title.label }}</label>
       {{ form.title }}

@@ -1,6 +1,7 @@
 import 'whatwg-fetch'
 var _ = require('underscore')
 import * as Cookies from "js-cookie"
+import {showFormElements} from './form'
 
 import {API_BASE, HOST_PORT, HOST_URL} from './api'
 
@@ -324,3 +325,25 @@ const cancelListModals = function (e) {
     }
   }
 }
+
+const openListForm = () => {
+  var form = document.querySelector('.list-edit-form')
+  showFormElements(form)
+}
+
+/* If accessed with the hash #edit, open in edit mode */
+document.addEventListener('DOMContentLoaded', () => {
+  var detail = document.querySelector('.list-detail')
+  if (detail) {
+    // Check for it onload
+    if (location.hash.substr(1) === 'edit') {
+      openListForm()
+    }
+    // Otherwise listen for the change
+    window.onhashchange = () => {
+      if (location.hash.substr(1) === 'edit') {
+        openListForm()
+      }
+    }
+  }
+})

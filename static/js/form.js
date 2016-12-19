@@ -3,13 +3,15 @@ export const resetSearchOnSubmit = (form) => {
   form.elements["page"].value = 1
 }
 
-export const showFormElements = function(e) {
-  var form = e.target.parentNode.parentNode.parentNode
+export const showFormElements = (form) => {
   showForm(form)
 
   // Do the same for the delete form
   var deleteForm = form.nextElementSibling
-  showForm(deleteForm)
+  if (deleteForm) {
+    showForm(deleteForm)
+  }
+
 }
 
 const showForm = (form) => {

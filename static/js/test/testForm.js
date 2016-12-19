@@ -24,20 +24,17 @@ describe('showForm', () => {
   }),
 
   it('shows any form field children when clicked', () => {
-    form.addEventListener('click', forms.showFormElements)
+
     assert('none' === form.querySelector('input').style.display)
     assert('none' === form.querySelector('textarea').style.display)
-    var a = form.querySelector('a')
-    a.click()
+    forms.showFormElements(form)
     assert('inherit' === form.querySelector('input').style.display)
     assert('inherit' === form.querySelector('textarea').style.display)
   }),
 
   it('hides any element with the `readonly` class', () => {
-    form.addEventListener('click', forms.showFormElements)
     assert('none' != form.querySelector('.form-readonly').style.display)
-    var a = form.querySelector('a')
-    a.click()
+    forms.showFormElements(form)
     assert('none' === form.querySelector('.form-readonly').style.display)
   })
 })
