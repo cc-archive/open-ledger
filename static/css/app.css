@@ -71,6 +71,8 @@ h5 {
       font-size: 25px; } }
 .about table th {
   text-align: left; }
+.about .provider-total {
+  font-weight: bold; }
 
 .metadata h4 {
   font-size: 1rem;

@@ -15,11 +15,12 @@ from imageledger import forms, search, licenses, models
 log = logging.getLogger(__name__)
 
 CACHE_STATS_DURATION = 60 * 60  # 1 hour
+CACHE_STATS_NAME = 'provider-stats'
 
 def about(request):
     """Information about the current site, its goals, and what content is loaded"""
     # Provider counts
-    providers = cache.get_or_set('providers-stats', [], CACHE_STATS_DURATION)
+    providers = cache.get_or_set(CACHE_STATS_NAME, [], CACHE_STATS_DURATION)
     if not providers:
         for provider in sorted(settings.PROVIDERS.keys()):
             s = Search()
@@ -31,6 +32,12 @@ def about(request):
                 total = intcomma(response.hits.total)
                 data.update({'hits': total})
                 providers.append(data)
+        # All results
+        s = Search()
+        response = s.execute()
+        total = intcomma(response.hits.total)
+        providers.append({'display_name': 'Total', 'hits': total})
+        cache.set(CACHE_STATS_NAME, providers)
     return render(request, "about.html", {'providers': providers})
 
 @login_required
