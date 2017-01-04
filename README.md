@@ -1,6 +1,6 @@
-# Open Ledger prototype
+# Creative Commons Search prototype
 
-<img src="https://travis-ci.org/creativecommons/open-ledger.svg?branch=master" alt="build-status" />
+<a href="https://travis-ci.org/creativecommons/open-ledger"><img src="https://travis-ci.org/creativecommons/open-ledger.svg?branch=master" alt="build-status" /></a>
 
 This is an in-progress prototype for a consolidated "front-door" to the
 Commons of visual imagery. The project has two near-term goals:
@@ -44,7 +44,7 @@ CommonsDB (see below), as well as direct API links to partners.
 
 ### CommonsDB
 
-This is the backing store for the overall Open Ledger project: our own
+This is the backing store for the overall CC Search project: our own
 collection of metadata about known CC (and later, PD) works, collected in
 partnership with content providers and in methods consistent with their
 terms of service. (We intend to store only metadata, not actual content
@@ -124,7 +124,7 @@ Per usual Django instructions, install the database tables:
 python manage.py migrate
 ```
 
-Open Ledger uses the database for caching at this time, so install those tables as well (migration don't install them automatically):
+CC Search uses the database for caching at this time, so install those tables as well (migration don't install them automatically):
 
 ```
 python manage.py createcachetable
