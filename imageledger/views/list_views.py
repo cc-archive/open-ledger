@@ -74,5 +74,5 @@ class OLOwnedListList(LoginRequiredMixin, OwnedListMixin, ListView):
     def get_context_data(self, **kwargs):
         """Get the "list" of favorites as well"""
         context = super().get_context_data(**kwargs)
-        context['favorites'] = models.Favorite.objects.filter(user=self.request.user)
+        context['favorites'] = models.Favorite.objects.filter(user=self.request.user).select_related('image')
         return context

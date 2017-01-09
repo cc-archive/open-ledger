@@ -18,11 +18,11 @@ class OwnedTagsMixin(object):
         qs = qs.filter(user_tags__user=self.request.user).distinct()
         return qs
 
-
 class UserTagsList(LoginRequiredMixin, OwnedTagsMixin, ListView):
     model = models.Tag
     template_name = "user-tags-list.html"
     raise_exception = False
+
 
 class UserTagsDetail(LoginRequiredMixin, ListView):
     template_name = "user-tags.html"
@@ -30,10 +30,9 @@ class UserTagsDetail(LoginRequiredMixin, ListView):
 
     def get_queryset(self):
         """Images owned by the current user only; 302 if anon"""
-        tag = get_object_or_404(models.Tag, slug=self.kwargs.get('slug'))
         # Get the distinct set of images
         qs = models.Image.objects.filter(user_tags__user=self.request.user,
-                       user_tags__tag=tag).distinct()
+                       user_tags__tag__slug=self.kwargs.get('slug')).distinct()
         return qs
 
     def render_to_response(self, context):
