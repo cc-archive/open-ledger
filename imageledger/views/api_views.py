@@ -237,7 +237,7 @@ class FavoriteList(mixins.ListModelMixin,
     permission_classes = (FavoritePermissions,)
 
     def get_queryset(self):
-        return models.Favorite.objects.filter(user=self.request.user)
+        return models.Favorite.objects.filter(user=self.request.user).select_related('image')
 
     def get(self, request, *args, **kwargs):
         return self.list(request, *args, **kwargs)

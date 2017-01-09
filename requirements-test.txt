@@ -6,3 +6,5 @@ awsebcli
 Fabric3==1.12.post1
 responses
 git+git://github.com/lizadaly/fabtools.git#egg=fabtools
+django-debug-toolbar
+git+https://github.com/djsutho/django-debug-toolbar-request-history.git
