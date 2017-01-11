@@ -30,48 +30,33 @@ into a coherent whole.
 across multiple providers to identify and measure re-use -- there will be many
 technical and privacy challenges here, and we seek to identify those early.
 
-## Components
-
-### Web app prototype
-
-The web application `openledger` is a simple Python/Django application which
-passes through requests to partner APIs. API keys are stored outside of the
-repo in environment variables or a local file. See `openledger/local.py.example` for
-a snapshot of the current expected values.
-
-This prototype is expected to grow to include works drawn directly from the
-CommonsDB (see below), as well as direct API links to partners.
-
-### CommonsDB
-
-This is the backing store for the overall CC Search project: our own
-collection of metadata about known CC (and later, PD) works, collected in
-partnership with content providers and in methods consistent with their
-terms of service. (We intend to store only metadata, not actual content
-assets.)
-
-The CommonsDB would be a point-in-time snapshot of the Commons _right now_,
-as we know it. However, it would be possible to roll back to previous
-snapshots (at least theoretically) using the Ledger, below.
-
-### The Ledger
-
-This is the idea of a transactional record of all changes to CC works:
-items _enter_ the record, changes to metadata are recorded, and new
-instances of that work appear on known partners. Right now this is purely
-theoretical.
-
 ## Installation for development
 
-* Python 3
+### Python 3
+
+Set up a virtual environment:
 
 ```
-pip install -r requirements
+virtualenv venv --python=python3
+source venv/bin/activate
 ```
 
-* JavaScript
+Install the dependencies:
+```
+pip install -r requirements.txt
+pip install -r requirements-test.txt
+```
+If everything works, this should produce some help output:
 
-Ensure that npm is installed. On Ubuntu, you will probably need:
+```
+python manage.py
+```
+
+If it returns an error, be sure you have activated the virtual environment you created in the first step.
+
+### JavaScript
+
+Ensure that `npm` is installed. On Ubuntu, you will probably need:
 
 ```
 ln -s /usr/bin/nodejs /usr/bin/node
@@ -83,7 +68,7 @@ Then:
 npm install
 ```
 
-* postgresql
+### postgresql
 
 Install header files and other dependencies. On Ubuntu:
 
@@ -118,29 +103,119 @@ postgres=# CREATE USER deploy WITH SUPERUSER;
 postgres=# CREATE DATABASE openledger;
 ```
 
-Per usual Django instructions, install the database tables:
+
+### Elasticsearch
+
+The app uses ES 2.4, which is the latest version supported by AWS. *You must use Elasticsearch 2.4 or the application will not work.*
+
+On macOS:
+
+```
+brew install elasticsearch24
+```
+
+TODO Ubuntu
+
+## Testing a development installation
+
+Ensure all services are actually running: postgres, elasticsearch and that the `openledger` database has been created.
+
+Build the JavaScript:
+
+```
+webpack
+```
+
+Create some local configuration data by copying the example file:
+
+```
+cp openledger/local.py.example openledger/local.py
+```
+
+Specifically, change the following settings right away:
+
+```
+# Make this a long random string
+SECRET_KEY = 'CHANGEME'
+
+# Get these from the AWS config for your account
+AWS_ACCESS_KEY_ID = 'CHANGEME'
+AWS_SECRET_ACCESS_KEY = 'CHANGEME'
+
+# Use the password you assigned when you created the local database user:
+DATABASES = {
+    'default': {
+        'PASSWORD': 'CHANGEME',
+        ...
+      }
+    }
+```
+
+Now the app should be able to talk to the database. Try this with:
 
 ```
 python manage.py migrate
-```
-
-CC Search uses the database for caching at this time, so install those tables as well (migration don't install them automatically):
-
-```
 python manage.py createcachetable
 ```
 
-## Instance configuration
+This should create the database tables. Now you're ready to start the app:
+
+```
+python manage.py runserver
+```
+
+Everything should work locally, though you won't have any content yet.
+
+## Testing
+
+Verify that the test suite runs:
+
+```
+python manage.py test
+```
+
+All tests should always pass. Tests assume that both Postgres and Elasticsearch are running locally.
+
+Tests are set up to run automatically on master commits by Travis CI. When getting started with the app, it's still a good idea to run tests locally to avoid unnecessary pushes to master.
+
+## Deployment
 
 ### Elastic Beanstalk deployment
 
-The application is already set up in EB. See the `open-ledger` Application and
-`open-ledger-1` Environment in the EB console.
+Install the EC2 keypair associated with the Elastic Beanstalk instance (this will be shared privately among technical staff).
 
-### EC2 Loader
+Install the AWS CLI tools: https://aws.amazon.com/cli/
 
-Elastic Beanstalk spins up `t2.micro` web workers and a database host, but
-at times it will be necessary to spin up purpose-built EC2 instances to perform
+In the openledger directory, run:
+
+```
+eb init
+```
+
+TODO verify these steps
+
+When you are ready to deploy, *run the tests first*.
+
+If tests pass, *commit your changes locally to git*.
+
+Then *deploy to staging*:
+
+```
+eb deploy open-ledger-2
+```
+
+Verify that your changes worked as expected on staging by *clicking the thing you changed*.
+
+If that works out, deploy to production:
+
+```
+eb deploy open-ledger-1
+```
+
+
+### EC2 Data Loader
+
+At times it will be necessary to spin up purpose-built EC2 instances to perform
 certain one-off tasks like these large loading jobs.
 
 Fabric is set up to do a limited amount of management of these instances. You'll
@@ -206,38 +281,3 @@ fab launchloader --set datasource=openimages-small
 
 See `fabfile.py` for complete documentation on loader tasks, including search engine indexing
 and loading of other image sets.
-
-## Development
-
-### Python
-
-Normal Django development applies:
-
-* Run the app in development with `manage.py runserver`
-* Handle database changes via `manage.py migrate`
-
-JavaScript dependencies are managed with `npm` and built with `webpack`.
-`Babel` is a dependency as the code is written in ES6+.
-
-When JavaScript assets are changed, run webpack:
-
-```
-webpack
-```
-
-It is run automatically on deploy prior to a server-side call to `manage.py collectstatic`
-
-## Testing
-
-Install the testing dependencies:
-
-```
-pip install -r requirements-test.txt
-```
-
-Search tests require a local version of elasticsearch 2.x; install using your favorite
-package manager.
-
-```
-./manage.py test
-```
