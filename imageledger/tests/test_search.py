@@ -100,7 +100,7 @@ class TestSearch(TestCase):
 
     def test_search_no_results(self):
         """It should be possible to get a no-results page"""
-        resp = self.client.get(self.url, {'search': 'nothing'})
+        resp = self.client.get(self.url, {'search': 'nothing', 'search_fields': 'title'})
         p = select_node(resp, '.t-no-results')
         assert p is not None
 
@@ -158,10 +158,10 @@ class TestSearch(TestCase):
         """It should be possible to filter by work_type"""
         self._index_img(self.img1)
         self._index_img(self.img2)
-        resp = self.client.get(self.url, {'search': 'object', 'work_types': 'photos'})
+        resp = self.client.get(self.url, {'search': 'object', 'work_types': 'photos', 'search_fields': 'tags'})
         assert 1 == len(select_nodes(resp, '.t-image-result'))
 
-        resp = self.client.get(self.url, {'search': 'object', 'work_types': 'cultural'})
+        resp = self.client.get(self.url, {'search': 'object', 'work_types': 'cultural', 'search_fields': 'tags'})
         assert 1 == len(select_nodes(resp, '.t-image-result'))
 
     def test_remove_from_search_after_sync(self):
@@ -182,7 +182,7 @@ class TestSearch(TestCase):
     def test_search_with_punctuation(self):
         """[#39] Searches with punctuation should not error"""
         self._index_img(self.img1)
-        resp = self.client.get(self.url, {'search': 'A+'})
+        resp = self.client.get(self.url, {'search': 'A+', 'search_fields': 'title'})
         self.assertEqual(200, resp.status_code)
         p = select_node(resp, '.t-no-results')
         assert p is not None

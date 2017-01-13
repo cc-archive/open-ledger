@@ -36,10 +36,12 @@ class SearchForm(forms.Form):
                     'licenses': [licenses.DEFAULT_LICENSE],
                     'providers': PROVIDER_DEFAULT}
 
-    search = forms.CharField(label='Search', max_length=1000)
+    search = forms.CharField(label='Search', max_length=1000, required=False)
     licenses = forms.MultipleChoiceField(label='License', choices=LICENSE_CHOICES, required=False,
                                          widget=forms.CheckboxSelectMultiple)
-    search_fields = forms.MultipleChoiceField(label='Fields', choices=FIELD_CHOICES, required=False,
+
+    # This is the only required field, as otherwise we have no idea what to search for
+    search_fields = forms.MultipleChoiceField(label='Fields', choices=FIELD_CHOICES,
                                               widget=forms.CheckboxSelectMultiple)
     work_types = forms.MultipleChoiceField(label='Work type', choices=WORK_TYPES, required=False,
                                            widget=forms.CheckboxSelectMultiple)

@@ -32,47 +32,48 @@ def index(request):
     results = search.Results(page=1)
 
     if form.is_valid():
-        and_queries = []
-        or_queries = []
+        if form.cleaned_data.get('search'):
+            and_queries = []
+            or_queries = []
 
-        # Search fields
-        if 'title' in form.cleaned_data.get('search_fields'):
-            or_queries.append(Q("match", title=form.cleaned_data['search']))
-        if 'tags' in form.cleaned_data.get('search_fields'):
-            or_queries.append(Q("match", tags=form.cleaned_data['search']))
-        if 'creator' in form.cleaned_data.get('search_fields'):
-            or_queries.append(Q("match", creator=form.cleaned_data['search']))
+            # Search fields
+            if 'title' in form.cleaned_data.get('search_fields'):
+                or_queries.append(Q("match", title=form.cleaned_data['search']))
+            if 'tags' in form.cleaned_data.get('search_fields'):
+                or_queries.append(Q("match", tags=form.cleaned_data['search']))
+            if 'creator' in form.cleaned_data.get('search_fields'):
+                or_queries.append(Q("match", creator=form.cleaned_data['search']))
 
-        # Limit to explicit providers first, and then to work providers second, if provided.
-        # If provider is supplied, work providers is ignored. TODO revisit this logic as it
-        # could be confusing to end users
-        work_providers = set()
-        if form.cleaned_data.get('work_types'):
-            for t in form.cleaned_data.get('work_types'):
-                for p in settings.WORK_TYPES[t]:
-                    work_providers.add(p)
+            # Limit to explicit providers first, and then to work providers second, if provided.
+            # If provider is supplied, work providers is ignored. TODO revisit this logic as it
+            # could be confusing to end users
+            work_providers = set()
+            if form.cleaned_data.get('work_types'):
+                for t in form.cleaned_data.get('work_types'):
+                    for p in settings.WORK_TYPES[t]:
+                        work_providers.add(p)
 
-        limit_to_providers = form.cleaned_data.get('providers') or work_providers
+            limit_to_providers = form.cleaned_data.get('providers') or work_providers
 
-        for provider in limit_to_providers:
-            and_queries.append(
-                            Q('bool',
-                            should=[Q("term", provider=provider)]
-                            ))
+            for provider in limit_to_providers:
+                and_queries.append(
+                                Q('bool',
+                                should=[Q("term", provider=provider)]
+                                ))
 
-        if len(or_queries) > 0 or len(and_queries) > 0:
-            q = Q('bool',
-                  should=or_queries,
-                  must=Q('bool', should=and_queries),
-                  minimum_should_match=1)
-            s = s.query(q)
-            response = s.execute()
-            results.pages = int(int(response.hits.total) / settings.RESULTS_PER_PAGE)
-            results.page = form.cleaned_data['page'] or 1
-            start = (results.page - 1) * settings.RESULTS_PER_PAGE
-            end = start + settings.RESULTS_PER_PAGE
-            for r in s[start:end]:
-                results.items.append(r)
+            if len(or_queries) > 0 or len(and_queries) > 0:
+                q = Q('bool',
+                      should=or_queries,
+                      must=Q('bool', should=and_queries),
+                      minimum_should_match=1)
+                s = s.query(q)
+                response = s.execute()
+                results.pages = int(int(response.hits.total) / settings.RESULTS_PER_PAGE)
+                results.page = form.cleaned_data['page'] or 1
+                start = (results.page - 1) * settings.RESULTS_PER_PAGE
+                end = start + settings.RESULTS_PER_PAGE
+                for r in s[start:end]:
+                    results.items.append(r)
     else:
         form = forms.SearchForm(initial=forms.SearchForm.initial_data)
 
