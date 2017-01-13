@@ -34,7 +34,7 @@
       {% endif %}
       <li>
         <h4>License</h4>
-        <a href="{{ license_url }}" class="license-link">{{ license_logo.license(image.license, with_cc=True) }}</a>
+        <a href="{{ license_url }}" class="license-link">{{ license_logo.license(image.license, with_cc=(image.license.lower() != 'cc0' and image.license.lower() != 'pdm')) }}</a>
       </li>
       <li>
         <a href="{{ image.foreign_landing_url }}">Original source</a>
@@ -66,7 +66,8 @@
       {% endif %}
 
       is licensed under
-      <a href="{{ license_url }}">CC {{ image.license|upper }} {{ image.license_version }}</a>
+      <a href="{{ license_url }}">
+        {% if image.license.lower() != 'cc0' and image.license.lower() != 'pdm' %}CC{% endif %} {{ image.license|upper }} {{ image.license_version }}</a>
     </blockquote>
     <button class="attribution-button button clipboard-sel-text primary" data-clipboard-target=".attribution">
       <span class="fi-page-copy"></span>
