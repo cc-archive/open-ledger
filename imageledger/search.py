@@ -31,18 +31,18 @@ class Results(object):
 
 class Image(DocType):
     title = String()
-    identifier = String()
+    identifier = String(index="not_analyzed")
     creator = String()
-    creator_url = String()
+    creator_url = String(index="not_analyzed")
     tags = String(multi=True)
     created_on = Date()
-    url = String()
-    thumbnail = String()
-    provider = String()
-    source = String()
-    license = String()
+    url = String(index="not_analyzed")
+    thumbnail = String(index="not_analyzed")
+    provider = String(index="not_analyzed")
+    source = String(index="not_analyzed")
+    license = String(index="not_analyzed")
     license_version = String()
-    foreign_landing_url = String()
+    foreign_landing_url = String(index="not_analyzed")
     removed_from_source = Boolean()
 
     class Meta:

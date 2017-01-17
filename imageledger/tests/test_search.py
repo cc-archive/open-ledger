@@ -272,3 +272,33 @@ class TestSearch(TestCase):
             self.assertEqual(2, len(select_nodes(resp, '.t-image-result')))
             self.assertEqual(img3.identifier, select_nodes(resp, '.t-image-result')[0].attrib['data-identifier'])
             self.assertEqual(img4.identifier, select_nodes(resp, '.t-image-result')[1].attrib['data-identifier'])
+
+
+    def test_license_types(self):
+        """[#123] Allow selection by license type"""
+        img1 = models.Image.objects.create(url='example.com/1',
+                                           title='licensetest nc',
+                                           license='by-nc',
+                                           provider='nypl')
+        img2 = models.Image.objects.create(url='example.com/2',
+                                           title='licensetest by',
+                                           license='by',
+                                           provider='flickr')
+        img3 = models.Image.objects.create(url='example.com/3',
+                                           title='licensetest nd',
+                                           license='by-nd',
+                                           provider='flickr')
+        self._index_img(img1)
+        self._index_img(img2)
+        self._index_img(img3)
+        resp = self.client.get(self.url, {'search_fields': 'title',
+                                          'search': 'licensetest',})
+        self.assertEqual(3, len(select_nodes(resp, '.t-image-result')))
+        resp = self.client.get(self.url, {'search_fields': 'title',
+                                          'search': 'licensetest',
+                                          'licenses': ['ALL-$']})
+        self.assertEqual(2, len(select_nodes(resp, '.t-image-result')))
+        resp = self.client.get(self.url, {'search_fields': 'title',
+                                          'search': 'licensetest',
+                                          'licenses': ['ALL-MOD']})
+        self.assertEqual(2, len(select_nodes(resp, '.t-image-result')))

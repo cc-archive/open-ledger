@@ -61,12 +61,23 @@ def index(request):
                                 should=[Q("term", provider=provider)]
                                 ))
 
+            # License limitations
+            license_filters = []
+            if form.cleaned_data.get('licenses'):
+                # If there's a license restriction, unpack the licenses and search for them
+                l_groups = form.cleaned_data.get('licenses')
+                for l_group in l_groups:
+                    license_filters += [l.lower() for l in licenses.LICENSE_GROUPS[l_group]]
+
             if len(or_queries) > 0 or len(and_queries) > 0:
                 q = Q('bool',
                       should=or_queries,
-                      must=Q('bool', should=and_queries),
+                      must=Q('bool',
+                             should=and_queries),
                       minimum_should_match=1)
                 s = s.query(q)
+                if license_filters:
+                    s = s.filter('terms', license=license_filters)
                 response = s.execute()
                 results.pages = int(int(response.hits.total) / settings.RESULTS_PER_PAGE)
                 results.page = form.cleaned_data['page'] or 1
