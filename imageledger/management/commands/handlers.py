@@ -8,7 +8,7 @@ import botocore
 
 from django.core.management.base import BaseCommand, CommandError
 
-from imageledger.handlers import handler_rijks, handler_nypl, handler_500px, handler_wikimedia
+from imageledger.handlers import handler_rijks, handler_nypl, handler_500px, handler_wikimedia, handler_met
 
 log = logging.getLogger(__name__)
 log.setLevel(logging.INFO)
@@ -19,7 +19,7 @@ class Command(BaseCommand):
     can_import_settings = True
     requires_migrations_checks = True
 
-    current_handlers = ('rijks', 'nypl', '500px', 'wikimedia')
+    current_handlers = ('rijks', 'nypl', '500px', 'wikimedia', 'met')
 
     def add_arguments(self, parser):
         parser.add_argument("handler",
@@ -72,6 +72,13 @@ class Command(BaseCommand):
             else:
                 file_dir = options['from_file']
             added = handler_nypl.insert_image(options['chunk_size'], options['max_results'], from_file=file_dir)
+            added = 0
+        elif options['handler'] == 'met':
+            added = handler_met.insert_image(walk_func=handler_met.walk,
+                                               serialize_func=handler_met.serialize,
+                                               chunk_size=options['chunk_size'],
+                                               max_results=options['max_results'])
+
             added = 0
 
         log.info("Successfully added %d images out of max %d attempted", added, options['max_results'])
