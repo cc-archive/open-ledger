@@ -76,7 +76,7 @@ class Command(BaseCommand):
         elif options['handler'] == 'met':
             added = handler_met.insert_image(walk_func=handler_met.walk,
                                                serialize_func=handler_met.serialize,
-                                               chunk_size=options['chunk_size'],
+                                               chunk_size=1,  # Use 1 to let dupes handle themselves
                                                max_results=options['max_results'])
 
             added = 0
