@@ -4,6 +4,8 @@ from django.core.cache import cache
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.http import require_POST
+from django.template.loader import get_template
+
 from django.http import HttpResponse
 from django.contrib.auth import get_user_model, logout
 from django.shortcuts import render, redirect
@@ -61,6 +63,11 @@ def delete_account(request):
 
 def health(request):
     return HttpResponse('OK')
+
+@cache_page(60 * 60)  # 1 hour
+def robots(request):
+    out = get_template("robots.txt").render()
+    return HttpResponse(out, content_type="text/plain")
 
 def intcomma(value):
     # Adapted from https://github.com/django/django/blob/master/django/contrib/humanize/templatetags/humanize.py
