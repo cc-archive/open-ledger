@@ -30,11 +30,22 @@
 .search-form {
   margin-top: 1rem;
   border: none;
+  padding: 0;
+  @include for-size(tablet-landscape-up) {
+    padding: 0 20%;
+  }
   ul, li {
     display: inline-block;
     margin: 0;
     line-height: 1rem;
     font-size: 0.5rem;
+  }
+  p {
+    color:  $dark-gray;
+    margin: 1rem 0;
+  }
+  h4 {
+    color: $gray;
   }
   .search-filters-license, .search-filters-source {
     li {

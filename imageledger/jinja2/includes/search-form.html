@@ -1,57 +1,66 @@
+
+
+
 <form method="GET" action="{{ endpoint }}" class="search-form"
       onSubmit="openledger.form.resetSearchOnSubmit(this)">
-  <div class="row">
-    <div class="column medium-6 small-12">
+
+  <div class="row align-center">
+    <div class="column">
+      <div class="row">
+        <img src="{{ static('images/cc.svg') }}" alt="CC" width="100"/>
+          <div class="column">
+            <img src="{{ static('images/title-search.svg') }}" alt="Search" width="200"/>
+            <div class="search-field-container">
+              <i class="fi-magnifying-glass"></i>
+              {{ form.search }}
+              {{ form.page }}
+              {{ form.per_page }}
+              <input type="submit" class="button" value="GO" />
+            </div>
+
+          </div>
+      </div>
       <p>
-        Find images to use or remix from organizations and individuals
-        supporting open content:
+        Use this prototype to find images that you can use and remix, across several open archives.
+        Give us your feedback, and help us design a front door to the commons.
       </p>
 
-      <div class="search-field-container">
-        <i class="fi-magnifying-glass"></i>
-        {{ form.search }}
-        {{ form.page }}
-        {{ form.per_page }}
-        <input type="submit" class="button" value="GO" />
-      </div>
     </div>
-    <div class="column search-filters small-12 medium-6">
-
-      <div class="row">
-
-        <div class="column search-filters-license small-6">
-          <fieldset>
-            <legend>
-              Find images I can...
-            </legend>
-            {{ form.licenses }}
-          </fieldset>
-        </div>
-        <div class="column small-6">
-          <fieldset>
-            <legend style="margin-right: 1rem">
-              Search from these collections:
-            </legend>
-            {{ form.work_types }}
-          </fieldset>
-        </div>
-        <div class="column small-6">
-          <fieldset>
-            <legend style="margin-right: 1rem">
-              Search within:
-              </legend>
-              {{ form.search_fields }}
-            </fieldset>
-        </div>
-        <div class="column small-6 search-filters-source">
-          <fieldset>
-            <legend>
-              ...or limit to these sources:
-            </legend>
-            {{ form.providers }}
-          </fieldset>
-        </div>
-      </div>
+  </div>
+  <h4>Filters</h4>
+  
+  <div class="row">
+    <div class="column search-filters-license small-6">
+      <fieldset>
+        <legend>
+          Find images I can...
+        </legend>
+        {{ form.licenses }}
+      </fieldset>
+    </div>
+    <div class="column small-6">
+      <fieldset>
+        <legend style="margin-right: 1rem">
+          Search from these collections:
+        </legend>
+        {{ form.work_types }}
+      </fieldset>
+    </div>
+    <div class="column small-6">
+      <fieldset>
+        <legend style="margin-right: 1rem">
+          Search within:
+          </legend>
+          {{ form.search_fields }}
+        </fieldset>
+    </div>
+    <div class="column small-6 search-filters-source">
+      <fieldset>
+        <legend>
+          ...or limit to these sources:
+        </legend>
+        {{ form.providers }}
+      </fieldset>
     </div>
   </div>
 </form>

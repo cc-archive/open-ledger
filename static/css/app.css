@@ -112,12 +112,21 @@ a.license-link, a.license-link:hover {
 
 .search-form {
   margin-top: 1rem;
-  border: none; }
+  border: none;
+  padding: 0; }
+  @media (min-width: 1200px) {
+    .search-form {
+      padding: 0 20%; } }
   .search-form ul, .search-form li {
     display: inline-block;
     margin: 0;
     line-height: 1rem;
     font-size: 0.5rem; }
+  .search-form p {
+    color: #2b2b2b;
+    margin: 1rem 0; }
+  .search-form h4 {
+    color: #999999; }
   .search-form .search-filters-license li, .search-form .search-filters-source li {
     display: block; }
   .search-form input {
@@ -354,7 +363,7 @@ figcaption {
 
 .loading-spinner {
   position: absolute;
-  top: 50%;
+  top: 80%;
   left: 50%;
   display: none; }
 
