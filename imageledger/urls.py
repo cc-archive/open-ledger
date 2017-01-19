@@ -37,7 +37,7 @@ urlpatterns = [
 
     # About and other static pages
     url(r'about$', site_views.about, name='about'),
-
+    url(r'health$', site_views.health, name='health'),
 
 ]
 

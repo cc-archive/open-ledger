@@ -4,6 +4,7 @@ from django.core.cache import cache
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.http import require_POST
+from django.http import HttpResponse
 from django.contrib.auth import get_user_model, logout
 from django.shortcuts import render, redirect
 from django.urls import reverse
@@ -57,6 +58,9 @@ def delete_account(request):
     logout(request)
     user.delete()
     return redirect(reverse('index'))
+
+def health(request):
+    return HttpResponse('OK')
 
 def intcomma(value):
     # Adapted from https://github.com/django/django/blob/master/django/contrib/humanize/templatetags/humanize.py
