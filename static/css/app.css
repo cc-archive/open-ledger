@@ -114,7 +114,7 @@ a.license-link, a.license-link:hover {
   margin-top: 1rem;
   border: none;
   padding: 0; }
-  @media (min-width: 1200px) {
+  @media (min-width: 600px) {
     .search-form {
       padding: 0 20%; } }
   .search-form ul, .search-form li {

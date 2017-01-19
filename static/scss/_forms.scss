@@ -31,7 +31,7 @@
   margin-top: 1rem;
   border: none;
   padding: 0;
-  @include for-size(tablet-landscape-up) {
+  @include for-size(tablet-portrait-up) {
     padding: 0 20%;
   }
   ul, li {
