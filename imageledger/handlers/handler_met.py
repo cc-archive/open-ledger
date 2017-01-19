@@ -2,7 +2,7 @@ import itertools
 import logging
 import time
 from pprint import pprint
-
+import html.parser
 import requests
 
 from django.conf import settings
@@ -45,6 +45,15 @@ CREATOR_LABELS_RAW = ['Role', 'Architect', 'Armorer', 'Artist', 'Artist and arch
 CREATOR_LABELS_RAW += [c + ':' for c in CREATOR_LABELS_RAW]
 CREATOR_LABELS = set(CREATOR_LABELS_RAW)
 
+class CreatorParser(html.parser.HTMLParser):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.out = []
+
+    def handle_data(self, data):
+        self.out.append(data)
+
+
 DELAY_SECONDS = 0.5  # Time to wait between API requests
 
 THUMBNAIL_WIDTH = 200
@@ -79,10 +88,16 @@ def serialize(result):
 
     # Creator might be a few fields
     tombstone = result['Tombstone']
+    creator_names = []
     for t in tombstone:
         if t['Name'] in CREATOR_LABELS:
-            image.creator = t['Value']
-        # TBD other metadata
+            val = t['Value']
+            parser = CreatorParser()
+            parser.feed(val)
+            creator_names.append(" ".join(parser.out))
+    if len(creator_names) > 0:
+        image.creator = ", ".join(creator_names)
+
     image.thumbnail = thumbnail
     image.license = "cc0"
     image.license_version = '1.0'
@@ -91,7 +106,7 @@ def serialize(result):
     image.title = result['CollectionObject']['Title']
     image.identifier = signals.create_identifier(image.url)
     image.last_synced_with_source = timezone.now()
-    log.info("Adding image %s (%s) identifier %s", image.title, image.foreign_identifier, image.identifier)
+    log.info("Adding image %s-%s (%s) identifier %s", image.title, image.creator, image.foreign_identifier, image.identifier)
     return image
 
 def walk(page=1, per_page=200):

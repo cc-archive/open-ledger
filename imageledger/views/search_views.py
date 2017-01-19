@@ -1,4 +1,5 @@
 import logging
+from functools import reduce
 
 from django.conf import settings
 from django.shortcuts import render, get_object_or_404
@@ -66,8 +67,10 @@ def index(request):
             if form.cleaned_data.get('licenses'):
                 # If there's a license restriction, unpack the licenses and search for them
                 l_groups = form.cleaned_data.get('licenses')
+                license_values = []
                 for l_group in l_groups:
-                    license_filters += [l.lower() for l in licenses.LICENSE_GROUPS[l_group]]
+                    license_values.append([l.lower() for l in licenses.LICENSE_GROUPS[l_group]])
+                license_filters = list(reduce(set.intersection, map(set, license_values)))
 
             if len(or_queries) > 0 or len(and_queries) > 0:
                 q = Q('bool',
