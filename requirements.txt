@@ -13,3 +13,4 @@ django-cas-ng
 djangorestframework
 django-filter
 newrelic
+wsgi-basic-auth

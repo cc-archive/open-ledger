@@ -24,6 +24,7 @@ except socket.gaierror:
     local_ip = 'localhost'
 
 ALLOWED_HOSTS = [local_ip,
+                 'localhost',
                  '.creativecommons.org',
                  '.elasticbeanstalk.com',]
 
@@ -201,10 +202,7 @@ PROVIDERS = {
              'url': 'http://digitalcollections.nypl.org/'},
     '500px': {'display_name': '500px',
               'url': 'https://500px.com/'},
-# Uncomment when ready
-#    'wikimedia': {'display_name': 'Wikimedia Commons',
-#                  'url': 'https://commons.wikimedia.org'
-#                  },
+
 }
 
 try:
