@@ -92,6 +92,11 @@ DATASOURCES = {
         'action': 'load-from-provider',
         'provider': 'wikimedia',
     },
+    'met': {
+        'name': 'load-met',
+        'action': 'load-from-provider',
+        'provider': 'met',
+    },
     'sync': {
         'action': 'sync',
         'name': 'sync',

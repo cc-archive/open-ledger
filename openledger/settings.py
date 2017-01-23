@@ -190,7 +190,7 @@ RESULTS_PER_PAGE = 100
 # These providers are current loaded
 WORK_TYPES = {
     'photos': ['flickr', '500px'],
-    'cultural': ['rijksmuseum', 'nypl', 'wikimedia']
+    'cultural': ['rijksmuseum', 'nypl', 'wikimedia', 'met']
 }
 PROVIDERS = {
     'flickr': {'display_name': 'Flickr',
@@ -202,6 +202,8 @@ PROVIDERS = {
              'url': 'http://digitalcollections.nypl.org/'},
     '500px': {'display_name': '500px',
               'url': 'https://500px.com/'},
+    'met': {'display_name': 'Metropolitan Museum of Art',
+              'url': 'http://www.metmuseum.org/'},
 
 }
 
