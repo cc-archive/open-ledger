@@ -6,7 +6,7 @@ from django.views.generic.detail import DetailView
 from django.urls import reverse_lazy
 from django.http import HttpResponseRedirect, Http404
 
-from imageledger import models
+from imageledger import models, forms
 
 class OwnedListMixin(object):
 
@@ -44,8 +44,12 @@ class OLListCreate(LoginRequiredMixin, CreateView):
 
 class OLListUpdate(LoginRequiredMixin, OwnedListMixin, UpdateView):
     model = models.List
+    form_class = forms.ListForm
     template_name = "list.html"
-    fields = ['title', 'description', 'is_public', 'creator_displayname']
+    def get_form_kwargs(self):
+        kw = super().get_form_kwargs()
+        kw['request'] = self.request
+        return kw
 
     def get_object(self):
         try:

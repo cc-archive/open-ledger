@@ -2,6 +2,8 @@ from django import forms
 from django.conf import settings
 
 from imageledger import licenses, models
+from akismet import Akismet
+from wordfilter import Wordfilter
 
 PROVIDER_PER_PAGE = 20
 
@@ -52,6 +54,26 @@ class SearchForm(forms.Form):
     per_page = forms.IntegerField(widget=forms.HiddenInput, required=False)
 
 class ListForm(forms.ModelForm):
+
+    def __init__(self, *args, **kwargs):
+        # important to "pop" added kwarg before call to parent's constructor
+        self.request = kwargs.pop('request')
+        super().__init__(*args, **kwargs)
+
     class Meta:
         model = models.List
         fields = ['title', 'is_public', 'description', 'images', 'creator_displayname']
+
+    def clean_description(self):
+        desc = self.cleaned_data['description']
+        akismet = Akismet(settings.AKISMET_KEY, blog="CC Search")
+        check_spam = akismet.check(self.request.get_host(),
+                              user_agent=self.request.META.get('user-agent'),
+                              comment_author=self.request.user.username,
+                              comment_content=desc)
+        wordfilter = Wordfilter()
+        check_words = wordfilter.blacklisted(desc)
+        if check_spam or check_words:
+            raise forms.ValidationError("This description failed our spam or profanity check; the description has not been updated.")
+
+        return desc

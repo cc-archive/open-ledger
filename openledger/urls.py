@@ -5,7 +5,7 @@ from django.conf import settings
 
 urlpatterns = [
     url(r'', include('imageledger.urls')),
-#    url(r'^admin/', admin.site.urls),
+    url(r'^admin/', admin.site.urls),
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
 
 if settings.DEBUG:

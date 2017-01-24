@@ -226,7 +226,7 @@ except ImportError:
     AWS_SECRET_ACCESS_KEY = os.environ.get('AWS_SECRET_ACCESS_KEY')
 
     SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY')
-
+    AKISMET_KEY = os.environ.get('AKISMET_KEY')
     LOGGING = {
         'version': 1,
         'disable_existing_loggers': False,
