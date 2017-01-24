@@ -15,10 +15,10 @@
         </a>
       </div>
       <figcaption>
-        <p class="title">{{ image.title|truncate(50) }}
+        <p class="title">{{ image.title|truncate(25) }}
           {% if image.creator %} by
             {% if image.creator_url %}
-              <a href="{{ image.creator_url }}">{{ image.creator }}</a>
+              <a href="{{ image.creator_url }}">{{ image.creator|truncate(10) }}</a>
             {% else %}
               {{ image.creator }}
             {% endif %}
