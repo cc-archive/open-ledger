@@ -8,22 +8,8 @@ from elasticsearch_dsl import Search, Q
 from elasticsearch_dsl.connections import connections
 
 from imageledger import forms, search, licenses, models
-from imageledger.handlers.handler_500px import photos as search_500
-from imageledger.handlers.handler_rijks import photos as search_rijks
-from imageledger.handlers.handler_flickr import photos as search_flickr
-from imageledger.handlers.handler_wikimedia import photos as search_wikimedia
 
 log = logging.getLogger(__name__)
-
-# Search by source
-
-
-search_funcs = {
-    "fpx": search_500,
-    "flickr": search_flickr,
-    "rijks": search_rijks,
-    "wikimedia": search_wikimedia,
-}
 
 @ensure_csrf_cookie
 def index(request):
@@ -93,6 +79,7 @@ def index(request):
 
     return render(request, 'results.html',
                   {'form': form,
+                   'work_types': settings.WORK_TYPES,
                    'results': results,})
 
 def by_image(request):

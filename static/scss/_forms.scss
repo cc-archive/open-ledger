@@ -37,8 +37,6 @@
   ul, li {
     display: inline-block;
     margin: 0;
-    line-height: 1rem;
-    font-size: 0.5rem;
   }
   p {
     color:  $dark-gray;
@@ -47,11 +45,7 @@
   h4 {
     color: $gray;
   }
-  .search-filters-license, .search-filters-source {
-    li {
-      display: block;
-    }
-  }
+
   input {
     margin: 0
   }
@@ -60,16 +54,28 @@
     @include for-size(phone-only) {
       /* In small viewports add top-margin */
       margin-top: 1rem;
-      .column, label {
+      .column, label, li {
         font-size: .8rem;
       }
       li {
         display: block;
       }
     }
-
     .column {
       margin-bottom: 1rem;
+    }
+    label {
+      display: inline-block;
+    }
+    .search-collections {
+      ul {
+        display: block;
+        margin-left: 1rem;
+        font-size: .875rem;
+      }
+      li {
+        margin-left: .5rem;
+      }
     }
     legend {
       text-transform: uppercase;

@@ -5,6 +5,7 @@ import * as form from './form'
 import * as grid from './grid'
 import * as favorite from './favorite'
 import * as tags from './tags'
+import * as search from './search'
 
 const init = () => {
   var clipboardText = new Clipboard('.clipboard-sel-text')
@@ -28,3 +29,4 @@ window.openledger.form = form
 window.openledger.grid = grid
 window.openledger.favorite = favorite
 window.openledger.tags = tags
+window.openledger.search = search
