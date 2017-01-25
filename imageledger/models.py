@@ -5,6 +5,7 @@ from django.urls import reverse
 from django.db import models
 from django.conf import settings
 from django.utils import timezone
+from django.utils.safestring import mark_safe
 
 import requests
 
@@ -137,7 +138,12 @@ class Image(OpenLedgerModel):
             return ''
 
     def __str__(self):
-        return '<Image %r found at %r by %r>' % (self.identifier, self.url, self.creator)
+        return '%r by %r from %r [%r %r]' % (self.title, self.creator, self.provider, self.license, self.license_version)
+
+    def image_tag(self):
+        return mark_safe('<img src="%s" width="150" />' % (self.url))
+
+    image_tag.short_description = 'Image'
 
     class Meta:
         db_table = 'image'
@@ -178,6 +184,8 @@ class List(OpenLedgerModel):
     def get_absolute_url(self):
         return reverse('my-list-update', kwargs={'slug': self.slug})
 
+    def __str__(self):
+        return "'{}' by {} [{}]".format(self.title, self.owner.username, "public" if self.is_public else "private")
 
 class Tag(OpenLedgerModel):
     foreign_identifier = models.CharField(max_length=255, blank=True, null=True)
