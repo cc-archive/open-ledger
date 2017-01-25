@@ -54,7 +54,7 @@ class CreatorParser(html.parser.HTMLParser):
         self.out.append(data)
 
 
-DELAY_SECONDS = 0.5  # Time to wait between API requests
+DELAY_SECONDS = 0.1  # Time to wait between API requests
 
 THUMBNAIL_WIDTH = 200
 
