@@ -4,6 +4,8 @@ import time
 from pprint import pprint
 import html.parser
 import requests
+from multiprocessing.dummy import Pool
+import multiprocessing
 
 from django.conf import settings
 from imageledger import models, signals, search
@@ -23,6 +25,8 @@ LICENSE_URL = "https://creativecommons.org/publicdomain/zero/1.0/"
 
 PROVIDER_NAME = "met"
 SOURCE_NAME = "met"
+
+DEFAULT_NUM_THREADS = 4
 
 # Labels found in the data that we'll assign to the 'creator' field
 CREATOR_LABELS_RAW = ['Role', 'Architect', 'Armorer', 'Artist', 'Artist and architect',
@@ -109,16 +113,24 @@ def serialize(result):
     image.title = result['CollectionObject']['Title']
     image.identifier = signals.create_identifier(image.url)
     image.last_synced_with_source = timezone.now()
-    log.info("Adding image %s-%s (%s) identifier %s", image.title, image.creator, image.foreign_identifier, image.identifier)
+    try:
+        image.save()
+        log.info("Adding image %s-%s (%s) identifier %s", image.title, image.creator, image.foreign_identifier, image.identifier)
+    except IntegrityError as e:
+        log.warn(e)
+        pass
     return image
 
-def walk(page=1, per_page=200):
+def walk(num_threads=DEFAULT_NUM_THREADS):
     """Walk through a set of search results and collect items to serialize"""
     results = photos()
-    for identifier in results:
-        # Retrieve the result
-        url = ENDPOINT_DETAIL + str(identifier)
-        r = requests.get(url, headers={'accept': 'text/html'}) # Met API quirk, ought to be application/json
-        result = r.json()
-        yield result
-        time.sleep(DELAY_SECONDS)
+    with Pool(num_threads) as pool:
+        pool.map(get_result, results)
+
+def get_result(identifier):
+    # Retrieve the result
+    url = ENDPOINT_DETAIL + str(identifier)
+    r = requests.get(url, headers={'accept': 'text/html'}) # Met API quirk, ought to be application/json
+    result = r.json()
+    serialize(result)
+    time.sleep(DELAY_SECONDS)

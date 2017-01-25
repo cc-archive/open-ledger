@@ -11,9 +11,9 @@ class ImageAdmin(admin.ModelAdmin):
     fields = ( 'image_tag', 'title', 'provider', 'license', 'license_version', 'created_on', 'last_synced_with_source',
               'foreign_landing_url', 'foreign_identifier')
     readonly_fields = ('image_tag', 'created_on', 'last_synced_with_source', )
-#    list_filter = ('provider', 'license')
     search_fields = ('title', 'creator')
     ordering = ('-id', )
+#    list_filter = ('provider', 'license')  # RDS database falls down and dies on this
 
 class ListAdmin(admin.ModelAdmin):
     empty_value_display = '-blank-'

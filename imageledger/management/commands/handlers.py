@@ -14,6 +14,7 @@ log = logging.getLogger(__name__)
 log.setLevel(logging.INFO)
 
 DEFAULT_CHUNK_SIZE = 1000
+DEFAULT_NUM_THREADS = 4
 
 class Command(BaseCommand):
     can_import_settings = True
@@ -45,6 +46,11 @@ class Command(BaseCommand):
         parser.add_argument("--from-file",
                             dest="from_file",
                             help="A raw import file that will be passed to the handler for use instead of an API")
+        parser.add_argument("--num-threads",
+                            dest="num_threads",
+                            default=DEFAULT_NUM_THREADS,
+                            type=int,
+                            help="Number of threads to run loader in (only valid for `met`)")
 
     def handle(self, *args, **options):
         if options['verbose']:
@@ -74,11 +80,7 @@ class Command(BaseCommand):
             added = handler_nypl.insert_image(options['chunk_size'], options['max_results'], from_file=file_dir)
             added = 0
         elif options['handler'] == 'met':
-            added = handler_met.insert_image(walk_func=handler_met.walk,
-                                               serialize_func=handler_met.serialize,
-                                               chunk_size=1,  # Use 1 to let dupes handle themselves
-                                               max_results=None)  # infinite results
-
+            handler_met.walk(num_threads=options['num_threads'])
             added = 0
 
         log.info("Successfully added %d images out of max %d attempted", added, options['max_results'])
