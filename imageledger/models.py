@@ -185,7 +185,7 @@ class List(OpenLedgerModel):
         return reverse('my-list-update', kwargs={'slug': self.slug})
 
     def __str__(self):
-        return "'{}' by {} [{}]".format(self.title, self.owner.username, "public" if self.is_public else "private")
+        return "'{}' by {} [{}]".format(self.title, self.owner.username if self.owner else 'No owner', "public" if self.is_public else "private")
 
 class Tag(OpenLedgerModel):
     foreign_identifier = models.CharField(max_length=255, blank=True, null=True)
