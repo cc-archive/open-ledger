@@ -66,6 +66,9 @@ def photos(search=None, page=1, per_page=20, **kwargs):
     params = {}
     r = requests.get(ENDPOINT_PHOTOS, params=params)
     results = r.json()
+    # Randomize the list
+    import random
+    random.shuffle(results)
     return results
 
 def serialize(result):
