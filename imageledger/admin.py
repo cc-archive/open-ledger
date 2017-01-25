@@ -11,7 +11,7 @@ class ImageAdmin(admin.ModelAdmin):
     fields = ( 'image_tag', 'title', 'provider', 'license', 'license_version', 'created_on', 'last_synced_with_source',
               'foreign_landing_url', 'foreign_identifier')
     readonly_fields = ('image_tag', 'created_on', 'last_synced_with_source', )
-    list_filter = ('provider', 'license')
+#    list_filter = ('provider', 'license')
     search_fields = ('title', 'creator')
     ordering = ('-id', )
 
@@ -22,6 +22,7 @@ class ListAdmin(admin.ModelAdmin):
     ordering = ('-created_on', )
     list_filter = ('is_public', )
     search_fields = ('title', 'owner__username', 'owner__email')
+
     def num_images(self, obj):
         return obj.images.all().count()
 
