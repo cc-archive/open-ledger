@@ -34,15 +34,6 @@ class TestModels(TestCase):
         image.save()
         assert models.Image.objects.count() == 1
 
-    def test_image_model_repr(self):
-        """An image model representation should include its identifer, url, and creator"""
-        url = "http://example.com"
-        creator = "jane doe"
-        image = models.Image(url=url, license="CC0", creator=creator)
-        assert url in image.__repr__()
-        assert creator in image.__repr__()
-
-
     def test_image_model_identifier(self):
         """The identifier-creation function should return the same value for each iteration"""
         url = 'http://example.com'
