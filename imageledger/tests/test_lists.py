@@ -46,25 +46,6 @@ class TestListViews(TestImageledgerApp):
         p = select_nodes(resp, '.t-image-result')
         assert 2 == len(p)
 
-    def test_update_my_list(self):
-        """A request to update a list via a POST request should update the list values"""
-        desc = 'new desc'
-        title = 'new title'
-        self._login_and_own()
-        resp = self.client.post(reverse('my-list-update', kwargs={'slug': self.lst.slug}), {'description': desc,
-                'title': title})
-        lst = models.List.objects.get(slug=self.lst.slug)
-        assert desc == lst.description
-        assert title == lst.title
-
-    def test_update_my_list_redirect(self):
-        """A request to update a list via a POST request should redirect to the list detail when done"""
-        self._login_and_own()
-        resp = self.client.post(reverse('my-list-update', kwargs={'slug': self.lst.slug}),
-                                {'description': self.lst.description,
-                                'title': self.lst.title})
-        self.assertRedirects(resp, reverse('my-list-update', kwargs={'slug': self.lst.slug}))
-
     def test_my_lists(self):
         """The my-lists page should load for a logged-in user"""
         self.client.force_login(self.user)
