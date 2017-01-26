@@ -130,7 +130,12 @@ def walk(num_threads=DEFAULT_NUM_THREADS):
 def get_result(identifier):
     # Retrieve the result
     url = ENDPOINT_DETAIL + str(identifier)
-    r = requests.get(url, headers={'accept': 'text/html'}) # Met API quirk, ought to be application/json
-    result = r.json()
-    serialize(result)
+    try:
+        r = requests.get(url, headers={'accept': 'text/html'}) # Met API quirk, ought to be application/json
+        result = r.json()
+        serialize(result)
+    except (requests.exceptions.ReadTimeout, requests.exceptions.ChunkedEncodingError) as e:
+        log.warn(e)
+        time.sleep(DELAY_SECONDS)
+        get_result(identifier)
     time.sleep(DELAY_SECONDS)
