@@ -17,7 +17,7 @@ FIELD_CHOICES = (
     ('creator', 'Creator'),
     ('tags', 'Tags')
 )
-FIELD_DEFAULT = ['title', 'tags',]
+FIELD_DEFAULT = ['title', 'tags', 'creator']
 
 # Types of works
 WORK_TYPES = (
