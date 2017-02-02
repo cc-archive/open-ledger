@@ -66,11 +66,14 @@ class ListForm(forms.ModelForm):
 
     def clean_description(self):
         desc = self.cleaned_data['description']
-        akismet = Akismet(settings.AKISMET_KEY, blog="CC Search")
-        check_spam = akismet.check(self.request.get_host(),
-                              user_agent=self.request.META.get('user-agent'),
-                              comment_author=self.request.user.username,
-                              comment_content=desc)
+        if settings.TESTING:
+            check_spam = False
+        else:
+            akismet = Akismet(settings.AKISMET_KEY, blog="CC Search")
+            check_spam = akismet.check(self.request.get_host(),
+                                  user_agent=self.request.META.get('user-agent'),
+                                  comment_author=self.request.user.username,
+                                  comment_content=desc)
         wordfilter = Wordfilter()
         check_words = wordfilter.blacklisted(desc)
         if check_spam or check_words:
