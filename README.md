@@ -46,6 +46,7 @@ Install the dependencies:
 pip install -r requirements.txt
 pip install -r requirements-test.txt
 ```
+
 If everything works, this should produce some help output:
 
 ```
@@ -82,27 +83,19 @@ On macOS:
 brew install postgres
 ```
 
-Database setup should be similar to:
+For a development account, you'll want a `deploy` user with superuser privileges, so that
+it can create and destroy test tables.
+
 ```
 $ sudo -u postgres psql
-
-postgres=# CREATE USER XXX WITH PASSWORD 'XXX';
+postgres=# CREATE USER deploy WITH PASSWORD 'deploy';
 CREATE ROLE
-postgres=# create database openledger;
+postgres=# ALTER USER deploy WITH SUPERUSER;
+postgres=# CREATE DATABASE openledger;
 CREATE DATABASE
-postgres=# GRANT ALL PRIVILEGES ON DATABASE openledger to XXX;
+postgres=# GRANT ALL PRIVILEGES ON DATABASE openledger TO deploy;
 GRANT
 ```
-
-For a development account, you'll want a `deploy` user with superuser privileges, so that
-it can create and destroy test tables.  Example on macOS:
-
-```
-$ psql -t template1
-postgres=# CREATE USER deploy WITH SUPERUSER;
-postgres=# CREATE DATABASE openledger;
-```
-
 
 ### Elasticsearch
 
