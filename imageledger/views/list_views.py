@@ -46,6 +46,7 @@ class OLListUpdate(LoginRequiredMixin, OwnedListMixin, UpdateView):
     model = models.List
     form_class = forms.ListForm
     template_name = "list.html"
+
     def get_form_kwargs(self):
         kw = super().get_form_kwargs()
         kw['request'] = self.request

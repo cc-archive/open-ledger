@@ -62,7 +62,7 @@ class ListForm(forms.ModelForm):
 
     class Meta:
         model = models.List
-        fields = ['title', 'is_public', 'description', 'images', 'creator_displayname']
+        fields = ['title', 'is_public', 'description', 'creator_displayname']
 
     def clean_description(self):
         desc = self.cleaned_data['description']
