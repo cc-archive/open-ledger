@@ -107,7 +107,8 @@ On macOS:
 brew install elasticsearch24
 ```
 
-TODO Ubuntu
+Debian-based:
+https://www.elastic.co/guide/en/elasticsearch/reference/2.4/setup-repositories.html
 
 ## Testing a development installation
 
@@ -118,6 +119,8 @@ Build the JavaScript:
 ```
 webpack
 ```
+
+(If you installed it and it's not found, then check `node_modules/bin`)
 
 Create some local configuration data by copying the example file:
 
@@ -185,8 +188,6 @@ In the openledger directory, run:
 eb init
 ```
 
-TODO verify these steps
-
 When you are ready to deploy, *run the tests first*.
 
 If tests pass, *commit your changes locally to git*.
@@ -205,6 +206,7 @@ If that works out, deploy to production:
 eb deploy open-ledger-1
 ```
 
+Don't forget to push your changes upstream!
 
 ### EC2 Data Loader
 

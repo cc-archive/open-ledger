@@ -83,6 +83,7 @@ def do_index(start, chunk_size):
         mapping.save(settings.ELASTICSEARCH_INDEX)
 
     except (requests.exceptions.ReadTimeout, elasticsearch.exceptions.TransportError) as e:
+        log.warn(e)
         log.warn("Skipping batch and retrying after wait")
         time.sleep(RETRY_WAIT)
         return
