@@ -74,19 +74,20 @@ def do_index(start, chunk_size):
     end = start + chunk_size + 1
     batches = []
     retries = 0
-    try:
-        es = search.init(timeout=2000)
-        if not settings.DEBUG:
-            es.cluster.health(wait_for_status='green', request_timeout=2000)
-        search.Image.init()
-        mapping = search.Image._doc_type.mapping
-        mapping.save(settings.ELASTICSEARCH_INDEX)
-
-    except (requests.exceptions.ReadTimeout, elasticsearch.exceptions.TransportError) as e:
-        log.warn(e)
-        log.warn("Skipping batch and retrying after wait")
-        time.sleep(RETRY_WAIT)
-        return
+    # FIXME: This is erroring on prod for some reason
+    # try:
+    #     es = search.init(timeout=2000)
+    #     if not settings.DEBUG:
+    #         es.cluster.health(wait_for_status='green', request_timeout=2000)
+    #     search.Image.init()
+    #     mapping = search.Image._doc_type.mapping
+    #     mapping.save(settings.ELASTICSEARCH_INDEX)
+    #
+    # except (requests.exceptions.ReadTimeout, elasticsearch.exceptions.TransportError) as e:
+    #     log.warn(e)
+    #     log.warn("Skipping batch and retrying after wait")
+    #     time.sleep(RETRY_WAIT)
+    #     return
 
     log.debug("Starting index in range from %d to %d...", start, end)
 
