@@ -368,7 +368,8 @@ figcaption {
 .loading-spinner {
   position: absolute;
   top: 80%;
-  left: 50%;
+  left: calc(50% - 60px);
+  /* Position at 50% minus half the width of the spinner */
   display: none; }
 
 .grid {
