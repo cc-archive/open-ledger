@@ -1,11 +1,31 @@
 from django.conf.urls import url, include
+from django.views.generic import RedirectView
+from django.core.urlresolvers import reverse_lazy
+from django.http import QueryDict
 
 from rest_framework.urlpatterns import format_suffix_patterns
 from django_cas_ng.views import login as cas_login, logout as cas_logout, callback as cas_callback
 
 from imageledger.views import search_views, api_views, list_views, favorite_views, tag_views, site_views
+from imageledger.forms import FIELD_DEFAULT
+
+class MetRedirectView(RedirectView):
+    permanent = True
+    query_string = True
+    pattern_name = 'search-met'
+
+    def get_redirect_url(self, *args, **kwargs):
+        url = reverse_lazy('index') + '?'
+        qd = QueryDict('', mutable=True, )
+        qd.update({'providers': 'met'})
+        qd.setlistdefault('search_fields', FIELD_DEFAULT)
+        url += qd.urlencode()
+        return url
 
 urlpatterns = [
+    # Custom search URLs
+    url(r'^themet$', MetRedirectView.as_view(), name='search-met'),
+
     url(r'^$', search_views.index, name='index'),
     url(r'^image/detail$', search_views.by_image, name="by-image"),
     url(r'^image/detail/(?P<identifier>.*)$', search_views.detail, name="detail"),

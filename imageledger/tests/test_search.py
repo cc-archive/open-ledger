@@ -302,3 +302,29 @@ class TestSearch(TestCase):
                                           'search': 'licensetest',
                                           'licenses': ['ALL-MOD']})
         self.assertEqual(2, len(select_nodes(resp, '.t-image-result')))
+
+    def test_custom_provider_view(self):
+        """[#156] Test that provider view with a custom URL works"""
+        img1 = models.Image.objects.create(url='example.com/1',
+                                           title='other result',
+                                           license='by-nc',
+                                           provider='nypl')
+        img2 = models.Image.objects.create(url='example.com/2',
+                                           title='met result',
+                                           license='by',
+                                           provider='met')
+        self._index_img(img1)
+        self._index_img(img2)
+
+        # The GET request should redirect
+        resp = self.client.get(reverse('search-met'))
+        self.assertEquals(resp.status_code, 301)
+
+        # Assert that the redirected request has 'met' checked by default and other providers unchecked
+        resp = self.client.get(reverse('search-met'), follow=True)
+        self.assertInHTML('''<input checked="checked" id="id_providers_2" name="providers" type="checkbox" value="met" />''',
+                          str(resp.content))
+        self.assertInHTML('''<input id="id_providers_3" name="providers" type="checkbox" value="nypl" />''',
+                          str(resp.content))
+        self.assertInHTML('''<input id="id_providers_1" name="providers" type="checkbox" value="flickr" />''',
+                          str(resp.content))
