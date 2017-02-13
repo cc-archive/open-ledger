@@ -356,9 +356,11 @@ figcaption {
   left: 0;
   right: 0;
   display: none; }
+  figcaption a {
+    color: #141414; }
   figcaption .title {
-    text-align: center;
-    font-size: 1rem;
+    text-align: left;
+    font-size: 0.8rem;
     line-height: 1.1rem; }
 
 .figure-wrapper {
