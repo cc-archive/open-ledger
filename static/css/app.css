@@ -69,6 +69,12 @@ h5 {
       padding: .5rem 1rem;
       color: white;
       font-size: 25px; } }
+/* Logo image next to title */
+.logo-black {
+  width: 100px;
+  height: 100px;
+  margin-top: 20px; }
+
 .about table th {
   text-align: left; }
 .about .provider-total {
