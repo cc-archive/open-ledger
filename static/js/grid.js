@@ -1,5 +1,6 @@
 import Masonry from 'masonry-layout'
 var imagesLoaded = require('imagesloaded')
+import * as utils from './utils'
 
 const columnWidth = 210
 const gutter = 10
@@ -38,7 +39,9 @@ const init = () => {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
+  const isIE = utils.detectIE()
   var results = document.querySelector('.results')
+
   if (results) {
     var spinner = document.querySelector('.loading-spinner')
     if (document.querySelector('.image-result')) {
@@ -51,7 +54,7 @@ document.addEventListener('DOMContentLoaded', () => {
       // detect which image is broken
       for (var i=0, len=imgLoad.images.length; i < len; i++) {
         var image = imgLoad.images[i]
-        if (!image.isLoaded) {
+        if (!image.isLoaded && !isIE) {
           let parent = image.img.parentNode.parentNode.parentNode.parentNode
           parent.style.display = 'none'
         }
@@ -61,4 +64,5 @@ document.addEventListener('DOMContentLoaded', () => {
       init()
     })
   }
+
 })

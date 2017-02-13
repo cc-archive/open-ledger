@@ -1,3 +1,8 @@
+import Promise from 'promise-polyfill'
+if (!window.Promise) {
+  window.Promise = Promise
+}
+
 import Clipboard from 'clipboard'
 import attributions from './attributions'
 import * as list from './list'
