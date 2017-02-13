@@ -4,7 +4,7 @@ import sys
 import os
 import datetime
 
-from . import SNAPSHOT_DIR
+SNAPSHOT_DIR = 'ccsearch-snapshots'
 
 # Run this just one time to register the specified cluster for manual
 # backups. See the shared loader environment for env variables.
@@ -25,6 +25,8 @@ if __name__ == "__main__":
     print("Restoring snapshot {} to {}".format(snapshot_name, to_host))
 
     resp = requests.post('https://{}/_snapshot/{}/{}/_restore'.format(to_host,
-                                                                      snapshot_name),
+                                                                      SNAPSHOT_DIR,
+                                                                      snapshot_name,
+                                                                      ),
                          auth=auth)
     print(resp.content)

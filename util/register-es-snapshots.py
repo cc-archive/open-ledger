@@ -2,7 +2,7 @@ from aws_requests_auth.aws_auth import AWSRequestsAuth
 import requests
 import os
 
-from . import SNAPSHOT_DIR
+SNAPSHOT_DIR = 'ccsearch-snapshots'
 
 # Run this just one time to register the specified cluster for manual
 # backups. See the shared loader environment for env variables.
