@@ -9,6 +9,7 @@ import uuid
 
 from elasticsearch import helpers
 import elasticsearch
+from elasticsearch_dsl import Index
 from django.conf import settings
 from django.core.management.base import BaseCommand, CommandError
 from django.db import connection, transaction
@@ -65,6 +66,14 @@ class Command(BaseCommand):
     def index_all_images(self, chunk_size=DEFAULT_CHUNK_SIZE, num_iterations=DEFAULT_NUM_ITERATIONS,
                          num_threads=DEFAULT_NUM_THREADS):
         """Index every record in the database with a server-side cursor"""
+        index = Index(settings.ELASTICSEARCH_INDEX)
+        if not index.exists():
+            log.info("Creating new index %s", settings.ELASTICSEARCH_INDEX)
+            search.Image.init()
+            mapping = search.Image._doc_type.mapping
+            mapping.save(settings.ELASTICSEARCH_INDEX)
+            log.info("Done creating new index")
+
         with Pool(num_threads) as pool:
             starts = [i * chunk_size for i in range(0, num_iterations)]
             pool.starmap(do_index, zip(starts, itertools.repeat(chunk_size, len(starts))))
@@ -74,20 +83,16 @@ def do_index(start, chunk_size):
     end = start + chunk_size + 1
     batches = []
     retries = 0
-    # FIXME: This is erroring on prod for some reason
     try:
-         es = search.init(timeout=2000)
-         if not settings.DEBUG:
-             es.cluster.health(wait_for_status='green', request_timeout=2000)
-    #     search.Image.init()
-    #     mapping = search.Image._doc_type.mapping
-    #     mapping.save(settings.ELASTICSEARCH_INDEX)
+        es = search.init(timeout=2000)
+        if not settings.DEBUG:
+            es.cluster.health(wait_for_status='green', request_timeout=2000)
 
     except (requests.exceptions.ReadTimeout, elasticsearch.exceptions.TransportError) as e:
-         log.warn(e)
-         log.warn("Skipping batch and retrying after wait")
-         time.sleep(RETRY_WAIT)
-         return
+        log.warn(e)
+        log.warn("Skipping batch and retrying after wait")
+        time.sleep(RETRY_WAIT)
+        return
 
     log.debug("Starting index in range from %d to %d...", start, end)
 
