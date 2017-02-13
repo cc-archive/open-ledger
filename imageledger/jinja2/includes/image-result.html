@@ -16,8 +16,8 @@
       </div>
       <figcaption>
         <a href="{{ detail_url }}">
-          <p class="title">{{ image.title|truncate(25, False, '…', 5) }}{% if image.creator %},
-                {{ image.creator|truncate(20, False, '…', 5) }}
+          <p class="title">{{ image.title|truncate(25) }}{% if image.creator %},
+                {{ image.creator|truncate(20) }}
             {% endif %}
           </p>
           </a>
