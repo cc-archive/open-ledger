@@ -25,11 +25,20 @@ def index(request):
 
             # Search fields
             if 'title' in form.cleaned_data.get('search_fields'):
-                or_queries.append(Q("match", title=form.cleaned_data['search']))
+                or_queries.append(Q("query_string",
+                                    default_operator="AND",
+                                    fields=["title"],
+                                    query=form.cleaned_data['search']))
             if 'tags' in form.cleaned_data.get('search_fields'):
-                or_queries.append(Q("match", tags=form.cleaned_data['search']))
+                or_queries.append(Q("query_string",
+                                    default_operator="AND",
+                                    fields=["tags"],
+                                    query=form.cleaned_data['search']))
             if 'creator' in form.cleaned_data.get('search_fields'):
-                or_queries.append(Q("match", creator=form.cleaned_data['search']))
+                or_queries.append(Q("query_string",
+                                    default_operator="AND",
+                                    fields=["creator"],
+                                    query=form.cleaned_data['search']))
 
             # Limit to explicit providers first, and then to work providers second, if provided.
             # If provider is supplied, work providers is ignored. TODO revisit this logic as it
