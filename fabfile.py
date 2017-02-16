@@ -100,6 +100,10 @@ DATASOURCES = {
     'sync': {
         'action': 'sync',
         'name': 'sync',
+    },
+    'remap': {
+        'action': 'remap',
+        'name': 'remap'
     }
 }
 
@@ -215,6 +219,8 @@ def load_data_from_instance(instance):
                     run('{before_args}./venv/bin/python manage.py handlers {provider} {flags} ; sleep 1'.format(**env.datasource))
                 elif env.datasource['action'] == 'sync':
                     run('{before_args}./venv/bin/python manage.py syncer {flags} ; sleep 1'.format(**env.datasource))
+                elif env.datasource['action'] == 'remap':
+                    run('{before_args}./venv/bin/python manage.py remap {flags} ; sleep 1'.format(**env.datasource))
 
 def deploy_code(host_string):
     max_retries = 20
