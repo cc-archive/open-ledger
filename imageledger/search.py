@@ -30,7 +30,7 @@ class Results(object):
         self.items = []
 
 class Image(DocType):
-    title = String()
+    title = String(analyzer="english")
     identifier = String(index="not_analyzed")
     creator = String()
     creator_url = String(index="not_analyzed")
