@@ -1,5 +1,6 @@
 # encoding: utf-8
 import logging
+from urllib.parse import urlparse
 
 log = logging.getLogger(__name__)
 
@@ -33,12 +34,15 @@ DEFAULT_LICENSE = "ALL"
 
 LICENSE_LIST.update(set(l for l in LICENSE_GROUPS.keys()))
 
+class LicenseException(Exception):
+    pass
+
 def get_license_url(license, version):
     """For a given version and license string, return the canonical human-readable deed"""
     if not license:
-        raise Exception("No license was provided")
+        raise LicenseException("No license was provided")
     if not version:
-        raise Exception("No version was provided")
+        raise LicenseException("No version was provided")
 
     if not license.upper() in set(l[0] for l in LICENSES):
         log.warn("Unknown license was provided: %r", license)
@@ -54,6 +58,29 @@ def get_license_url(license, version):
         return "{}/publicdomain/mark/1.0".format(LICENSE_URL_BASE)
     elif license and version:
         return "{}/licenses/{}/{}".format(LICENSE_URL_BASE, license, version)
+
+def url_to_license(url):
+    """Given a URL, return the license"""
+    (scheme, netloc, path, *remainder) = urlparse(url)
+    path_parts = path.split('/')
+    if len(path_parts) != 4:
+        raise LicenseException("Did not get 4 path segments, probably not a CC license URL")
+    license = path_parts[2].upper()  # First is '', because it starts with a leading /
+    version = path_parts[3]
+
+    # Handle the PD licenses as special-cases
+    if license == 'ZERO':
+        license = 'CC0'
+        version = None
+    if license == 'MARK':
+        license = 'PDM'
+        version = None
+    if license not in LICENSE_LIST:
+        raise LicenseException("License fragment %s was not a valid license", license)
+    if version:
+        return "{} {}".format(license, version)
+    else:
+        return license
 
 def license_map_from_partners():
     """Returns a dictionary of each partner with known licensing schemes, and their

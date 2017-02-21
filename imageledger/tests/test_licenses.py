@@ -81,11 +81,11 @@ class TestModels(TestCase):
 
     def test_get_license_url_no_version(self):
         """The license URL method should return an exception if not passed a version"""
-        self.assertRaises(Exception, licenses.get_license_url, "by", None)
+        self.assertRaises(licenses.LicenseException, licenses.get_license_url, "by", None)
 
     def test_get_license_url_no_license(self):
         """The license URL method should return an exception if not passed a license"""
-        self.assertRaises(Exception, licenses.get_license_url, None, "3.0")
+        self.assertRaises(licenses.LicenseException, licenses.get_license_url, None, "3.0")
 
     def test_get_license_url_unknown_license(self):
         """The license URL method should return None if passed an unknown license"""
@@ -95,3 +95,26 @@ class TestModels(TestCase):
         """The license URL method should return the correct public domain licenses regardless of version"""
         assert "https://creativecommons.org/publicdomain/zero/1.0" == licenses.get_license_url("cc0", "10.0")
         assert "https://creativecommons.org/publicdomain/mark/1.0" == licenses.get_license_url("pdm", "10.0")
+
+    def test_url_to_license(self):
+        """The URL-to-license method should return the correct license and version number given a well-formed URL"""
+        url = "https://creativecommons.org/licenses/by/3.0"
+        self.assertEquals("BY 3.0", licenses.url_to_license(url))
+        url = "https://creativecommons.org/licenses/by-nc/4.0"
+        self.assertEquals("BY-NC 4.0", licenses.url_to_license(url))
+
+    def test_url_to_pd_licenses(self):
+        """The URL-to-license method should return the correct license and version number given a
+        well-formed URL to the public domain licenses"""
+        url = "https://creativecommons.org/publicdomain/zero/1.0"
+        self.assertEquals("CC0", licenses.url_to_license(url))
+        url = "https://creativecommons.org/publicdomain/mark/1.0"
+        self.assertEquals("PDM", licenses.url_to_license(url))
+
+    def test_url_to_license_unknown_license(self):
+        """The URL to license method should raise an exception if an unknown URL is passed"""
+        bad = "http://example.com"
+        # Exceptions for both malformed URL and non-licenses
+        self.assertRaises(licenses.LicenseException, licenses.url_to_license, bad)
+        bad = "https://creativecommons.org/licenses/madeup/3.0"
+        self.assertRaises(licenses.LicenseException, licenses.url_to_license, bad)
