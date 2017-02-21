@@ -190,7 +190,7 @@ RESULTS_PER_PAGE = 20
 # These providers are current loaded
 WORK_TYPES = {
     'photos': ['flickr', '500px'],
-    'cultural': ['rijksmuseum', 'nypl', 'wikimedia', 'met']
+    'cultural': ['rijksmuseum', 'nypl', 'wikimedia', 'met', 'bl', 'nhl', 'nbc', 'cg']
 }
 PROVIDERS = {
     'flickr': {'display_name': 'Flickr',
@@ -204,7 +204,14 @@ PROVIDERS = {
               'url': 'https://500px.com/'},
     'met': {'display_name': 'Metropolitan Museum of Art',
               'url': 'http://www.metmuseum.org/'},
-
+    'bl': {'display_name': 'British Library',
+                            'url': 'http://www.bl.uk/'},
+    'nhl': {'display_name': 'Natural History Museum, London',
+            'url': 'http://www.nhm.ac.uk/'},
+    'nbc': {'display_name': 'Naturalis Biodiversity Center',
+            'url': 'http://www.naturalis.nl/en/'},
+    'cg': {'display_name': 'Culture Grid',
+           'url': 'http://www.culturegrid.org.uk/'}
 }
 
 try:
@@ -219,7 +226,8 @@ except ImportError:
     FLICKR_KEY = os.environ.get('FLICKR_KEY')
     FLICKR_SECRET = os.environ.get('FLICKR_SECRET')
     NYPL_KEY = os.environ.get('NYPL_KEY')
-
+    EUROPEANA_API_KEY = os.environ.get('EUROPEANA_API_KEY')
+    EUROPEANA_PRIVATE_KEY = os.environ.get('EUROPEANA_PRIVATE_KEY')
     ELASTICSEARCH_URL = os.environ.get('ELASTICSEARCH_URL')
     ELASTICSEARCH_PORT = 80
     AWS_ACCESS_KEY_ID = os.environ.get('AWS_ACCESS_KEY_ID')

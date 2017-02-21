@@ -21,7 +21,7 @@ def grouper_it(n, iterable):
             return
         yield itertools.chain((first_el,), chunk_it)
 
-def insert_image(walk_func, serialize_func, chunk_size, max_results=5000):
+def insert_image(walk_func, serialize_func, chunk_size, max_results=5000, **kwargs):
     count = 0
     success_count = 0
     es = search.init()
@@ -29,7 +29,7 @@ def insert_image(walk_func, serialize_func, chunk_size, max_results=5000):
     mapping = search.Image._doc_type.mapping
     mapping.save(settings.ELASTICSEARCH_INDEX)
 
-    for chunk in grouper_it(chunk_size, walk_func()):
+    for chunk in grouper_it(chunk_size, walk_func(**kwargs)):
         if max_results is not None and count >= max_results:
             break
         else:

@@ -319,12 +319,3 @@ class TestSearch(TestCase):
         # The GET request should redirect
         resp = self.client.get(reverse('search-met'))
         self.assertEquals(resp.status_code, 301)
-
-        # Assert that the redirected request has 'met' checked by default and other providers unchecked
-        resp = self.client.get(reverse('search-met'), follow=True)
-        self.assertInHTML('''<input checked="checked" id="id_providers_2" name="providers" type="checkbox" value="met" />''',
-                          str(resp.content))
-        self.assertInHTML('''<input id="id_providers_3" name="providers" type="checkbox" value="nypl" />''',
-                          str(resp.content))
-        self.assertInHTML('''<input id="id_providers_1" name="providers" type="checkbox" value="flickr" />''',
-                          str(resp.content))
