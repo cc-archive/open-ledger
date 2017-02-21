@@ -55,7 +55,7 @@ class Command(BaseCommand):
                             help="The number of threads to start up at once")
 
     def handle(self, *args, **options):
-        if options['verbose']:
+        if options['verbose'] or settings.DEBUG:
             log.setLevel(logging.DEBUG)
         self.index_all_images(chunk_size=options['chunk_size'],
                               num_iterations=options['num_iterations'],
@@ -97,7 +97,7 @@ def do_index(start, chunk_size):
     log.debug("Starting index in range from %d to %d...", start, end)
 
     qs = models.Image.objects.filter(removed_from_source=False, id__gt=start).order_by('id')[0:chunk_size]
-    #qs = models.Image.objects.filter(removed_from_source=False).order_by('id')[start:end]
+
     for db_image in server_cursor_query(qs, chunk_size=chunk_size):
         log.debug("Indexing database record %s", db_image.identifier)
         image = search.db_image_to_index(db_image)

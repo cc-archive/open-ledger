@@ -60,10 +60,11 @@ def get_license_url(license, version):
         return "{}/licenses/{}/{}".format(LICENSE_URL_BASE, license, version)
 
 def url_to_license(url):
-    """Given a URL, return the license"""
+    """Given a URL, return the license as a license/version tuple"""
     (scheme, netloc, path, *remainder) = urlparse(url)
+
     path_parts = path.split('/')
-    if len(path_parts) != 4:
+    if len(path_parts) < 4:
         raise LicenseException("Did not get 4 path segments, probably not a CC license URL")
     license = path_parts[2].upper()  # First is '', because it starts with a leading /
     version = path_parts[3]
@@ -71,16 +72,13 @@ def url_to_license(url):
     # Handle the PD licenses as special-cases
     if license == 'ZERO':
         license = 'CC0'
-        version = None
+        version = '1.0'
     if license == 'MARK':
         license = 'PDM'
-        version = None
+        version = '1.0'
     if license not in LICENSE_LIST:
         raise LicenseException("License fragment %s was not a valid license", license)
-    if version:
-        return "{} {}".format(license, version)
-    else:
-        return license
+    return (license, version)
 
 def license_map_from_partners():
     """Returns a dictionary of each partner with known licensing schemes, and their

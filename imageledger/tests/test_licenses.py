@@ -99,17 +99,17 @@ class TestModels(TestCase):
     def test_url_to_license(self):
         """The URL-to-license method should return the correct license and version number given a well-formed URL"""
         url = "https://creativecommons.org/licenses/by/3.0"
-        self.assertEquals("BY 3.0", licenses.url_to_license(url))
+        self.assertEquals(("BY", "3.0"), licenses.url_to_license(url))
         url = "https://creativecommons.org/licenses/by-nc/4.0"
-        self.assertEquals("BY-NC 4.0", licenses.url_to_license(url))
+        self.assertEquals(("BY-NC", "4.0"), licenses.url_to_license(url))
 
     def test_url_to_pd_licenses(self):
         """The URL-to-license method should return the correct license and version number given a
         well-formed URL to the public domain licenses"""
         url = "https://creativecommons.org/publicdomain/zero/1.0"
-        self.assertEquals("CC0", licenses.url_to_license(url))
+        self.assertEquals(("CC0", "1.0"), licenses.url_to_license(url))
         url = "https://creativecommons.org/publicdomain/mark/1.0"
-        self.assertEquals("PDM", licenses.url_to_license(url))
+        self.assertEquals(("PDM", "1.0"), licenses.url_to_license(url))
 
     def test_url_to_license_unknown_license(self):
         """The URL to license method should raise an exception if an unknown URL is passed"""

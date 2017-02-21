@@ -97,6 +97,11 @@ DATASOURCES = {
         'action': 'load-from-provider',
         'provider': 'met',
     },
+    'europeana': {
+        'name': 'load-europeana',
+        'action': 'load-from-provider',
+        'provider': 'europeana',
+    },
     'sync': {
         'action': 'sync',
         'name': 'sync',
@@ -203,6 +208,7 @@ def load_data_from_instance(instance):
                 NYPL_KEY=NYPL_KEY,
                 DJANGO_SECRET_KEY=os.environ.get('DJANGO_SECRET_KEY'),
                 NEW_RELIC_LICENSE_KEY=os.environ.get('NEW_RELIC_LICENSE_KEY'),
+                EUROPEANA_API_KEY=os.environ.get('EUROPEANA_API_KEY')
                 ):
 
                 env.datasource['flags'] = env.flags

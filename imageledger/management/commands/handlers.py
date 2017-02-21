@@ -8,7 +8,8 @@ import botocore
 
 from django.core.management.base import BaseCommand, CommandError
 
-from imageledger.handlers import handler_rijks, handler_nypl, handler_500px, handler_wikimedia, handler_met
+from imageledger.handlers import handler_rijks, handler_nypl, handler_500px, \
+    handler_wikimedia, handler_met, handler_europeana
 
 log = logging.getLogger(__name__)
 log.setLevel(logging.INFO)
@@ -20,7 +21,7 @@ class Command(BaseCommand):
     can_import_settings = True
     requires_migrations_checks = True
 
-    current_handlers = ('rijks', 'nypl', '500px', 'wikimedia', 'met')
+    current_handlers = ('rijks', 'nypl', '500px', 'wikimedia', 'met', 'europeana')
 
     def add_arguments(self, parser):
         parser.add_argument("handler",
@@ -53,6 +54,7 @@ class Command(BaseCommand):
                             help="Number of threads to run loader in (only valid for `met`)")
 
     def handle(self, *args, **options):
+        added = 0
         if options['verbose']:
             log.setLevel(logging.DEBUG)
         if options['handler'] not in self.current_handlers:
@@ -78,10 +80,19 @@ class Command(BaseCommand):
             else:
                 file_dir = options['from_file']
             added = handler_nypl.insert_image(options['chunk_size'], options['max_results'], from_file=file_dir)
-            added = 0
         elif options['handler'] == 'met':
             handler_met.walk(num_threads=options['num_threads'])
-            added = 0
+        elif options['handler'] == 'europeana':
+            for provider in handler_europeana.providers:
+                if provider == 'nhl':
+                    # NHL is loaded with dupe images, use a chunk size of 1
+                    options['chunk_size'] = 1
+
+                added = handler_europeana.insert_image(walk_func=handler_europeana.walk,
+                                                       serialize_func=handler_europeana.serialize,
+                                                       chunk_size=options['chunk_size'],
+                                                       max_results=options['max_results'],
+                                                       provider=provider)
 
         log.info("Successfully added %d images out of max %d attempted", added, options['max_results'])
 
