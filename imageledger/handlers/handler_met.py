@@ -65,8 +65,6 @@ THUMBNAIL_WIDTH = 200
 log = logging.getLogger(__name__)
 
 def photos(search=None, page=1, per_page=20, **kwargs):
-    # This will retrieve the complete collection of openly-licensed images
-    # Rijks pages are zero-indexed, so always subtract one before the request
     params = {}
     r = requests.get(ENDPOINT_PHOTOS, params=params)
     results = r.json()
