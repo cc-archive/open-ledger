@@ -250,7 +250,7 @@ class TestSearch(TestCase):
         """[#119] Results on page 1 should not reappear on page 2"""
         # Re-set the results per page (this could be less fragile)
         prev_default = forms.RESULTS_PER_PAGE_DEFAULT
-        forms.RESULTS_PER_PAGE_DEFAULT = 2:
+        forms.RESULTS_PER_PAGE_DEFAULT = 2
 
         img1 = models.Image.objects.create(url='example.com/1', title='relevant ' * 10,)
         img2 = models.Image.objects.create(url='example.com/2', title='less ' * 10 + 'relevant',)
