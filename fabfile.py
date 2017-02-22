@@ -127,10 +127,6 @@ else:
 if not env.get('instance_type'):
     env.instance_type = 't2.micro'
 
-# Override the database instance or use the default
-if not env.get('database_id'):
-    env.database_id = 'openledger-db-1'
-
 # Which branch should we check out on the loader?
 if not env.get('branch'):
     env.branch = 'master'
@@ -152,7 +148,9 @@ log = logging.getLogger(__name__)
 log.addHandler(console)
 log.setLevel(logging.DEBUG)
 
-log.debug("Starting up with ami=%s, key=%s, db=%s", AMI, KEY_NAME, env.database_id)
+log.debug("Starting up with ami=%s, key=%s, db=%s, es=%s", AMI, KEY_NAME,
+          os.environ.get('DJANGO_DATABASE_HOST'),
+          ELASTICSEARCH_URL)
 
 class LoaderException(Exception):
     pass
