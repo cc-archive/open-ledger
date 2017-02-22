@@ -11,7 +11,6 @@
               <i class="fi-magnifying-glass"></i>
               {{ form.search }}
               {{ form.page }}
-              {{ form.per_page }}
               <input type="submit" class="button" value="GO" />
             </div>
 
@@ -24,6 +23,8 @@
 
     </div>
   </div>
+
+
   <h4>Filters</h4>
 
   <div class="row search-filters">
@@ -34,12 +35,18 @@
         </legend>
         {{ form.licenses }}
       </fieldset>
-      <fieldset>
+      <fieldset style="margin-top: .2rem">
         <legend style="margin-right: 1rem">
           Search within:
           </legend>
           {{ form.search_fields }}
         </fieldset>
+      <fieldset style="margin-top: .2rem">
+      <legend style="margin-right: 1rem">
+        Results per page:
+      </legend>
+       {{ form.per_page }}
+      </fieldset>
     </div>
     <div class="column small-6 search-collections">
       <fieldset>
@@ -76,4 +83,6 @@
     </div>
 
   </div>
+
+
 </form>

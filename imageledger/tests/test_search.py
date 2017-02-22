@@ -248,31 +248,34 @@ class TestSearch(TestCase):
 
     def test_results_dont_repeat(self):
         """[#119] Results on page 1 should not reappear on page 2"""
-        with self.settings(RESULTS_PER_PAGE=2):
-            img1 = models.Image.objects.create(url='example.com/1', title='relevant ' * 10,)
-            img2 = models.Image.objects.create(url='example.com/2', title='less ' * 10 + 'relevant',)
-            img3 = models.Image.objects.create(url='example.com/3', title='less ' * 100 + 'relevant',)
-            img4 = models.Image.objects.create(url='example.com/4', title='less ' * 200 + 'relevant',)
-            self._index_img(img1)
-            self._index_img(img2)
-            self._index_img(img3)
-            self._index_img(img4)
-            resp = self.client.get(self.url, {'search_fields': 'title',
-                                              'search': 'relevant',})
-            # Page 1 should only have 2 results
-            self.assertEqual(2, len(select_nodes(resp, '.t-image-result')))
-            self.assertEqual(img1.identifier, select_nodes(resp, '.t-image-result')[0].attrib['data-identifier'])
-            self.assertEqual(img2.identifier, select_nodes(resp, '.t-image-result')[1].attrib['data-identifier'])
+        # Re-set the results per page (this could be less fragile)
+        prev_default = forms.RESULTS_PER_PAGE_DEFAULT
+        forms.RESULTS_PER_PAGE_DEFAULT = 2:
 
-            # Page 2 should have 2 results as well, but the other 2
-            resp = self.client.get(self.url, {'search_fields': 'title',
-                                              'search': 'relevant',
-                                              'page': 2})
+        img1 = models.Image.objects.create(url='example.com/1', title='relevant ' * 10,)
+        img2 = models.Image.objects.create(url='example.com/2', title='less ' * 10 + 'relevant',)
+        img3 = models.Image.objects.create(url='example.com/3', title='less ' * 100 + 'relevant',)
+        img4 = models.Image.objects.create(url='example.com/4', title='less ' * 200 + 'relevant',)
+        self._index_img(img1)
+        self._index_img(img2)
+        self._index_img(img3)
+        self._index_img(img4)
+        resp = self.client.get(self.url, {'search_fields': 'title',
+                                          'search': 'relevant',})
+        # Page 1 should only have 2 results
+        self.assertEqual(2, len(select_nodes(resp, '.t-image-result')))
+        self.assertEqual(img1.identifier, select_nodes(resp, '.t-image-result')[0].attrib['data-identifier'])
+        self.assertEqual(img2.identifier, select_nodes(resp, '.t-image-result')[1].attrib['data-identifier'])
 
-            self.assertEqual(2, len(select_nodes(resp, '.t-image-result')))
-            self.assertEqual(img3.identifier, select_nodes(resp, '.t-image-result')[0].attrib['data-identifier'])
-            self.assertEqual(img4.identifier, select_nodes(resp, '.t-image-result')[1].attrib['data-identifier'])
+        # Page 2 should have 2 results as well, but the other 2
+        resp = self.client.get(self.url, {'search_fields': 'title',
+                                          'search': 'relevant',
+                                          'page': 2})
 
+        self.assertEqual(2, len(select_nodes(resp, '.t-image-result')))
+        self.assertEqual(img3.identifier, select_nodes(resp, '.t-image-result')[0].attrib['data-identifier'])
+        self.assertEqual(img4.identifier, select_nodes(resp, '.t-image-result')[1].attrib['data-identifier'])
+        forms.RESULTS_PER_PAGE_DEFAULT = prev_default
 
     def test_license_types(self):
         """[#123] Allow selection by license type"""

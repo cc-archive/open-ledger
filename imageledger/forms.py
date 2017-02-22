@@ -5,8 +5,6 @@ from imageledger import licenses, models
 from akismet import Akismet
 from wordfilter import Wordfilter
 
-PROVIDER_PER_PAGE = 20
-
 LICENSE_CHOICES = (
     ('ALL-$', 'Use for commercial purposes'),
     ('ALL-MOD', 'Modify, adapt, or build upon')
@@ -30,9 +28,17 @@ WORK_TYPES_DEFAULT = [wt[0] for wt in WORK_TYPES]
 PROVIDER_CHOICES = sorted([(p, settings.PROVIDERS[p]['display_name'],) for p in settings.PROVIDERS])
 PROVIDER_DEFAULT = [p for p in settings.PROVIDERS]
 
+# Results per page choices
+RESULTS_PER_PAGE_CHOICES = (
+    ('20', '20'),
+    ('50', '50'),
+    ('100', '100'),
+)
+RESULTS_PER_PAGE_DEFAULT = '20'
+
 class SearchForm(forms.Form):
     initial_data = {'page': 1,
-                    'per_page': settings.RESULTS_PER_PAGE,
+                    'per_page': RESULTS_PER_PAGE_DEFAULT,
                     'search_fields': FIELD_DEFAULT,
                     'work_types': WORK_TYPES_DEFAULT,
                     'licenses': [licenses.DEFAULT_LICENSE],
@@ -51,7 +57,10 @@ class SearchForm(forms.Form):
     providers = forms.MultipleChoiceField(widget=forms.CheckboxSelectMultiple,
                                           required=False,
                                           choices=PROVIDER_CHOICES)
-    per_page = forms.IntegerField(widget=forms.HiddenInput, required=False)
+    per_page = forms.ChoiceField(label="Results per page",
+                                 widget=forms.RadioSelect,
+                                 required=False,
+                                 choices=RESULTS_PER_PAGE_CHOICES)
 
 class ListForm(forms.ModelForm):
 

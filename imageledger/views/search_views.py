@@ -20,6 +20,7 @@ def index(request):
 
     if form.is_valid():
         if form.cleaned_data.get('search'):
+            per_page = int(form.cleaned_data.get('per_page') or forms.RESULTS_PER_PAGE_DEFAULT)
             and_queries = []
             or_queries = []
 
@@ -77,10 +78,10 @@ def index(request):
                 if license_filters:
                     s = s.filter('terms', license=license_filters)
                 response = s.execute()
-                results.pages = int(int(response.hits.total) / settings.RESULTS_PER_PAGE)
+                results.pages = int(int(response.hits.total) / per_page)
                 results.page = form.cleaned_data['page'] or 1
-                start = (results.page - 1) * settings.RESULTS_PER_PAGE
-                end = start + settings.RESULTS_PER_PAGE
+                start = (results.page - 1) * per_page
+                end = start + per_page
                 for r in s[start:end]:
                     results.items.append(r)
     else:
