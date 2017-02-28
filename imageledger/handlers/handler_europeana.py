@@ -42,6 +42,12 @@ def photos(search=None, page='*', per_page=20, **kwargs):
 def serialize(result):
     """For a given Europeana result, map that to our database"""
     if 'edmIsShownBy' in result:
+        # Some Europeana identifiers are longer than we support (>80 chars!)
+        # Skip these records for now or else the database will choke; we don't
+        # want to truncate them or run an expensive db migration on our end right now
+        if len(result['id']) > 79:
+            return None
+
         url = result['edmIsShownBy'][0]
 
         image = models.Image(url=url)
