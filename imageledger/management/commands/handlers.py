@@ -83,16 +83,11 @@ class Command(BaseCommand):
         elif options['handler'] == 'met':
             handler_met.walk(num_threads=options['num_threads'])
         elif options['handler'] == 'europeana':
-            for provider in handler_europeana.providers:
-                if provider == 'nhl':
-                    # NHL is loaded with dupe images, use a chunk size of 1
-                    options['chunk_size'] = 1
+            added = handler_europeana.insert_image(walk_func=handler_europeana.walk,
+                                                   serialize_func=handler_europeana.serialize,
+                                                   chunk_size=options['chunk_size'],
+                                                   max_results=options['max_results'])
 
-                added = handler_europeana.insert_image(walk_func=handler_europeana.walk,
-                                                       serialize_func=handler_europeana.serialize,
-                                                       chunk_size=options['chunk_size'],
-                                                       max_results=options['max_results'],
-                                                       provider=provider)
 
         log.info("Successfully added %d images out of max %d attempted", added, options['max_results'])
 

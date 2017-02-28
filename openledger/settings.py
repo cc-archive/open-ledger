@@ -187,7 +187,7 @@ ELASTICSEARCH_INDEX = "openledger"
 # These providers are current loaded
 WORK_TYPES = {
     'photos': ['flickr', '500px'],
-    'cultural': ['rijksmuseum', 'nypl', 'wikimedia', 'met', 'bl', 'nhl', 'nbc', 'cg']
+    'cultural': ['rijksmuseum', 'nypl', 'wikimedia', 'met', 'europeana']
 }
 PROVIDERS = {
     'flickr': {'display_name': 'Flickr',
@@ -201,14 +201,8 @@ PROVIDERS = {
               'url': 'https://500px.com/'},
     'met': {'display_name': 'Metropolitan Museum of Art',
               'url': 'http://www.metmuseum.org/'},
-    'bl': {'display_name': 'British Library',
-                            'url': 'http://www.bl.uk/'},
-    'nhl': {'display_name': 'Natural History Museum, London',
-            'url': 'http://www.nhm.ac.uk/'},
-    'nbc': {'display_name': 'Naturalis Biodiversity Center',
-            'url': 'http://www.naturalis.nl/en/'},
-    'cg': {'display_name': 'Culture Grid',
-           'url': 'http://www.culturegrid.org.uk/'}
+    'europeana': {'display_name': 'Europeana',
+                            'url': 'http://www.europeana.eu/portal/en'},
 }
 
 try:
