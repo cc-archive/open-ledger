@@ -57,7 +57,7 @@ def serialize(result):
         image.provider = SOURCE_NAME
         image.creator = result['dcCreator'][0] if 'dcCreator' in result else None
         license, version = licenses.url_to_license(result['rights'][0])
-        image.license = license
+        image.license = license.lower()
         image.license_version = version
         image.foreign_landing_url = result['guid']
         image.foreign_identifier = result['id']
