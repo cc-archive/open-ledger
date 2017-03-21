@@ -53,3 +53,22 @@ class Command(BaseCommand):
                 log.debug("Going to delete image %s", img)
                 deleted_count += 1
         log.info("Deleted %d from search engine", deleted_count)
+
+    def correct_license_capitalization(self, provider='europeana', end=None):
+        """[#186] Correct license capitalization"""
+        s = Search()
+        q = Q('term', provider=provider)
+        s = s.query(q)
+        response = s.execute()
+        total = response.hits.total
+        log.info("Using search engine instance %s", settings.ELASTICSEARCH_URL)
+        mod_count = 0
+        count = 0
+        for r in s.scan():
+            if not r.license.islower():
+                img = search.Image.get(id=r.identifier)
+                log.debug("[%d] Changing license %s to %s", count, img.license, img.license.lower())
+                img.update(license=img.license.lower())
+                mod_count += 1
+            count += 1
+        log.info("Modified %d records in search engine", mod_count)
