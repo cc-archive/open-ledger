@@ -8,7 +8,11 @@
 
 {% with %}
   {% set endpoint = '' %}
-  {% include "includes/search-form.html" %}
+  {% if results.items|length == 0 or request.GET.get('advanced', '') != '' %}
+  	{% include "includes/search-form.html" %}
+  {% else %}
+  	{% include "includes/search-form-abbr.html" %}
+  {% endif %}
 {% endwith %}
 
 
