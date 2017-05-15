@@ -1,0 +1,27 @@
+<form method="GET" action="{{ endpoint }}" class="search-form"
+      onSubmit="openledger.form.resetSearchOnSubmit(this)">
+
+  <div class="row align-center">
+    <div class="column">
+      <div class="row">
+        <img class="logo-black" src="{{ static('images/cc.svg') }}" alt="CC" />
+          <div class="column">
+            <img src="{{ static('images/title-search.svg') }}" alt="Search" width="200"/>
+            <div class="search-field-container">
+              <i class="fi-magnifying-glass"></i>
+              {{ form.search }}
+              {{ form.page }}
+              <input type="submit" class="button" value="GO" />
+            </div>
+
+          </div>
+      </div>
+      <p>
+      	<a href="{{ url_with_form('index', form or [], args=[], kwargs={'advanced': True}) }}">Advanced search.</a>
+      </p>
+
+    </div>
+  </div>
+
+
+</form>

@@ -97,20 +97,24 @@ class TestSearch(TestCase):
         """It should be possible to load the search view"""
         resp = self.client.get(self.url)
         assert 200 == resp.status_code
+    
+    def test_search_advanced(self):
+        """It should be possible to specify the advanced search URL parameter and get the advanced search form"""
+        resp = self.client.get(self.url, {'search': 'nothing', 'advanced': 'true'})
+        assert select_node(resp, '.search-filters') is not None
 
     def test_search_no_results(self):
-        """It should be possible to get a no-results page"""
+        """It should be possible to get a no-results page and to show the advanced search form"""
         resp = self.client.get(self.url, {'search': 'nothing', 'search_fields': 'title'})
-        p = select_node(resp, '.t-no-results')
-        assert p is not None
+        assert select_node(resp, '.t-no-results') is not None and select_node(resp, '.search-filters') is not None
 
     def test_search_results(self):
-        """If indexed, a single result should be returned from the search engine"""
+        """If indexed, a single result should be returned from the search engine, the advanced search form should be hidden"""
         self._index_img(self.img1)
         resp = self.client.get(self.url, {'search': 'greyhounds', 'search_fields': 'title'})
         p = select_nodes(resp, '.t-image-result')
         self.assertEquals(1, len(p))
-        assert select_node(resp, '.t-no-results') is None
+        assert select_node(resp, '.t-no-results') is None and select_node(resp, '.search-filters') is None
 
 
     def test_search_filter_creator(self):

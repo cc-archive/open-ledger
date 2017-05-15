@@ -36,6 +36,11 @@ technical and privacy challenges here, and we seek to identify those early.
 
 Set up a virtual environment:
 
+To install virtualenv:
+```
+pip install virtualenv 
+```
+
 ```
 virtualenv venv --python=python3
 source venv/bin/activate
@@ -186,6 +191,20 @@ In the openledger directory, run:
 
 ```
 eb init
+```
+
+Create the elasticsearch index named openledger (you can change its name in settins/openledger.py) 
+```
+curl -XPUT 'localhost:9200/openledger?pretty' -H 'Content-Type: application/json' -d'
+{
+    "settings" : {
+        "index" : {
+            "number_of_shards" : 3, 
+            "number_of_replicas" : 2 
+        }
+    }
+}
+'
 ```
 
 When you are ready to deploy, *run the tests first*.
