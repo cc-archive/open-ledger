@@ -3,7 +3,7 @@ var imagesLoaded = require('imagesloaded')
 import * as utils from './utils'
 
 const columnWidth = 210
-const gutter = 10
+const gutter = 5 
 
 const init = () => {
   var grid = document.querySelector('.grid')
@@ -37,8 +37,7 @@ const init = () => {
   }
 
 }
-
-document.addEventListener('DOMContentLoaded', () => {
+window.addEventListener('load', () => {
   const isIE = utils.detectIE()
   var results = document.querySelector('.results')
 
@@ -52,10 +51,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
     imgLoad.on('always', () => {
       // detect which image is broken
+	console.log ("Always triggered " + imgLoad.images.length + " images.")
       for (var i=0, len=imgLoad.images.length; i < len; i++) {
         var image = imgLoad.images[i]
         if (!image.isLoaded && !isIE) {
-          let parent = image.img.parentNode.parentNode.parentNode.parentNode
+		console.log  ("hiding image: " + i + " " + image.isLoaded + " " + isIE)
+		console.log (image);
+          let parent = image.img.parentNode.parentNode.parentNode
           parent.style.display = 'none'
         }
       }
