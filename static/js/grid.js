@@ -51,12 +51,9 @@ window.addEventListener('load', () => {
 
     imgLoad.on('always', () => {
       // detect which image is broken
-	console.log ("Always triggered " + imgLoad.images.length + " images.")
       for (var i=0, len=imgLoad.images.length; i < len; i++) {
         var image = imgLoad.images[i]
         if (!image.isLoaded && !isIE) {
-		console.log  ("hiding image: " + i + " " + image.isLoaded + " " + isIE)
-		console.log (image);
           let parent = image.img.parentNode.parentNode.parentNode
           parent.style.display = 'none'
         }
