@@ -64,7 +64,7 @@ class TestSearch(TestCase):
         """Index a single img and ensure that it's been propagated to the search engine"""
         image = search.db_image_to_index(img)
         image.save()
-        self.es.indices.refresh(force=True)
+        self.es.indices.refresh()
 
     def test_query(self):
         """It should be possible to query the search engine for results"""
@@ -178,7 +178,7 @@ class TestSearch(TestCase):
             rsps.add(responses.HEAD, FOREIGN_URL + TEST_IMAGE_REMOVED, status=404)
             self.removed.sync()
         signals._update_search_index(self.removed)
-        self.es.indices.refresh(force=True)
+        self.es.indices.refresh()
         s = self.s.query(Q("match", title="removed"))
         r = s.execute()
         self.assertEquals(0, r.hits.total)
