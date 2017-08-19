@@ -14,7 +14,7 @@ log = logging.getLogger(__name__)
 @ensure_csrf_cookie
 def index(request):
     s = Search(index=settings.ELASTICSEARCH_INDEX)
-    s = s.sort({'_score': {'order': 'desc'}})
+    s = s.extra(track_scores=True)
     form = forms.SearchForm(request.GET)
     results = search.Results(page=1)
 
@@ -68,15 +68,19 @@ def index(request):
                     license_values.append([l.lower() for l in licenses.LICENSE_GROUPS[l_group]])
                 license_filters = list(reduce(set.intersection, map(set, license_values)))
 
+            for license_filter in license_filters:
+                and_queries.append(
+                            Q('bool', should=[Q("term", license=license_filter)])
+                        )
+
             if len(or_queries) > 0 or len(and_queries) > 0:
                 q = Q('bool',
                       should=or_queries,
                       must=Q('bool',
                              should=and_queries),
                       minimum_should_match=1)
+
                 s = s.query(q)
-                if license_filters:
-                    s = s.filter('terms', license=license_filters)
                 response = s.execute()
                 results.pages = int(int(response.hits.total) / per_page)
                 results.page = form.cleaned_data['page'] or 1
@@ -86,6 +90,7 @@ def index(request):
                     results.items.append(r)
     else:
         form = forms.SearchForm(initial=forms.SearchForm.initial_data)
+
 
     return render(request, 'results.html',
                   {'form': form,
