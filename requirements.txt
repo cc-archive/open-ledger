@@ -6,7 +6,7 @@ rdflib
 requests
 requests-oauthlib
 boto3
-elasticsearch-dsl>=2.0.0,<3.0.0
+elasticsearch-dsl>=5.0.0,<6.0.0
 aws-requests-auth
 django
 django-cas-ng
