@@ -11,14 +11,13 @@ install:
 - cd elasticsearch-5.4.0
 - echo 'y' |  bin/elasticsearch-plugin install mapper-attachments
 script:
-- elasticsearch -d --default.path.conf=imageledger/tests/elasticsearch
-- sleep 20
+- cd ../
 - python manage.py test
 services:
 - postgresql
 before_script:
 - psql -c 'create user deploy with superuser;' -U postgres
-- bin/elasticsearch > temp.txt &
+- bin/elasticsearch -d --default.path.conf=imageledger/tests/elasticsearch > temp.txt &
 - sleep 10
 notifications:
   slack:
