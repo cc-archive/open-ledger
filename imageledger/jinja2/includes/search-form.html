@@ -53,36 +53,21 @@
         <legend >
           Search from these collections:
         </legend>
-        <div class="work-type">
-
-          {{ form.work_types.0 }}
-          <ul>
-            {% for provider in form.providers %}
-              {% if provider.choice_value in work_types.photos %}
-                <li>
-                  {{ provider }}
-                </li>
-              {% endif %}
-            {% endfor %}
-          </ul>
-        </div>
-        <div class="work-type">
-          {{ form.work_types.1 }}
-          <ul>
-            {% for provider in form.providers %}
-              {% if provider.choice_value in work_types.cultural %}
-                <li>
-                  {{ provider }}
-                </li>
-              {% endif %}
-            {% endfor %}
-          </ul>
-        </div>
+	{% for work_type in work_types %}
+		<div class="work-type">
+			{{ form.work_types[loop.index-1] }}
+			<ul>
+				{% for provider in form.providers %}
+					{% if provider.data.value in work_types[work_type] %}
+					<li>
+						{{ form.providers[loop.index-1] }}
+					</li>
+					{% endif %}
+				{% endfor %}
+			</ul>
+		</div>
+	{% endfor %}
       </fieldset>
-
     </div>
-
   </div>
-
-
 </form>
