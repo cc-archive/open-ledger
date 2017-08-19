@@ -6,9 +6,9 @@ cache: bundler
 install:
 - pip install -r requirements.txt
 - pip install -r requirements-test.txt
-- sudo wget -O ./elasticsearch.tar.gz https://artifacts.elastic.co/downloads/elasticsearch/elasticsearch-5.0.0-rc1.tar.gz
-- tar -xvf elasticsearch.tar.gz
-- cd elasticsearch-5.0.0-rc1
+- curl -O https://artifacts.elastic.co/downloads/elasticsearch/elasticsearch-5.4.0.tar.gz
+- tar -xvf elasticsearch-5.4.0.tar.gz
+- cd elasticsearch-5.4.0
 - echo 'y' |  bin/elasticsearch-plugin install mapper-attachments
 script:
 - elasticsearch -d --default.path.conf=imageledger/tests/elasticsearch
