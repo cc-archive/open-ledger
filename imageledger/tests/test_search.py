@@ -64,7 +64,9 @@ class TestSearch(TestCase):
         """Index a single img and ensure that it's been propagated to the search engine"""
         image = search.db_image_to_index(img)
         image.save()
-        self.es.indices.refresh()
+        index = Index(name=settings.ELASTICSEARCH_INDEX)
+        index.flush(force=True)
+        index.refresh()
 
     def test_query(self):
         """It should be possible to query the search engine for results"""
@@ -235,9 +237,9 @@ class TestSearch(TestCase):
 
     def test_sorting(self):
         """[#119] Results should be return in relevance order, always"""
-        img1 = models.Image.objects.create(url='example.com/1', title='relevant ' * 10,)
-        img2 = models.Image.objects.create(url='example.com/2', title='less ' * 10 + 'relevant',)
-        img3 = models.Image.objects.create(url='example.com/3', title='less ' * 100 + 'relevant',)
+        img1 = models.Image.objects.create(url='example.com/1', title='relevant ' * 200,)
+        img2 = models.Image.objects.create(url='example.com/2', title='less ' + 'relevant ' * 100,)
+        img3 = models.Image.objects.create(url='example.com/3', title='less ' * 10 + ' relevant',)
         img4 = models.Image.objects.create(url='example.com/4', title='not at all rel',)
         self._index_img(img1)
         self._index_img(img2)
