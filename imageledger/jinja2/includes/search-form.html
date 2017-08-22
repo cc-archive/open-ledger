@@ -53,16 +53,16 @@
         <legend >
           Search from these collections:
         </legend>
-	{% for work_type in work_types %}
+	{% for type in form.work_types %}
 		<div class="work-type">
-			{{ form.work_types[loop.index-1] }}
+			{{ type }}
 			<ul>
-				{% for provider in form.providers %}
-					{% if provider.data.value in work_types[work_type] %}
+				{% for prov in work_types[type.data.value]|sort %}
+					{% for provider in form.providers if provider.data.value == prov %}
 					<li>
-						{{ form.providers[loop.index-1] }}
+						{{ provider }}
 					</li>
-					{% endif %}
+					{% endfor %}
 				{% endfor %}
 			</ul>
 		</div>
