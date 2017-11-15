@@ -9,7 +9,8 @@ module.exports = [{
   entry: ['whatwg-fetch', "./index"],
   output: {
     path: __dirname + root + "/js/build",
-    filename: 'openledger.js'
+    filename: 'openledger.js',
+    vendor: ['photoswipe', 'photoswipe/src/js/ui/photoswipe-ui-default.js']
   },
   module: {
     loaders: [{
@@ -41,3 +42,6 @@ module.exports = [{
     })]
   }
 ];
+module.exports[0].plugins.push (new webpack.ProvidePlugin({PhotoSwipe: 'photoswipe', PhotoSwipeUI_Default: './photoswipe-ui-default'}))
+
+console.log (module.exports[0].plugins);
