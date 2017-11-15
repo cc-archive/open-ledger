@@ -122,6 +122,7 @@ window.addEventListener('load', () => {
                     }
                     var fn = function (idx) { 
                         return function (e) { 
+                            console.log ('click ' + idx);
                             //first and foremost let's stop propagation and default click actions.
                             e.preventDefault ();
                             e.stopPropagation ();
@@ -148,62 +149,60 @@ window.addEventListener('load', () => {
                                 });
                                 lightBox.init ();
                             } catch (e) { }
-
-                            // Connect buttons
-                            // Copy attribution text
-                            // TODO: add HTML option
-                            var copy = document.querySelector(".pswp .pswp__button--attribution");
-                            var clipboardText = new Clipboard (copy, {
-                                text: function () {
-                                    var idx = lightBox.getCurrentIndex (), data = urls [idx].data;
-                                    return data.title + " by " + data.creator + " is licensed under " + data.license.toUpperCase ();
-                                }
-                            });
-                            clipboardText.on ("success", function (e) { 
-                                e.trigger.classList.toggle ('done');
-
-                                window.setTimeout(function () {
-                                    e.trigger.classList.remove ('done');
-                                }, 1500)
-                            })
-
-                            //Toggle the favorite status
-
-
-                            var fav = document.querySelector(".pswp .pswp__button--favorite");
-
-                            fav.addEventListener ('click', function (e) { 
-                                fav.classList.add ('waiting');
-                                // first we need to fetch the current item, the data and identifier to then fetch the form that contains the fav status
-                                var idx = lightBox.getCurrentIndex (), data = urls [idx].data;
-                                var form = document.querySelector("[data-identifier='"+data.identifier+"'] form.add-to-favorite"), isFav = form.dataset['is-favorite'];
-                                favorite.toggleFavoriteWithForm (form, (isFav) => { 
-                                   fav.classList.remove ('waiting');
-
-                                   if (isFav) { 
-                                       fav.classList.add ('is_fav')
-                                   } else { 
-                                       fav.classList.remove ('is_fav')
-                                   }
-
-                                })
-
-                            });
-                            var list = document.querySelector(".pswp .pswp__button--list");
-                            list.addEventListener ('click', function (e) { 
-                                list.classList.add ('waiting');
-                                var idx = lightBox.getCurrentIndex (), data = urls [idx].data;
-                                var formBtn = document.querySelector("[data-identifier='"+data.identifier+"'] .add-to-list-container button");
-                                formBtn.click ();
-                            });
-
                         }
+                       
                     }
                     image.img.addEventListener ('click', fn (urls.length));
                     var w = 0, h = 0;
                     urls.push ({src: image.img.dataset.url, w: w, h: h, data: image.img.dataset, title: image.img.dataset.title});
                 }
             }
+            // Connect buttons
+            // Copy attribution text
+            // TODO: add HTML option
+            var copy = document.querySelector(".pswp .pswp__button--attribution");
+            var clipboardText = new Clipboard (copy, {
+                text: function () {
+                    var idx = lightBox.getCurrentIndex (), data = urls [idx].data;
+                    return data.title + " by " + data.creator + " is licensed under " + data.license.toUpperCase ();
+                }
+            });
+            clipboardText.on ("success", function (e) { 
+                e.trigger.classList.toggle ('done');
+
+                window.setTimeout(function () {
+                    e.trigger.classList.remove ('done');
+                }, 1500)
+            })
+
+            //Toggle the favorite status
+
+            var fav = document.querySelector(".pswp .pswp__button--favorite");
+            fav.addEventListener ('click', function (e) { 
+                fav.classList.add ('waiting');
+                // first we need to fetch the current item, the data and identifier to then fetch the form that contains the fav status
+                var idx = lightBox.getCurrentIndex (), data = urls [idx].data;
+                var form = document.querySelector("[data-identifier='"+data.identifier+"'] form.add-to-favorite"), isFav = form.dataset['is-favorite'];
+                favorite.toggleFavoriteWithForm (form, (isFav) => { 
+                   fav.classList.remove ('waiting');
+
+                   if (isFav) { 
+                       fav.classList.add ('is_fav')
+                   } else { 
+                       fav.classList.remove ('is_fav')
+                   }
+
+                })
+
+            });
+            var list = document.querySelector(".pswp .pswp__button--list");
+            list.addEventListener ('click', function (e) { 
+                list.classList.add ('waiting');
+                var idx = lightBox.getCurrentIndex (), data = urls [idx].data;
+                var formBtn = document.querySelector("[data-identifier='"+data.identifier+"'] .add-to-list-container button");
+                formBtn.click ();
+            });
+
             spinner.style.display = 'none'
             results.style.visibility = 'visible'
 
