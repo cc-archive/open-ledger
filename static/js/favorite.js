@@ -4,42 +4,51 @@ import {API_BASE, HOST_PORT, HOST_URL} from './api'
 require('dom4') /* Activate polyfill for closest() */
 
 export const toggleFavorite = function (e) {
-  e.stopPropagation()
-  e.preventDefault()
+    e.stopPropagation()
+    e.preventDefault()
 
-  var form = e.target.parentNode
-  var method = 'PUT'
+    var form = e.target.parentNode
+    toggleFavoriteWithForm (form);
+}
+export const toggleFavoriteWithForm = function (form, cb) {
+    var method = 'PUT'
 
-  const url = API_BASE + 'images/favorite/' + form.elements['identifier'].value
-  const csrf = Cookies.get('csrftoken')
+    const url = API_BASE + 'images/favorite/' + form.elements['identifier'].value
+    const csrf = Cookies.get('csrftoken')
 
-  // If they aren't logged in, tell them to do so. We can improve the UI here later.
-  if (document.body.dataset.loggedIn != 'True') {
-    alert("Please sign in to favorite this image.")
-    return
-  }
-
-  if (form.dataset.isFavorite === 'True') {
-    method = 'DELETE'
-  }
-
-  fetch(url, {
-    method: method,
-    body: JSON.stringify({}),
-    credentials: "include",
-    headers: {
-      "X-CSRFToken": csrf,
-      "Content-Type": "application/json"
+    // If they aren't logged in, tell them to do so. We can improve the UI here later.
+    if (document.body.dataset.loggedIn != 'True') {
+        alert("Please sign in to favorite this image.")
+        if (cb) cb (false);
+        return
     }
-  })
-  .then((response) => {
-    if (response.status === 204) { // We removed a favorite
-      removeAsFavorite(form)
+
+    if (form.dataset.isFavorite === 'True') {
+        method = 'DELETE'
     }
-    else if (response.status === 201 || response.status === 200) {  // We added a favorite
-      setAsFavorite(form)
-    }
-  })
+
+    fetch(url, {
+        method: method,
+        body: JSON.stringify({}),
+        credentials: "include",
+        headers: {
+            "X-CSRFToken": csrf,
+            "Content-Type": "application/json"
+        }
+    })
+        .then((response) => {
+            var isFav = false;
+            if (response.status === 204) { // We removed a favorite
+                removeAsFavorite(form)
+            }
+            else if (response.status === 201 || response.status === 200) {  // We added a favorite
+                setAsFavorite(form)
+                isFav = true
+            }
+            if (cb) {
+                cb (isFav);
+            }
+        })
 }
 
 export const setAsFavorite = (form) => {
