@@ -3,6 +3,7 @@ from datetime import datetime
 import logging
 import requests
 import time
+from functools import reduce
 from imageledger import forms, licenses
 
 from django.conf import settings
