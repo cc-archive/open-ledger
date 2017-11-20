@@ -10,7 +10,14 @@
       <div class="figure-wrapper">
 
         <a href="{{ detail_url }}" class="t-detail-link">
-            <img src="{{ image.thumbnail }}" {% for k in image if k not in skip_attributes %}data-{{ k }}="{{ image [k] }}"{% endfor %} data-provider_name="{{ providers[image.provider].display_name }}" data-provider_url="{{ providers[image.provider].url }}"/>
+            <img src="{{ image.thumbnail }}" 
+                    {% for k in image if k not in skip_attributes %}
+                        data-{{ k }}="{{ image [k] }}"
+                    {% endfor %}
+            {% if image.provider  %}
+                data-provider_name="{{ providers[image.provider].display_name }}" data-provider_url="{{ providers[image.provider].url }}"
+            {% endif %}
+            />
         </a>
       </div>
       <figcaption>
