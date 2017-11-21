@@ -23,51 +23,53 @@
 
     </div>
   </div>
-
-
-  <h4>Filters</h4>
-
-  <div class="row search-filters">
-    <div class="column search-filters-license small-6">
-      <fieldset>
-        <legend>
-          Find images I can...
-        </legend>
-        {{ form.licenses }}
-      </fieldset>
-      <fieldset style="margin-top: .2rem">
-        <legend style="margin-right: 1rem">
-          Search within:
+  <div class="search-filters {%if results.items|length > 0 and request.GET.get('advanced') == None %}hide{% endif %}">
+      <h4>Filters</h4>
+      <div class="row">
+        <div class="column search-filters-license small-6">
+          <fieldset>
+            <legend>
+              Find images I can...
+            </legend>
+            {{ form.licenses }}
+          </fieldset>
+          <fieldset style="margin-top: .2rem">
+            <legend style="margin-right: 1rem">
+              Search within:
+              </legend>
+              {{ form.search_fields }}
+            </fieldset>
+          <fieldset style="margin-top: .2rem">
+          <legend style="margin-right: 1rem">
+            Results per page:
           </legend>
-          {{ form.search_fields }}
-        </fieldset>
-      <fieldset style="margin-top: .2rem">
-      <legend style="margin-right: 1rem">
-        Results per page:
-      </legend>
-       {{ form.per_page }}
-      </fieldset>
-    </div>
-    <div class="column small-6 search-collections">
-      <fieldset>
-        <legend >
-          Search from these collections:
-        </legend>
-	{% for type in form.work_types %}
-		<div class="work-type">
-			{{ type }}
-			<ul>
-				{% for prov in work_types[type.data.value]|sort %}
-					{% for provider in form.providers if provider.data.value == prov %}
-					<li>
-						{{ provider }}
-					</li>
-					{% endfor %}
-				{% endfor %}
-			</ul>
-		</div>
-	{% endfor %}
-      </fieldset>
-    </div>
+           {{ form.per_page }}
+          </fieldset>
+        </div>
+        <div class="column small-6 search-collections">
+          <fieldset>
+            <legend >
+              Search from these collections:
+            </legend>
+        {% for type in form.work_types %}
+            <div class="work-type">
+                {{ type }}
+                <ul>
+                    {% for prov in work_types[type.data.value]|sort %}
+                        {% for provider in form.providers if provider.data.value == prov %}
+                        <li>
+                            {{ provider }}
+                        </li>
+                        {% endfor %}
+                    {% endfor %}
+                </ul>
+            </div>
+        {% endfor %}
+          </fieldset>
+        </div>
+      </div>
   </div>
+  {%if request.GET.get('advanced') == None and request.GET|length > 0 %}
+  <a id="toggle_advanced_search">Advanced Search</a>. 
+  {% endif %}
 </form>

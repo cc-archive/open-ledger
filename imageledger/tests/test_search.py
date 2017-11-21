@@ -111,12 +111,12 @@ class TestSearch(TestCase):
         assert select_node(resp, '.t-no-results') is not None and select_node(resp, '.search-filters') is not None
 
     def test_search_results(self):
-        """If indexed, a single result should be returned from the search engine, the advanced search form should be hidden"""
+        """If indexed, a single result should be returned from the search engine"""
         self._index_img(self.img1)
         resp = self.client.get(self.url, {'search': 'greyhounds', 'search_fields': 'title'})
         p = select_nodes(resp, '.t-image-result')
         self.assertEquals(1, len(p))
-        assert select_node(resp, '.t-no-results') is None and select_node(resp, '.search-filters') is None
+        assert select_node(resp, '.t-no-results') is None
 
 
     def test_search_filter_creator(self):
