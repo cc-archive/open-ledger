@@ -69,7 +69,7 @@
         </div>
       </div>
   </div>
-  {%if request.GET.get('advanced') == None %}
+  {%if request.GET.get('advanced') == None and request.GET.length == 0 %}
   <a id="toggle_advanced_search">Advanced Search</a>. 
   {% endif %}
 </form>
