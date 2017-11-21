@@ -1,17 +1,23 @@
 {% import "includes/license-logo.html" as license_logo %}
 {% import "includes/lists.html" as lists %}
 {% import "includes/favorite.html" as favorite %}
+{% set skip_attributes = ['removed_from_source', 'thumbnail'] %}
 
-{% macro show(detail_url, image, request) -%}
-<div class="grid-item image-result t-image-result" data-identifier="{{ image.identifier }}"
-      onClick="if (event.target === this) { location.href='{{ detail_url }}' } "
-      >
+{% macro show(detail_url, image, request, providers) -%}
+<div class="grid-item image-result t-image-result" data-identifier="{{ image.identifier }}">
 
     <figure>
       <div class="figure-wrapper">
 
         <a href="{{ detail_url }}" class="t-detail-link">
-          <img src="{{ image.thumbnail }}" />
+            <img src="{{ image.thumbnail }}" 
+                    {% for k in image if k not in skip_attributes %}
+                        data-{{ k }}="{{ image [k] }}"
+                    {% endfor %}
+            {% if image.provider  %}
+                data-provider_name="{{ providers[image.provider].display_name }}" data-provider_url="{{ providers[image.provider].url }}"
+            {% endif %}
+            />
         </a>
       </div>
       <figcaption>

@@ -1,0 +1,50 @@
+.data_container {
+    visibility: hidden;
+}
+.data_container.fake {
+    min-height: 10%;
+}
+.data_container * {
+    margin-bottom: 0 !important;
+}
+.data_container.show {
+    visibility: visible;
+    width: 100%;
+    min-height: 10%; 
+    max-height: 10%;
+    height: 10% !important;
+    overflow: hidden;
+    background-color: rgba(255,255,255,0.8) !important;
+}
+.pswp--zoomed-in .pswp__caption { 
+    display: none;
+    visibility: hidden !important;
+}
+.data_container {
+    font-size: 0.8em;
+    padding-left: 0.5rem;
+} 
+.data_container .license img {
+    width: 30px;
+    margin-right: 2px;
+}
+.pswp__button--attribution, .pswp__button--favorite, .pswp__button--list { 
+    background-image: none !important;
+    color: white;
+}
+.pswp__button.waiting {
+    background-color: red;
+}
+.pswp__button.is_fav { 
+    background-color: yellow;
+}
+.pswp__button--attribution {
+    background-color: #2199e8; 
+}
+.pswp__button--list {
+    background-color: #01a635;
+}
+.pswp__button.done {
+    background-color: yellow;
+    color: black;
+}

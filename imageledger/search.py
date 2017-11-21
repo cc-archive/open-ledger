@@ -3,6 +3,8 @@ from datetime import datetime
 import logging
 import requests
 import time
+from functools import reduce
+from imageledger import forms, licenses
 
 from django.conf import settings
 
@@ -11,7 +13,7 @@ from elasticsearch.exceptions import ConnectionError
 from aws_requests_auth.aws_auth import AWSRequestsAuth
 from elasticsearch_dsl.connections import connections
 from elasticsearch_dsl import DocType, String, Date, Nested, Boolean, \
-    analyzer, InnerObjectWrapper, Completion, Search
+    analyzer, InnerObjectWrapper, Completion, Search, Q
 
 CHUNK_SIZE = 1000
 
@@ -81,6 +83,94 @@ def init_es(timeout=TIMEOUT):
                        max_retries=10, retry_on_timeout=True,
                        http_auth=auth)
     return es
+
+def do_search(request):
+    s = Search(index=settings.ELASTICSEARCH_INDEX)
+    s = s.extra(track_scores=True)
+    form = forms.SearchForm(request.GET)
+    results = Results(page=1)
+
+    if form.is_valid():
+        if form.cleaned_data.get('search'):
+            per_page = int(form.cleaned_data.get('per_page') or forms.RESULTS_PER_PAGE_DEFAULT)
+            and_queries = []
+            or_queries = []
+
+            # Search fields
+            if 'title' in form.cleaned_data.get('search_fields'):
+                or_queries.append(Q("query_string",
+                                    default_operator="AND",
+                                    fields=["title"],
+                                    query=form.cleaned_data['search']))
+            if 'tags' in form.cleaned_data.get('search_fields'):
+                or_queries.append(Q("query_string",
+                                    default_operator="AND",
+                                    fields=["tags"],
+                                    query=form.cleaned_data['search']))
+            if 'creator' in form.cleaned_data.get('search_fields'):
+                or_queries.append(Q("query_string",
+                                    default_operator="AND",
+                                    fields=["creator"],
+                                    query=form.cleaned_data['search']))
+
+            # Limit to explicit providers first, and then to work providers second, if provided.
+            # If provider is supplied, work providers is ignored. TODO revisit this logic as it
+            # could be confusing to end users
+            work_providers = set()
+            if form.cleaned_data.get('work_types'):
+                for t in form.cleaned_data.get('work_types'):
+                    for p in settings.WORK_TYPES[t]:
+                        work_providers.add(p)
+
+            limit_to_providers = form.cleaned_data.get('providers') or work_providers
+
+            for provider in limit_to_providers:
+                and_queries.append(
+                                Q('bool',
+                                should=[Q("term", provider=provider)]
+                                ))
+
+            # License limitations
+            license_filters = []
+            if form.cleaned_data.get('licenses'):
+                # If there's a license restriction, unpack the licenses and search for them
+                l_groups = form.cleaned_data.get('licenses')
+                license_values = []
+                for l_group in l_groups:
+                    license_values.append([l.lower() for l in licenses.LICENSE_GROUPS[l_group]])
+                license_filters = list(reduce(set.intersection, map(set, license_values)))
+
+            for license_filter in license_filters:
+                and_queries.append(
+                            Q('bool', should=[Q("term", license=license_filter)])
+                        )
+
+            if len(or_queries) > 0 or len(and_queries) > 0:
+                q = Q('bool',
+                      should=or_queries,
+                      must=Q('bool',
+                             should=and_queries),
+                      minimum_should_match=1)
+
+                s = s.query(q)
+                response = s.execute()
+                results.pages = int(int(response.hits.total) / per_page)
+                results.page = form.cleaned_data['page'] or 1
+                start = (results.page - 1) * per_page
+                end = start + per_page
+                for r in s[start:end]:
+                    results.items.append(r)
+
+                # We need the providers catalog for the new search result gallery.
+                results.providers = settings.PROVIDERS
+    else:
+        form = forms.SearchForm(initial=forms.SearchForm.initial_data)
+
+    return { 
+            "results": results,
+            "form": form
+        }
+
 
 def init(timeout=TIMEOUT):
     """Initialize all search objects"""
