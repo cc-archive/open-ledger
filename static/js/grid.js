@@ -44,16 +44,17 @@ const init = (imgLoad) => {
             new Masonry(grid4, { itemSelector: '.grid-item', columnWidth: columnWidth, gutter: gutter })
         }
         // Connect buttons
-        // Copy attribution text
-        // TODO: add HTML option
+        // Copy attribution HTML 
         var copy = document.querySelector(".pswp .pswp__button--attribution");
-        var clipboardText = new Clipboard (copy, {
+        var clipboardHTML = new Clipboard (copy, {
             text: function () {
-                var idx = lightBox.getCurrentIndex (), data = urls [idx].data;
-                return data.title + " by " + data.creator + " is licensed under " + data.license.toUpperCase ();
+                const m = document.querySelector (".pswp .data_container.show");
+                return m.innerHTML;
+                //var idx = lightBox.getCurrentIndex (), data = urls [idx].data;
+                //return data.title + " by " + data.creator + " is licensed under " + data.license.toUpperCase ();
             }
         });
-        clipboardText.on ("success", function (e) { 
+        clipboardHTML.on ("success", function (e) { 
             e.trigger.classList.toggle ('done');
 
             window.setTimeout(function () {
@@ -125,22 +126,25 @@ const configImage = (image) => {
                             m.href = item.data ['provider_url'];
                             m.innerText = item.data ['provider_name'];
                         } else if (d == 'license') {
-                            //UGLIEST code ever but we dont have license_version in ES so we have to do this. >:@
-                            var license = item.data [d].toLowerCase (), with_cc = true, buttons = [],segments = license.split ('-');
+                            // Still very ugly code that needs to be refactored but, soon...
+                            var license = item.data [d].toLowerCase (), with_cc = true, licenseName = [], segments = license.split ('-');
                             if (license == 'cc0' || license == 'pdm') with_cc = false; 
 
                             if (with_cc) {
-                                buttons.push ('/static/images/cc.svg');
+                                licenseName.push ('CC');
+                                for (var b in segments) {
+                                    licenseName.push (segments [b])
+                                }
+                                m.href = "https://creativecommons.org/licenses/" + licenseName.slice (1).join('-').toLowerCase ();
+                            } else {
+                                licenseName.push (license);
+                                m.href = "https://creativecommons.org/publicdomain/" + (license == "cc0" ? "zero" : "mark");
                             }
-                            for (var b in segments) {
-                                buttons.push ('/static/images/' + segments [b] + '.svg')
-                            }
-                            for (var b in buttons) {
-                                var el = document.createElement ("IMG");
-                                el.src = buttons [b];
-                                el.title = buttons[b].toUpperCase ();
-                                m.appendChild (el);
-                            }
+
+                            m.href += "/" + item.data ['license_version'];
+                            m.innerText = licenseName.join ('-').toUpperCase () + " " + item.data ['license_version'];
+
+                            
                         } else {
                             m.innerText = item.data [d];
                         }
@@ -188,7 +192,6 @@ const configImage = (image) => {
     }
     image.addEventListener ('click', fn (urls.length));
     var w = 0, h = 0;
-    console.log (image.dataset.url);
     if (image.dataset.url !== undefined) {
         urls.push ({src: image.dataset.url, w: w, h: h, data: image.dataset, title: image.dataset.title});
     }

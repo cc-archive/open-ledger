@@ -62,6 +62,7 @@ def db_image_to_index(db_image):
                   provider=db_image.provider,
                   source=db_image.source,
                   license=db_image.license,
+                  license_version=db_image.license_version,
                   foreign_landing_url=db_image.foreign_landing_url,
                   removed_from_source=db_image.removed_from_source,
                   _id=db_image.identifier,
