@@ -44,4 +44,3 @@ module.exports = [{
 ];
 module.exports[0].plugins.push (new webpack.ProvidePlugin({PhotoSwipe: 'photoswipe', PhotoSwipeUI_Default: './photoswipe-ui-default'}))
 
-console.log (module.exports[0].plugins);
