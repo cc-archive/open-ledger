@@ -1200,4 +1200,11 @@ a.pswp__share--download:hover {
   background-color: yellow;
   color: black; }
 
+.pswp__top-bar {
+  opacity: 1 !important; }
+
+.pswp .add-to-list-container .add-to-list, .pswp .add-to-list-container .add-to-list-response {
+  right: 1%;
+  top: 40px; }
+
 /*# sourceMappingURL=app.css.map */

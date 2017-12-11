@@ -14,7 +14,7 @@
                     {% for k in image if k not in skip_attributes %}
                         data-{{ k }}="{{ image [k] }}"
                     {% endfor %}
-            {% if image.provider  %}
+            {% if image.provider and providers %}
                 data-provider_name="{{ providers[image.provider].display_name }}" data-provider_url="{{ providers[image.provider].url }}"
             {% endif %}
             />

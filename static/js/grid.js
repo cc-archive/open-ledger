@@ -5,6 +5,7 @@ var PhotoSwipe = require ('photoswipe')
 import * as utils from './utils'
 import Clipboard from 'clipboard'
 import * as favorite from './favorite'
+import * as listmgr from './list'
 
 const columnWidth = 210
 const gutter = 5 
@@ -84,10 +85,12 @@ const init = (imgLoad) => {
         });
         var list = document.querySelector(".pswp .pswp__button--list");
         list.addEventListener ('click', function (e) { 
-            list.classList.add ('waiting');
             var idx = lightBox.getCurrentIndex (), data = urls [idx].data;
-            var formBtn = document.querySelector("[data-identifier='"+data.identifier+"'] .add-to-list-container button");
-            formBtn.click ();
+            var d = document.getElementById ("pswp--photo_id");
+            if (d) { 
+                    d.value = data.identifier;
+            }
+            listmgr.addToListForm (e)
         });
 
     }
@@ -184,6 +187,10 @@ const configImage = (image) => {
                     }
                     //TODO: set favorite status here
 
+                });
+                lightBox.listen ('beforeChange', function () { 
+                    var d = document.querySelector (".pswp .add-to-list")
+                    d.style.display = "none";
                 });
                 lightBox.init ();
             } catch (e) { }

@@ -29,8 +29,16 @@
                 <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
 
                 <button class="pswp__button pswp__button--share" title="Share"></button>
-
-                <button class="pswp__button pswp__button--list success fi-list-bullet" title="Save to list"></button>
+                <div class="add-to-list-container">
+                    <button class="pswp__button pswp__button--list success fi-list-bullet" title="Save to list"></button>
+                    <form class="add-to-list animated" action="#" method="GET" data-logged-in="{{ request.user.is_authenticated() }}"
+                      onClick="event.stopPropagation()">
+                      <input type="text" name="title" value="" autocomplete="off"  placeholder="Save to new or existing list" size="40"/>
+                      <div class="autocomplete"></div>
+                      <input id="pswp--photo_id" type="hidden" name="identifier" value="" />
+                    </form>
+                    <div class="add-to-list-response"></div>
+                </div>
                 <button class="pswp__button pswp__button--favorite  fi-star favorite-button" title="Save as a Favorite"></button>
                 <button class="pswp__button pswp__button--attribution clipboard-sel-text fi-page-copy" title="Copy credit as HTML"></button>
 
