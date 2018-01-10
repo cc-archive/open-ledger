@@ -8,9 +8,8 @@ import {API_BASE, HOST_PORT, HOST_URL} from './api'
 import * as utils from './utils'
 
 /* Bring up a form to capture a list title from a user */
-export const addToListForm = function (e) {
+export const addToListForm = function (form) {
 
-  var form = e.target.nextElementSibling
 
   // If they aren't logged in, tell them to do so. We can improve the UI here later.
   if (document.body.dataset.loggedIn != 'True') {
@@ -40,10 +39,11 @@ export const addToListForm = function (e) {
   input.addEventListener('keyup', _.throttle(completeListTitle, 1000), false)
 
   // Add cancel handler last, as bubbling
-  document.body.addEventListener('keydown', cancelListModals, false)
-
-  e.stopPropagation()
-  e.preventDefault()
+    document.body.addEventListener('keydown', cancelListModals, false)
+    try {
+     e.stopPropagation()
+     e.preventDefault()
+    } catch (err) { }
 }
 
 /* DELETE an image from a List */

@@ -448,17 +448,17 @@ var PhotoSwipeUI_Default =
         {
             name: 'button--list',
             option: 'listEl',
-            onTap: function () { }
+            onTap: pswp.options.listFn ? pswp.options.listFn : null
         },
         {
             name: 'button--favorite',
             option: 'favEl',
-            onTap: function () { }
+            onTap: pswp.options.favFn ? pswp.options.favFn : null
         },
         {
             name: 'button--attribution',
             option: 'attrEl',
-            onTap: function () { }
+            onTap: pswp.options.attrFn ? pswp.options.attrFn : null
         },
 		{ 
 			name: 'button--zoom', 

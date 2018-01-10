@@ -57,41 +57,10 @@ const init = (imgLoad) => {
         });
         clipboardHTML.on ("success", function (e) { 
             e.trigger.classList.toggle ('done');
-
             window.setTimeout(function () {
                 e.trigger.classList.remove ('done');
             }, 1500)
         })
-
-        //Toggle the favorite status
-
-        var fav = document.querySelector(".pswp .pswp__button--favorite");
-        fav.addEventListener ('click', function (e) { 
-            fav.classList.add ('waiting');
-            // first we need to fetch the current item, the data and identifier to then fetch the form that contains the fav status
-            var idx = lightBox.getCurrentIndex (), data = urls [idx].data;
-            var form = document.querySelector("[data-identifier='"+data.identifier+"'] form.add-to-favorite"), isFav = form.dataset['is-favorite'];
-            favorite.toggleFavoriteWithForm (form, (isFav) => { 
-                fav.classList.remove ('waiting');
-
-                if (isFav) { 
-                    fav.classList.add ('is_fav')
-                } else { 
-                    fav.classList.remove ('is_fav')
-                }
-
-            })
-
-        });
-        var list = document.querySelector(".pswp .pswp__button--list");
-        list.addEventListener ('click', function (e) { 
-            var idx = lightBox.getCurrentIndex (), data = urls [idx].data;
-            var d = document.getElementById ("pswp--photo_id");
-            if (d) { 
-                    d.value = data.identifier;
-            }
-            listmgr.addToListForm (e)
-        });
 
     }
     const isIE = utils.detectIE()
@@ -162,6 +131,36 @@ const configImage = (image) => {
             return false;
         }
     }
+    var _favCallback = function (e) { 
+        var fav = document.querySelector(".pswp .pswp__button--favorite");
+        fav.classList.add ('waiting');
+        // first we need to fetch the current item, the data and identifier to then fetch the form that contains the fav status
+        var idx = lightBox.getCurrentIndex (), data = urls [idx].data;
+        var form = document.querySelector("[data-identifier='"+data.identifier+"'] form.add-to-favorite"), isFav = form.dataset['is-favorite'];
+        favorite.toggleFavoriteWithForm (form, (isFav) => { 
+            fav.classList.remove ('waiting');
+
+            if (isFav) { 
+                fav.classList.add ('is_fav')
+            } else { 
+                fav.classList.remove ('is_fav')
+            }
+
+        })
+
+    }
+    var _listCallback = function () { 
+        var idx = lightBox.getCurrentIndex (), data = urls [idx].data;
+        var d = document.getElementById ("pswp--photo_id");
+        if (d) { 
+                d.value = data.identifier;
+        }
+        listmgr.addToListForm (d.parentElement)
+    }
+    var _attrCallback = function () { 
+        var copy = document.querySelector(".pswp .pswp__button--attribution");
+        copy.click ();
+    }
     var fn = function (idx) { 
         return function (e) { 
             //first and foremost let's stop propagation and default click actions.
@@ -170,7 +169,7 @@ const configImage = (image) => {
 
             try {
                 //Init the gallery.
-                lightBox = new PhotoSwipe (document.querySelectorAll('.pswp')[0], PhotoSwipeUI_Default, urls, {index: idx, addCaptionHTMLFn: captionFn (), shareEl: false, listEl: true, favEl: true, attrEl: true});
+                lightBox = new PhotoSwipe (document.querySelectorAll('.pswp')[0], PhotoSwipeUI_Default, urls, {index: idx, addCaptionHTMLFn: captionFn (), shareEl: false, listEl: true, favEl: true, attrEl: true, favFn: _favCallback, listFn: _listCallback, attrFn: _attrCallback });
                 lightBox.listen ('gettingData', function (index, item) {
                     // we use this so we don't have to know the image size beforehand.
                     var i = index;
