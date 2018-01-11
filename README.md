@@ -104,16 +104,16 @@ GRANT
 
 ### Elasticsearch
 
-The app uses ES 2.4, which is the latest version supported by AWS. *You must use Elasticsearch 2.4 or the application will not work.*
+*You must have to use Elasticsearch 5.3 or the application will not work.*
 
 On macOS:
 
 ```
-brew install elasticsearch24
+brew install elasticsearch53
 ```
 
 Debian-based:
-https://www.elastic.co/guide/en/elasticsearch/reference/2.4/setup-repositories.html
+https://www.elastic.co/guide/en/elasticsearch/reference/5.3/deb.html
 
 ## Testing a development installation
 
