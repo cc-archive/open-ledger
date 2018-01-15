@@ -1,6 +1,6 @@
 from django.conf.urls import url, include
 from django.views.generic import RedirectView
-from django.core.urlresolvers import reverse_lazy
+from django.urls import reverse_lazy
 from django.http import QueryDict
 
 from rest_framework.urlpatterns import format_suffix_patterns
