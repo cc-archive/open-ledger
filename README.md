@@ -62,18 +62,10 @@ npm install
 
 ### postgresql
 
-For a development account, you'll want a `deploy` user with superuser privileges, so that
-it can create and destroy test tables.
+Create the database:
 
 ```
-$ sudo -u postgres psql
-postgres=# CREATE USER deploy WITH PASSWORD 'deploy';
-CREATE ROLE
-postgres=# ALTER USER deploy WITH SUPERUSER;
-postgres=# CREATE DATABASE openledger;
-CREATE DATABASE
-postgres=# GRANT ALL PRIVILEGES ON DATABASE openledger TO deploy;
-GRANT
+docker-compose exec db createdb -U postgres openledger
 ```
 
 ### Elasticsearch
@@ -129,24 +121,18 @@ DATABASES = {
 Now the app should be able to talk to the database. Try this with:
 
 ```
-python manage.py migrate
-python manage.py createcachetable
+docker-compose exec web python manage.py migrate
+docker-compose exec web python manage.py createcachetable
 ```
 
-This should create the database tables. Now you're ready to start the app:
-
-```
-python manage.py runserver
-```
-
-Everything should work locally, though you won't have any content yet.
+This should create the database tables. Everything should work locally, though you won't have any content yet.
 
 ## Testing
 
 Verify that the test suite runs:
 
 ```
-python manage.py test
+docker-compose exec python manage.py test
 ```
 
 All tests should always pass. Tests assume that both Postgres and Elasticsearch are running locally.
