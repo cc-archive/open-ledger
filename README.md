@@ -32,6 +32,25 @@ technical and privacy challenges here, and we seek to identify those early.
 
 ## Installation for development
 
+### Configuration
+
+Create some local configuration data by copying the example file:
+
+```
+cp openledger/local.py.example openledger/local.py
+```
+
+You will want to set the following settings:
+
+```python
+# Make this a long random string
+SECRET_KEY = 'CHANGEME'
+
+# Get these from the AWS config for your account
+AWS_ACCESS_KEY_ID = 'CHANGEME'
+AWS_SECRET_ACCESS_KEY = 'CHANGEME'
+```
+
 ### Docker
 
 The easiest way to run the application is through [Docker Compose](https://docs.docker.com/compose/overview/). Install Docker, then run:
@@ -65,47 +84,15 @@ curl -XPUT 'localhost:9200/openledger?pretty' -H 'Content-Type: application/json
 
 ### postgresql
 
-Create the database:
+Set up the database:
 
 ```
 docker-compose exec db createdb -U postgres openledger
-```
-
-## Testing a development installation
-
-Create some local configuration data by copying the example file:
-
-```
-cp openledger/local.py.example openledger/local.py
-```
-
-Specifically, change the following settings right away:
-
-```
-# Make this a long random string
-SECRET_KEY = 'CHANGEME'
-
-# Get these from the AWS config for your account
-AWS_ACCESS_KEY_ID = 'CHANGEME'
-AWS_SECRET_ACCESS_KEY = 'CHANGEME'
-
-# Use the password you assigned when you created the local database user:
-DATABASES = {
-    'default': {
-        'PASSWORD': 'CHANGEME',
-        ...
-      }
-    }
-```
-
-Now the app should be able to talk to the database. Try this with:
-
-```
 docker-compose exec web python manage.py migrate
 docker-compose exec web python manage.py createcachetable
 ```
 
-This should create the database tables. Everything should work locally, though you won't have any content yet.
+This should create the database tables. Everything should work locally, though you won't have any content yet. Visit http://localhost:8000 to see the site.
 
 ## Testing
 
