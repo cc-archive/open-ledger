@@ -102,3 +102,4 @@ node_modules
 .sass-cache
 
 local.py
+.idea

@@ -73,8 +73,20 @@ Then:
 ```
 npm install
 ```
+### postgresql and Elasticsearch via `docker-compose`
 
-### postgresql
+Install docker:
+https://docs.docker.com/engine/installation
+
+Run `docker-compose`:
+```
+cd docker
+docker-compose up
+```
+
+(This also installs `adminer` database client - https://www.adminer.org/, url: http://localhost:8080/ )
+
+### postgresql (manually)
 
 Install header files and other dependencies. On Ubuntu:
 
@@ -102,7 +114,7 @@ postgres=# GRANT ALL PRIVILEGES ON DATABASE openledger TO deploy;
 GRANT
 ```
 
-### Elasticsearch
+### Elasticsearch (manually)
 
 *You must have to use Elasticsearch 5.3 or the application will not work.*
 
@@ -125,7 +137,7 @@ Build the JavaScript:
 webpack
 ```
 
-(If you installed it and it's not found, then check `node_modules/bin`)
+(If you installed it and it's not found, then check `node_modules/.bin`)
 
 Create some local configuration data by copying the example file:
 
