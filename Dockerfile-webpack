@@ -1,0 +1,11 @@
+FROM node:8
+
+ENV PATH="/code/node_modules/.bin:${PATH}"
+
+RUN mkdir /code
+WORKDIR /code
+
+ADD package.json /code/
+RUN npm install
+
+CMD webpack --watch

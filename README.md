@@ -63,20 +63,6 @@ curl -XPUT 'localhost:9200/openledger?pretty' -H 'Content-Type: application/json
 '
 ```
 
-### JavaScript
-
-Ensure that `npm` is installed. On Ubuntu, you will probably need:
-
-```
-ln -s /usr/bin/nodejs /usr/bin/node
-```
-
-Then:
-
-```
-npm install
-```
-
 ### postgresql
 
 Create the database:
@@ -86,16 +72,6 @@ docker-compose exec db createdb -U postgres openledger
 ```
 
 ## Testing a development installation
-
-Ensure all services are actually running: postgres, elasticsearch and that the `openledger` database has been created.
-
-Build the JavaScript:
-
-```
-webpack
-```
-
-(If you installed it and it's not found, then check `node_modules/bin`)
 
 Create some local configuration data by copying the example file:
 
