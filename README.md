@@ -32,33 +32,19 @@ technical and privacy challenges here, and we seek to identify those early.
 
 ## Installation for development
 
-### Python 3
+### Docker
 
-Set up a virtual environment:
-
-To install virtualenv:
-```
-pip install virtualenv 
-```
+The easiest way to run the application is through [Docker Compose](https://docs.docker.com/compose/overview/). Install Docker, then run:
 
 ```
-virtualenv venv --python=python3
-source venv/bin/activate
-```
-
-Install the dependencies:
-```
-pip install -r requirements.txt
-pip install -r requirements-test.txt
+docker-compose up
 ```
 
 If everything works, this should produce some help output:
 
 ```
-python manage.py
+docker-compose exec web python3 manage.py
 ```
-
-If it returns an error, be sure you have activated the virtual environment you created in the first step.
 
 ### JavaScript
 
@@ -75,18 +61,6 @@ npm install
 ```
 
 ### postgresql
-
-Install header files and other dependencies. On Ubuntu:
-
-```
-sudo apt install libpq-dev python3-dev postgresql-client-common postgresql-contrib
-```
-
-On macOS:
-
-```
-brew install postgres
-```
 
 For a development account, you'll want a `deploy` user with superuser privileges, so that
 it can create and destroy test tables.
@@ -193,14 +167,14 @@ In the openledger directory, run:
 eb init
 ```
 
-Create the elasticsearch index named openledger (you can change its name in settins/openledger.py) 
+Create the elasticsearch index named openledger (you can change its name in settins/openledger.py)
 ```
 curl -XPUT 'localhost:9200/openledger?pretty' -H 'Content-Type: application/json' -d'
 {
     "settings" : {
         "index" : {
-            "number_of_shards" : 3, 
-            "number_of_replicas" : 2 
+            "number_of_shards" : 3,
+            "number_of_replicas" : 2
         }
     }
 }
