@@ -46,6 +46,23 @@ If everything works, this should produce some help output:
 docker-compose exec web python3 manage.py
 ```
 
+### Elasticsearch
+
+Create the elasticsearch index named `openledger`. You can change its name in `settings/openledger.py`.
+
+```
+curl -XPUT 'localhost:9200/openledger?pretty' -H 'Content-Type: application/json' -d
+{
+    "settings" : {
+        "index" : {
+            "number_of_shards" : 3,
+            "number_of_replicas" : 2
+        }
+    }
+}
+'
+```
+
 ### JavaScript
 
 Ensure that `npm` is installed. On Ubuntu, you will probably need:
@@ -67,19 +84,6 @@ Create the database:
 ```
 docker-compose exec db createdb -U postgres openledger
 ```
-
-### Elasticsearch
-
-*You must have to use Elasticsearch 5.3 or the application will not work.*
-
-On macOS:
-
-```
-brew install elasticsearch53
-```
-
-Debian-based:
-https://www.elastic.co/guide/en/elasticsearch/reference/5.3/deb.html
 
 ## Testing a development installation
 
@@ -151,20 +155,6 @@ In the openledger directory, run:
 
 ```
 eb init
-```
-
-Create the elasticsearch index named openledger (you can change its name in settins/openledger.py)
-```
-curl -XPUT 'localhost:9200/openledger?pretty' -H 'Content-Type: application/json' -d'
-{
-    "settings" : {
-        "index" : {
-            "number_of_shards" : 3,
-            "number_of_replicas" : 2
-        }
-    }
-}
-'
 ```
 
 When you are ready to deploy, *run the tests first*.
