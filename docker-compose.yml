@@ -12,7 +12,8 @@ services:
       xpack.security.enabled: "false"
   web:
     build: .
-    command: python3 manage.py runserver 0.0.0.0:8000
+    # ensure Elasticsearch is fully started
+    command: wait-for-it.sh es:9200 -- python manage.py runserver 0.0.0.0:8000
     volumes:
       - .:/code
     ports:
