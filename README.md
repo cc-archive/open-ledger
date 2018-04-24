@@ -41,9 +41,18 @@ To install virtualenv:
 pip install virtualenv 
 ```
 
+On macOS:
+
 ```
 virtualenv venv --python=python3
 source venv/bin/activate
+```
+
+On Windows(Note: Be sure to switch '/' to '\' if using command prompt):
+
+```
+virtualenv venv
+venv/Scripts/activate
 ```
 
 Install the dependencies:
@@ -88,6 +97,14 @@ On macOS:
 brew install postgres
 ```
 
+On Windows:
+
+Install [Scoop](scoop.sh), or use your favorite command line installer:
+
+```
+scoop install postgresql
+```
+
 For a development account, you'll want a `deploy` user with superuser privileges, so that
 it can create and destroy test tables.
 
@@ -114,6 +131,9 @@ brew install elasticsearch53
 
 Debian-based:
 https://www.elastic.co/guide/en/elasticsearch/reference/5.3/deb.html
+
+Windows:
+https://www.elastic.co/guide/en/elasticsearch/reference/5.3/windows.html
 
 ## Testing a development installation
 
