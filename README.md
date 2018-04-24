@@ -48,7 +48,7 @@ virtualenv venv --python=python3
 source venv/bin/activate
 ```
 
-On Windows(Note: Be sure to switch '/' to '\' if using command prompt):
+On Windows(Note: Be sure to switch '/' to '\\' if using command prompt):
 
 ```
 virtualenv venv
