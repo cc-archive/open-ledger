@@ -3,12 +3,10 @@ import itertools
 import logging
 import os
 import tempfile
-import uuid
-import base64
 
 import boto3
 import botocore
-from django.core.management.base import BaseCommand, CommandError
+from django.core.management.base import BaseCommand
 from django.db.utils import IntegrityError
 
 from imageledger import models, signals
@@ -159,7 +157,8 @@ def _insert_image(iterator, reader, chunk_size, skip_existence_check=False):
     for chunk in iterator(chunk_size, reader):
         images = []
         for row in chunk:
-            if skip_existence_check or models.Image.objects.filter(foreign_identifier=row['ImageID']).exists():
+            image_exists = models.Image.objects.filter(foreign_identifier=row['ImageID']).exists()
+            if skip_existence_check or not image_exists:
                 image = models.Image()
                 image.identifier = signals.create_identifier(row['OriginalURL'])
                 image.foreign_identifier = row['ImageID']
