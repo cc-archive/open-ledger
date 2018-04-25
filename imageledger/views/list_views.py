@@ -22,7 +22,7 @@ class OLListDetail(DetailView):
     fields = ['title', 'description', 'creator_displayname', 'images']
 
     def render_to_response(self, context):
-        if not self.request.user.is_anonymous() and self.object.owner == self.request.user:
+        if not self.request.user.is_anonymous and self.object.owner == self.request.user:
             return HttpResponseRedirect(reverse_lazy('my-list-update', kwargs={'slug': self.object.slug}))
         return super().render_to_response(context)
 
@@ -30,7 +30,7 @@ class OLListDetail(DetailView):
         """Public lists only, or the user's own list"""
         qs = super().get_queryset()
 
-        if self.request.user.is_anonymous():
+        if self.request.user.is_anonymous:
             qs = qs.filter(is_public=True)
         else:
             qs = qs.filter(Q(owner=self.request.user) | Q(is_public=True))

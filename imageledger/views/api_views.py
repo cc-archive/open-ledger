@@ -16,7 +16,7 @@ class AutocompletePermissions(permissions.BasePermission):
 
     def has_permission(self, request, view):
         # POST requests require auth at this time
-        if request.method == 'GET' and request.user.is_authenticated():
+        if request.method == 'GET' and request.user.is_authenticated:
             return True
         return False
 
@@ -40,7 +40,7 @@ class ListPermissions(permissions.BasePermission):
 
     def has_permission(self, request, view):
         # POST requests require auth at this time
-        if request.method == 'POST' and not request.user.is_authenticated():
+        if request.method == 'POST' and not request.user.is_authenticated:
             return False
         return True
 
