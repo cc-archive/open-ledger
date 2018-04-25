@@ -99,6 +99,7 @@ class Command(BaseCommand):
             if delete_source_when_done:
                 os.remove(filename)
 
+
 def import_images_from_openimages(filename, chunk_size=DEFAULT_CHUNK_SIZE, skip_existence_check=False):
     """Import image records from the `open-images` dataset"""
     start_count = models.Image.objects.all().count()
@@ -107,6 +108,7 @@ def import_images_from_openimages(filename, chunk_size=DEFAULT_CHUNK_SIZE, skip_
         _insert_image(grouper_it, reader, chunk_size, skip_existence_check=skip_existence_check)
     end_count = models.Image.objects.all().count()
     log.info("Database now has %d images (+%d)", end_count, (end_count - start_count))
+
 
 def import_tags_from_openimages(filename):
     """Import tag names from the `open-images` dataset"""
@@ -120,11 +122,13 @@ def import_tags_from_openimages(filename):
             log.debug("Adding tag %s", tag.name)
             tag.save()
 
+
 def import_images_tags_from_openimages(filename, chunk_size=DEFAULT_CHUNK_SIZE):
     """Import tag/image relationships from the `open-images` dataset"""
     with open(filename) as fh:
         reader = csv.DictReader(fh)
         _insert_image_tag(grouper_it, reader, chunk_size)
+
 
 def grouper_it(n, iterable):
     it = iter(iterable)
@@ -135,6 +139,7 @@ def grouper_it(n, iterable):
         except StopIteration:
             return
         yield itertools.chain((first_el,), chunk_it)
+
 
 def download_from_s3(filename, bucket_name, source):
     """Download the named file from the CC openledger bucket to begin processing it.
@@ -148,6 +153,7 @@ def download_from_s3(filename, bucket_name, source):
     (fh, datafile) = tempfile.mkstemp()
     s3.download_file(Bucket=bucket_name, Key=filename, Filename=datafile)
     return datafile
+
 
 def _insert_image(iterator, reader, chunk_size, skip_existence_check=False):
     for chunk in iterator(chunk_size, reader):
@@ -169,14 +175,15 @@ def _insert_image(iterator, reader, chunk_size, skip_existence_check=False):
                 image.title = row['Title']
                 image.filesize = row['OriginalSize']
 
-                # log.debug("Adding image %s", row['ImageID'])
+                log.debug("Adding image %s", row['ImageID'])
                 images.append(image)
             else:
-                # log.debug("Skipping existing image %s", row['ImageID'])
+                log.debug("Skipping existing image %s", row['ImageID'])
                 pass
         if len(images) > 0:
             models.Image.objects.bulk_create(images)
             log.debug("*** Committing set of %d images", len(images))
+
 
 def _insert_image_tag(iterator, reader, chunk_size):
     image_ids = {}
@@ -196,20 +203,22 @@ def _insert_image_tag(iterator, reader, chunk_size):
             if tag and img:
                 image_ids[img.foreign_identifier] = img
                 tag_ids[tag.foreign_identifier] = tag
-                #log.debug("Adding tag %s to image %s ", tag, img)
+                # log.debug("Adding tag %s to image %s ", tag, img)
                 it = models.ImageTags(image=img, tag=tag)
                 image_tags.append(it)
                 # Also add it to the denormalized array
                 ext_tags = list(set(img.tags_list[:] if img.tags_list else []))
                 ext_tags.append(tag.name)
                 img.tags_list = ext_tags
+
         if len(image_tags) > 0:
             try:
                 models.ImageTags.objects.bulk_create(image_tags)
                 log.debug("*** Committing set of %d image tags", len(image_tags))
             except IntegrityError as e:
-                #log.debug(e)
+                # log.debug(e)
                 pass
+        print("")
 
     log.debug("Saving all %d remaining modified image objects", len(image_ids))
     # Save all the images we modified
