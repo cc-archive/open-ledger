@@ -214,7 +214,7 @@ If tests pass, *commit your changes locally to git*.
 Then *deploy to staging*:
 
 ```
-eb deploy open-ledger-2
+eb deploy open-ledger-3
 ```
 
 Verify that your changes worked as expected on staging by *clicking the thing you changed*.
@@ -222,7 +222,7 @@ Verify that your changes worked as expected on staging by *clicking the thing yo
 If that works out, deploy to production:
 
 ```
-eb deploy open-ledger-1
+eb deploy open-ledger-prod
 ```
 
 Don't forget to push your changes upstream!
@@ -293,5 +293,9 @@ This loader is invoked in production using the Fabric task, above:
 fab launchloader --set datasource=openimages-small
 ```
 
-See `fabfile.py` for complete documentation on loader tasks, including search engine indexing
-and loading of other image sets.
+See `fabfile.py` for complete documentation on loader tasks, including loading of other image sets.
+
+3. Index the newly imported data in Elasticsearch.
+```
+./manage.py indexer
+```
