@@ -217,7 +217,6 @@ def _insert_image_tag(iterator, reader, chunk_size):
             except IntegrityError as e:
                 # log.debug(e)
                 pass
-        print("")
 
     log.debug("Saving all %d remaining modified image objects", len(image_ids))
     # Save all the images we modified
