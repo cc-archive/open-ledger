@@ -2,8 +2,11 @@ language: python
 python:
 - '3.6'
 sudo: required
+before_install:
+  - sudo service postgresql stop
+  - while sudo lsof -Pi :5432 -sTCP:LISTEN -t; do sleep 1; done
 script:
-- docker-compose run web es:9200 -- python manage.py test
+- sudo service postgresql stop && docker-compose run web python manage.py test
 services:
 - docker
 notifications:
