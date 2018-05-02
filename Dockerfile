@@ -1,6 +1,5 @@
-FROM python:3.6.5-alpine3.7
+FROM python:3.6
 
-RUN apk add --update git
 ENV PYTHONUNBUFFERED 1
 
 RUN mkdir /django-app
