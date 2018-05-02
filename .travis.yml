@@ -2,10 +2,8 @@ language: python
 python:
 - '3.6'
 sudo: required
-env:
-  DOCKER_COMPOSE_VERSION: 1.21.0
 script:
--  sudo service postgresql stop && docker-compose run web python manage.py test
+- docker-compose run web es:9200 -- python manage.py test
 services:
 - docker
 notifications:
