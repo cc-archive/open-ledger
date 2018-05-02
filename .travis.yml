@@ -5,7 +5,7 @@ sudo: required
 env:
   DOCKER_COMPOSE_VERSION: 1.21.0
 script:
-- docker-compose run web python manage.py test
+-  sudo service postgresql stop && docker-compose run web python manage.py test
 services:
 - docker
 notifications:
