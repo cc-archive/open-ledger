@@ -1,0 +1,41 @@
+version: '3'
+services:
+  db:
+    image: postgres:10.3-alpine
+    image: postgres
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_DB: "openledger"
+      POSTGRES_USER: "deploy"
+      POSTGRES_PASSWORD: "deploy"
+    healthcheck:
+      test: "pg_isready -U deploy -d openledger"
+
+  es:
+    image: docker.elastic.co/elasticsearch/elasticsearch:5.3.3
+    ports:
+      - "9200:9200"
+    environment:
+      # disable XPack
+      # https://www.elastic.co/guide/en/elasticsearch/reference/5.3/docker.html#_security_note
+      xpack.security.enabled: "false"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://es:9200"]
+  web:
+    build: .
+    command: python manage.py runserver 0.0.0.0:8000
+    volumes:
+      - .:/django-app
+    ports:
+      - "8000:8000"
+    depends_on:
+      - db
+      - es
+  webpack:
+    build:
+      context: .
+      dockerfile: Dockerfile-webpack
+    volumes:
+      - .:/webpack/
+      - /webpack/node_modules

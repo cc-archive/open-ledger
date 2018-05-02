@@ -11,7 +11,7 @@ NYPL_KEY = 'TESTING'
 FLICKR_KEY = 'TESTING'
 FLICKR_SECRET = 'TESTING'
 
-ELASTICSEARCH_URL = 'localhost'
+ELASTICSEARCH_URL = 'es'
 ELASTICSEARCH_PORT = 9200
 ELASTICSEARCH_INDEX = 'testing'
 
@@ -24,8 +24,8 @@ DATABASES = {
         'ENGINE': 'django.db.backends.postgresql',
         'NAME': 'openledger',
         'USER': 'deploy',
+        'HOST': 'db',
         'PASSWORD': 'deploy',
-        'HOST': 'localhost',
         'PORT': 5432,
     }
 }

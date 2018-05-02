@@ -32,100 +32,7 @@ technical and privacy challenges here, and we seek to identify those early.
 
 ## Installation for development
 
-### Python 3
-
-Set up a virtual environment:
-
-To install virtualenv:
-```
-pip install virtualenv 
-```
-
-```
-virtualenv venv --python=python3
-source venv/bin/activate
-```
-
-Install the dependencies:
-```
-pip install -r requirements.txt
-pip install -r requirements-test.txt
-```
-
-If everything works, this should produce some help output:
-
-```
-python manage.py
-```
-
-If it returns an error, be sure you have activated the virtual environment you created in the first step.
-
-### JavaScript
-
-Ensure that `npm` is installed. On Ubuntu, you will probably need:
-
-```
-ln -s /usr/bin/nodejs /usr/bin/node
-```
-
-Then:
-
-```
-npm install
-```
-
-### postgresql
-
-Install header files and other dependencies. On Ubuntu:
-
-```
-sudo apt install libpq-dev python3-dev postgresql-client-common postgresql-contrib
-```
-
-On macOS:
-
-```
-brew install postgres
-```
-
-For a development account, you'll want a `deploy` user with superuser privileges, so that
-it can create and destroy test tables.
-
-```
-$ sudo -u postgres psql
-postgres=# CREATE USER deploy WITH PASSWORD 'deploy';
-CREATE ROLE
-postgres=# ALTER USER deploy WITH SUPERUSER;
-postgres=# CREATE DATABASE openledger;
-CREATE DATABASE
-postgres=# GRANT ALL PRIVILEGES ON DATABASE openledger TO deploy;
-GRANT
-```
-
-### Elasticsearch
-
-*You must have to use Elasticsearch 5.3 or the application will not work.*
-
-On macOS:
-
-```
-brew install elasticsearch53
-```
-
-Debian-based:
-https://www.elastic.co/guide/en/elasticsearch/reference/5.3/deb.html
-
-## Testing a development installation
-
-Ensure all services are actually running: postgres, elasticsearch and that the `openledger` database has been created.
-
-Build the JavaScript:
-
-```
-webpack
-```
-
-(If you installed it and it's not found, then check `node_modules/bin`)
+### Configuration
 
 Create some local configuration data by copying the example file:
 
@@ -133,46 +40,66 @@ Create some local configuration data by copying the example file:
 cp openledger/local.py.example openledger/local.py
 ```
 
-Specifically, change the following settings right away:
+You will want to set the following settings:
 
-```
+```python
 # Make this a long random string
 SECRET_KEY = 'CHANGEME'
 
 # Get these from the AWS config for your account
 AWS_ACCESS_KEY_ID = 'CHANGEME'
 AWS_SECRET_ACCESS_KEY = 'CHANGEME'
+```
 
-# Use the password you assigned when you created the local database user:
-DATABASES = {
-    'default': {
-        'PASSWORD': 'CHANGEME',
-        ...
-      }
+### Docker
+
+The easiest way to run the application is through [Docker Compose](https://docs.docker.com/compose/overview/). Install Docker, then run:
+
+```
+docker-compose up
+```
+
+If everything works, this should produce some help output:
+
+```
+docker-compose exec web python3 manage.py
+```
+
+### Elasticsearch
+
+Create the elasticsearch index named `openledger`. You can change its name in `settings/openledger.py`.
+
+```
+curl -XPUT 'localhost:9200/openledger?pretty' -H 'Content-Type: application/json' -d
+{
+    "settings" : {
+        "index" : {
+            "number_of_shards" : 3,
+            "number_of_replicas" : 2
+        }
     }
+}
+'
 ```
 
-Now the app should be able to talk to the database. Try this with:
+### postgresql
+
+Set up the database:
 
 ```
-python manage.py migrate
-python manage.py createcachetable
+docker-compose exec db createdb -U postgres openledger
+docker-compose exec web python manage.py migrate
+docker-compose exec web python manage.py createcachetable
 ```
 
-This should create the database tables. Now you're ready to start the app:
-
-```
-python manage.py runserver
-```
-
-Everything should work locally, though you won't have any content yet.
+This should create the database tables. Everything should work locally, though you won't have any content yet. Visit http://localhost:8000 to see the site.
 
 ## Testing
 
 Verify that the test suite runs:
 
 ```
-python manage.py test
+docker-compose exec python manage.py test
 ```
 
 All tests should always pass. Tests assume that both Postgres and Elasticsearch are running locally.
@@ -191,20 +118,6 @@ In the openledger directory, run:
 
 ```
 eb init
-```
-
-Create the elasticsearch index named openledger (you can change its name in settins/openledger.py) 
-```
-curl -XPUT 'localhost:9200/openledger?pretty' -H 'Content-Type: application/json' -d'
-{
-    "settings" : {
-        "index" : {
-            "number_of_shards" : 3, 
-            "number_of_replicas" : 2 
-        }
-    }
-}
-'
 ```
 
 When you are ready to deploy, *run the tests first*.
