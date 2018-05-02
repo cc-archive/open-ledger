@@ -10,10 +10,11 @@ services:
       # disable XPack
       # https://www.elastic.co/guide/en/elasticsearch/reference/5.3/docker.html#_security_note
       xpack.security.enabled: "false"
+    healthcheck:
+            test: ["CMD", "curl", "-f", "http://es:9200"]
   web:
     build: .
-    # ensure Elasticsearch is fully started
-    command: wait-for-it.sh es:9200 -- python manage.py runserver 0.0.0.0:8000
+    command: python manage.py runserver 0.0.0.0:8000
     volumes:
       - .:/code
     ports:
