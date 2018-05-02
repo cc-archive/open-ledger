@@ -23,7 +23,7 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
         'NAME': 'openledger',
-        'USER': 'postgres',
+        'USER': 'deploy',
         'HOST': 'db',
         'PASSWORD': 'deploy',
         'PORT': 5432,
