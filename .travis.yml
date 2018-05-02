@@ -3,7 +3,7 @@ python:
 - '3.6'
 sudo: required
 script:
-- docker-compose run --service-ports web python manage.py test
+- docker-compose run web python manage.py test
 services:
 - docker
 notifications:
