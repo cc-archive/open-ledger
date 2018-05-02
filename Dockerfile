@@ -1,14 +1,12 @@
-FROM python:3.6
+FROM python:3.6.5-alpine3.7
 
+RUN apk add --update git
 ENV PYTHONUNBUFFERED 1
 
-RUN mkdir /code
-WORKDIR /code
+RUN mkdir /django-app
+WORKDIR /django-app
 
-ADD https://raw.githubusercontent.com/vishnubob/wait-for-it/master/wait-for-it.sh /usr/bin/
-RUN chmod +x /usr/bin/wait-for-it.sh
-
-ADD requirements.txt /code/
+ADD requirements.txt /django-app/
 RUN pip install -r requirements.txt
-ADD requirements-test.txt /code/
+ADD requirements-test.txt /django-app/
 RUN pip install -r requirements-test.txt
