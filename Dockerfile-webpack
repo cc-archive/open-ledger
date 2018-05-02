@@ -1,11 +1,11 @@
 FROM node:8
 
-ENV PATH="/code/node_modules/.bin:${PATH}"
+ENV PATH="/webpack/node_modules/.bin:${PATH}"
 
-RUN mkdir /code
-WORKDIR /code
+RUN mkdir /webpack
+WORKDIR /webpack
 
-ADD package.json /code/
+ADD package.json /webpack/
 RUN npm install
 
 CMD webpack --watch
