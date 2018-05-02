@@ -25,6 +25,7 @@ DATABASES = {
         'NAME': 'openledger',
         'USER': 'postgres',
         'HOST': 'db',
+        'PASSWORD': 'deploy',
         'PORT': 5432,
     }
 }
