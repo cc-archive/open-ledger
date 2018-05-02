@@ -8,8 +8,8 @@ requests-oauthlib
 boto3
 elasticsearch-dsl>=5.0.0,<6.0.0
 aws-requests-auth
-django==1.11
-django-cas-ng
+django==2.0.1
+-e git://github.com/mingchen/django-cas-ng.git@5a370af14b8023bda0ae34af001228f15ba86f51#egg=django-cas-ng
 djangorestframework
 django-filter
 newrelic

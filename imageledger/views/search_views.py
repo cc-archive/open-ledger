@@ -34,7 +34,7 @@ def by_image(request):
 
 def detail(request, identifier):
     obj = get_object_or_404(models.Image, identifier=identifier)
-    if request.user.is_authenticated():
+    if request.user.is_authenticated:
         # Is it a favorite?
         obj.is_favorite = models.Favorite.objects.filter(user=request.user, image=obj).exists()
     license_url = licenses.get_license_url(obj.license, obj.license_version)

@@ -1,6 +1,6 @@
 language: python
 python:
-- '3.4'
+- '3.6'
 sudo: required
 script:
 - docker-compose run web wait-for-it.sh es:9200 -- python manage.py test
