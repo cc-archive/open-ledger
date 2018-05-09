@@ -1,17 +1,19 @@
-import getpass
 import uuid
 import random
 import sys
 import os
+import time
 import pdb
+import itertools
 
 sys.path.append("..")
 from imageledger import models
 from django.core.management.base import BaseCommand
+from multiprocessing import Pool
 
 """
-A utility for inserting random data into the database. This is tailored for stress testing full text search in 
-PostgreSQL.
+A utility for inserting large amounts of random data into the database. This is tailored for stress testing full text
+search in PostgreSQL.
 """
 
 
@@ -35,20 +37,30 @@ class Command(BaseCommand):
         print('Inserting random data\n')
         count = options['record_count']
 
+        num_workers = 4
+        worker_images = 5000
+        # Number of images to generate before committing results
         chunk_size = 10000
         images = []
-        for i in range(0, count):
-            images.append(make_mock_image(english_words, com_words, fake_creators))
-            progress = round(i / count * 100, 3)
-            if len(images) == chunk_size or i == count - 1:
+        pool = Pool(num_workers)
+        required_iterations = int(count / (worker_images * num_workers))
+        for i in range(0, required_iterations):
+            results = pool.starmap(
+                generate_n_mock_images, [[worker_images, english_words, com_words, fake_creators] for _ in range(num_workers)]
+            )
+            # Flatten pool results before storing
+            images.extend(list(itertools.chain.from_iterable(results)))
+            progress = round(i / required_iterations * 100, 3)
+            if len(images) >= chunk_size or i == required_iterations - 1:
+                # Commit to database after accumulating enough data
+                print('Committing ', len(images), ' images. Total progress: ', progress, '%', sep='')
+                commit_start_time = time.time()
                 models.Image.objects.bulk_create(images)
-                images = []
+                commit_time = time.time() - commit_start_time
+                print('Committed', len(images), 'in', commit_time, 'seconds', len(images)/commit_time, 'per second')
 
-            if i % 5 == 0:
-                # Print a status update every so often
-                print('\r{:.2f}'.format(progress), '%', sep='', end="")
-        print('')
-        print('Done')
+                images = []
+        print('\nDone')
 
 
 def make_mock_image(dictionary, common_words, creators):
@@ -80,3 +92,11 @@ def make_mock_image(dictionary, common_words, creators):
     image.filesize = 42
 
     return image
+
+
+def generate_n_mock_images(n, dictionary, common_words, creators):
+    start_time = time.time()
+    result = [make_mock_image(dictionary, common_words, creators) for _ in range(n)]
+    end_time = time.time()
+    print('Worker generated', n / (end_time - start_time), 'records per second')
+    return result
