@@ -57,9 +57,10 @@ class Command(BaseCommand):
                 commit_start_time = time.time()
                 models.Image.objects.bulk_create(images)
                 commit_time = time.time() - commit_start_time
-                print('Committed', len(images), 'in', commit_time, 'seconds', len(images)/commit_time, 'per second')
-
+                print('Committed', len(images), 'in', commit_time, 'seconds', '(' + str(len(images)/commit_time),
+                      'per second)')
                 images = []
+
         print('\nDone')
 
 
