@@ -10,6 +10,9 @@ from django.utils.safestring import mark_safe
 import requests
 
 from django.contrib.postgres.fields import ArrayField
+from django.contrib.postgres.indexes import GinIndex
+from django.contrib.postgres.search import SearchVectorField
+
 
 class OpenLedgerModel(models.Model):
 
@@ -26,6 +29,7 @@ class OpenLedgerModel(models.Model):
 
     class Meta:
         abstract = True
+
 
 class Image(OpenLedgerModel):
 
@@ -97,6 +101,11 @@ class Image(OpenLedgerModel):
     # True if this image has been removed from the source
     removed_from_source = models.BooleanField(default=False)
 
+    # Cached weighted lexemes for fast full text search.
+    # This is automatically populated by database triggers. See "trigger_search_vectors" in ./migrations.
+    # Currently, we index title, tags, and creator.
+    search_vectors = SearchVectorField(blank=True, null=True)
+
     def sync(self, attempt_perceptual_hash=False):
         """Attempt to sync the image with the remote location. Optionally does a number of
         other actions:
@@ -157,6 +166,7 @@ class Image(OpenLedgerModel):
         db_table = 'image'
         ordering = ['-created_on']
 
+
 class ImageTags(OpenLedgerModel):
     tag = models.ForeignKey('Tag', on_delete=models.CASCADE, blank=True, null=True)
     image = models.ForeignKey(Image, on_delete=models.CASCADE, blank=True, null=True)
@@ -164,6 +174,7 @@ class ImageTags(OpenLedgerModel):
     class Meta:
         unique_together = (('tag', 'image'))
         db_table = 'image_tags'
+
 
 class UserTags(OpenLedgerModel):
     tag = models.ForeignKey('Tag', on_delete=models.CASCADE, related_name="user_tags")
@@ -195,6 +206,7 @@ class List(OpenLedgerModel):
     def __str__(self):
         return "'{}' by {} [{}]".format(self.title, self.owner.username if self.owner else 'No owner', "public" if self.is_public else "private")
 
+
 class Tag(OpenLedgerModel):
     foreign_identifier = models.CharField(max_length=255, blank=True, null=True)
     name = models.CharField(max_length=1000, blank=True, null=True)
@@ -204,6 +216,7 @@ class Tag(OpenLedgerModel):
 
     class Meta:
         db_table = 'tag'
+
 
 class Favorite(OpenLedgerModel):
     image = models.ForeignKey(Image, on_delete=models.CASCADE, related_name="favorites")
