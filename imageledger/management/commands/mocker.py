@@ -35,10 +35,10 @@ class Command(BaseCommand):
         print('Inserting random data\n')
         count = options['record_count']
 
-        chunk_size = 500
+        chunk_size = 10000
         images = []
         for i in range(0, count):
-            images.append(make_mock_image(english_words, com_words, fake_creators, i))
+            images.append(make_mock_image(english_words, com_words, fake_creators))
             progress = round(i / count * 100, 3)
             if len(images) == chunk_size or i == count - 1:
                 models.Image.objects.bulk_create(images)
@@ -51,7 +51,7 @@ class Command(BaseCommand):
         print('Done')
 
 
-def make_mock_image(dictionary, common_words, creators, curr_count):
+def make_mock_image(dictionary, common_words, creators):
     """ Create a mock model.Image generated from random data. Don't bother with any unsearchable fields. """
     image = models.Image()
 
