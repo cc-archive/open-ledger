@@ -3,19 +3,93 @@ import random
 import sys
 import os
 import time
-import pdb
 import itertools
+import pdb
 
 sys.path.append("..")
 from imageledger import models
 from django.core.management.base import BaseCommand
 from django.db import connection
-from multiprocessing import Pool
+from multiprocessing import Manager, Pool, Process
+from queue import Queue
 
 """
 A utility for inserting large amounts of random data into the database. This is tailored for stress testing full text
 search in PostgreSQL.
 """
+
+
+class MockDataProducer(Process):
+
+    def __init__(self, num_results, result_queue, num_workers, num_worker_images, producer_finished):
+        Process.__init__(self)
+        self.done = False
+        self.result_queue = result_queue
+        self.num_workers = num_workers
+        self.num_worker_images = num_worker_images
+        self.num_results = num_results
+        self.producer_finished = producer_finished
+        english_words = set()
+        with open(os.path.join(os.path.dirname(__file__), 'all_english_words.txt'), 'r') as english_dictionary:
+            for line in english_dictionary:
+                english_words.add(line.rstrip())
+
+        self.com_words = random.sample(list(english_words), 50000)
+        self.fake_creators = random.sample(list(english_words), 5000)
+        self.queue_limit = 200000
+
+    def run(self):
+        mock_count = 0
+        print('Starting MockDataProducer')
+        pool = Pool(self.num_workers)
+        required_iterations = int(self.num_results / (self.num_worker_images * self.num_workers))
+        for i in range(0, required_iterations):
+            results = pool.starmap(
+                generate_n_mock_images,
+                [[self.num_worker_images, self.com_words, self.fake_creators] for _ in range(self.num_workers)]
+            )
+            # Flatten pool results into a single list and enqueue
+            result_imgs = list(itertools.chain.from_iterable(results))
+            mock_count += len(result_imgs)
+            while self.result_queue.qsize() >= self.queue_limit:
+                # The queue is getting big, wait for the DB pusher to catch up
+                time.sleep(1)
+            list(map(self.result_queue.put, result_imgs))
+        print('Done producing after mocking', mock_count)
+        self.producer_finished.value = 1
+
+
+class DatabasePusher(Process):
+
+    def __init__(self, mock_data_queue, mock_data_producer, num_images_to_push, producer_finished):
+        Process.__init__(self)
+        self.mock_data_queue = mock_data_queue
+        self.mock_data_producer = mock_data_producer
+        self.num_images_to_push = num_images_to_push
+        self.producer_finished = producer_finished
+
+    def run(self):
+        print('Starting DatabasePusher')
+        to_commit = []
+        total_commits = 0
+        while self.producer_finished.value == 0:
+            count = 0
+            while not self.mock_data_queue.empty() and count < 50000:
+                count += 1
+                to_commit.append(self.mock_data_queue.get())
+
+            while len(to_commit) > 0:
+                start_time = time.time()
+                print('Pushing', len(to_commit), 'records to database')
+                models.Image.objects.bulk_create(to_commit)
+                commit_time = time.time() - start_time
+                total_commits += len(to_commit)
+                print('Committed', len(to_commit), 'in', commit_time,
+                      'seconds', '(' + str(len(to_commit) / commit_time), 'per second)')
+                print('Progress: ', total_commits / self.num_images_to_push * 100, '%', sep='')
+                to_commit = []
+            time.sleep(1)
+        print('Done pushing')
 
 
 class Command(BaseCommand):
@@ -29,6 +103,11 @@ class Command(BaseCommand):
                             action='store_true')
 
     def handle(self, *args, **options):
+        count = options['record_count']
+        if count < 50000:
+            print("Error: minimum of 50,000 mock records required")
+            exit(1)
+
         if not options['noninteractive']:
             print('Running this script will result in the following database receiving junk test data:')
             print('Database', connection.settings_dict['NAME'], 'on host', connection.settings_dict['HOST'])
@@ -37,44 +116,24 @@ class Command(BaseCommand):
             if not _continue:
                 exit(0)
 
-        english_words = set()
-        print('Caching the English language. . .')
-        with open(os.path.join(os.path.dirname(__file__), 'all_english_words.txt'), 'r') as english_dictionary:
-            for line in english_dictionary:
-                english_words.add(line.rstrip())
-        print('Done caching.')
-        com_words = random.sample(list(english_words), 50000)
-        fake_creators = random.sample(list(english_words), 5000)
         print('Inserting random data\n')
-        count = options['record_count']
 
-        num_workers = 8
-        worker_images = 5000
-        # Number of images to generate before committing results
-        chunk_size = max(10000, num_workers * worker_images)
-        images = []
-        pool = Pool(num_workers)
-
-        required_iterations = int(count / (worker_images * num_workers))
-        for i in range(0, required_iterations):
-            results = pool.starmap(
-                generate_n_mock_images,
-                [[worker_images, com_words, fake_creators] for _ in range(num_workers)]
-            )
-            # Flatten pool results before storing
-            images.extend(list(itertools.chain.from_iterable(results)))
-            progress = round(i / required_iterations * 100, 3)
-            if len(images) >= chunk_size or i == required_iterations - 1:
-                # Commit to database after accumulating enough data
-                print('Committing ', len(images), ' images. Total progress: ', progress, '%', sep='')
-                commit_start_time = time.time()
-                models.Image.objects.bulk_create(images)
-                commit_time = time.time() - commit_start_time
-                print('Committed', len(images), 'in', commit_time, 'seconds', '(' + str(len(images)/commit_time),
-                      'per second)')
-                images = []
-
-        print('\nDone')
+        with Manager() as manager:
+            producer_finished = manager.Value('i', 0)
+            mock_data_queue = manager.Queue()
+            mock_data_producer = MockDataProducer(num_results=count,
+                                                  result_queue=mock_data_queue,
+                                                  num_workers=4,
+                                                  num_worker_images=5000,
+                                                  producer_finished=producer_finished)
+            db_pusher = DatabasePusher(mock_data_queue=mock_data_queue,
+                                       mock_data_producer=mock_data_producer,
+                                       num_images_to_push=count,
+                                       producer_finished=producer_finished)
+            mock_data_producer.start()
+            db_pusher.start()
+            db_pusher.join()
+            print('\nDone')
 
 
 def make_mock_image(common_words, creators):
