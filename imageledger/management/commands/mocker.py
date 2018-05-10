@@ -59,7 +59,7 @@ class Command(BaseCommand):
         for i in range(0, required_iterations):
             results = pool.starmap(
                 generate_n_mock_images,
-                [[worker_images, english_words, com_words, fake_creators] for _ in range(num_workers)]
+                [[worker_images, com_words, fake_creators] for _ in range(num_workers)]
             )
             # Flatten pool results before storing
             images.extend(list(itertools.chain.from_iterable(results)))
@@ -77,7 +77,7 @@ class Command(BaseCommand):
         print('\nDone')
 
 
-def make_mock_image(dictionary, common_words, creators):
+def make_mock_image(common_words, creators):
     """ Create a mock model.Image generated from random data. Don't bother with any unsearchable fields. """
     image = models.Image()
 
@@ -108,9 +108,9 @@ def make_mock_image(dictionary, common_words, creators):
     return image
 
 
-def generate_n_mock_images(n, dictionary, common_words, creators):
+def generate_n_mock_images(n, common_words, creators):
     start_time = time.time()
-    result = [make_mock_image(dictionary, common_words, creators) for _ in range(n)]
+    result = [make_mock_image(common_words, creators) for _ in range(n)]
     end_time = time.time()
     print('Worker generated', n / (end_time - start_time), 'records per second')
     return result
