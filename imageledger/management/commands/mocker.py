@@ -9,6 +9,7 @@ import itertools
 sys.path.append("..")
 from imageledger import models
 from django.core.management.base import BaseCommand
+from django.db import connection
 from multiprocessing import Pool
 
 """
@@ -26,6 +27,13 @@ class Command(BaseCommand):
                             default=10000)
 
     def handle(self, *args, **options):
+        print('Running this script will result in the following database receiving junk test data:')
+        print('Database', connection.settings_dict['NAME'], 'on host', connection.settings_dict['HOST'])
+        print('Are you sure you want to continue?')
+        _continue = input('y/n\n').lower() == 'y'
+        if not _continue:
+            exit(0)
+
         english_words = set()
         print('Caching the English language. . .')
         with open(os.path.join(os.path.dirname(__file__), 'all_english_words.txt'), 'r') as english_dictionary:
@@ -37,7 +45,7 @@ class Command(BaseCommand):
         print('Inserting random data\n')
         count = options['record_count']
 
-        num_workers = 4
+        num_workers = 8
         worker_images = 5000
         # Number of images to generate before committing results
         chunk_size = 10000
@@ -46,7 +54,8 @@ class Command(BaseCommand):
         required_iterations = int(count / (worker_images * num_workers))
         for i in range(0, required_iterations):
             results = pool.starmap(
-                generate_n_mock_images, [[worker_images, english_words, com_words, fake_creators] for _ in range(num_workers)]
+                generate_n_mock_images,
+                [[worker_images, english_words, com_words, fake_creators] for _ in range(num_workers)]
             )
             # Flatten pool results before storing
             images.extend(list(itertools.chain.from_iterable(results)))
