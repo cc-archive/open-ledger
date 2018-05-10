@@ -55,7 +55,7 @@ class MockDataProducer(Process):
                 # The queue is getting big, wait for the DB pusher to catch up
                 time.sleep(1)
             list(map(self.result_queue.put, result_imgs))
-        print('Done producing after mocking', mock_count)
+        print('Done producing data after mocking', mock_count)
         self.producer_finished.value = 1
 
 
@@ -72,7 +72,7 @@ class DatabasePusher(Process):
         print('Starting DatabasePusher')
         to_commit = []
         total_commits = 0
-        while self.producer_finished.value == 0:
+        while self.producer_finished.value == 0 or self.mock_data_queue.qsize() > 0:
             count = 0
             while not self.mock_data_queue.empty() and count < 50000:
                 count += 1
@@ -89,7 +89,7 @@ class DatabasePusher(Process):
                 print('Progress: ', total_commits / self.num_images_to_push * 100, '%', sep='')
                 to_commit = []
             time.sleep(1)
-        print('Done pushing')
+        print('Done pushing after committing', total_commits)
 
 
 class Command(BaseCommand):
