@@ -25,14 +25,17 @@ class Command(BaseCommand):
     def add_arguments(self, parser):
         parser.add_argument('record_count', metavar='N', type=int, help='The number of mock records to generate.',
                             default=10000)
+        parser.add_argument('--noninteractive', help='Run in non-interactive mode. Skips warning prompt.',
+                            action='store_true')
 
     def handle(self, *args, **options):
-        print('Running this script will result in the following database receiving junk test data:')
-        print('Database', connection.settings_dict['NAME'], 'on host', connection.settings_dict['HOST'])
-        print('Are you sure you want to continue?')
-        _continue = input('y/n\n').lower() == 'y'
-        if not _continue:
-            exit(0)
+        if not options['noninteractive']:
+            print('Running this script will result in the following database receiving junk test data:')
+            print('Database', connection.settings_dict['NAME'], 'on host', connection.settings_dict['HOST'])
+            print('Are you sure you want to continue?')
+            _continue = input('y/n\n').lower() == 'y'
+            if not _continue:
+                exit(0)
 
         english_words = set()
         print('Caching the English language. . .')
@@ -48,9 +51,10 @@ class Command(BaseCommand):
         num_workers = 8
         worker_images = 5000
         # Number of images to generate before committing results
-        chunk_size = 10000
+        chunk_size = max(10000, num_workers * worker_images)
         images = []
         pool = Pool(num_workers)
+
         required_iterations = int(count / (worker_images * num_workers))
         for i in range(0, required_iterations):
             results = pool.starmap(
