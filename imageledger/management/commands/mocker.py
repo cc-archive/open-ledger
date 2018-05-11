@@ -11,7 +11,6 @@ from imageledger import models
 from django.core.management.base import BaseCommand
 from django.db import connection
 from multiprocessing import Manager, Pool, Process
-from queue import Queue
 
 """
 A utility for inserting large amounts of random data into the database. This is tailored for stress testing full text
@@ -19,8 +18,13 @@ search in PostgreSQL.
 """
 
 
-class MockDataProducer(Process):
+class TColors:
+    WARNING = '\033[33m'
+    RESET = '\033[0m'
 
+
+class MockDataProducer(Process):
+    """ Creates mock data and pushes the results to a message queue."""
     def __init__(self, num_results, result_queue, num_workers, num_worker_images, producer_finished):
         Process.__init__(self)
         self.done = False
@@ -60,13 +64,13 @@ class MockDataProducer(Process):
 
 
 class DatabasePusher(Process):
-
-    def __init__(self, mock_data_queue, mock_data_producer, num_images_to_push, producer_finished):
+    """ Consumes mock data from a message queue and pushes it to the database. """
+    def __init__(self, mock_data_queue, num_images_to_push, producer_finished):
         Process.__init__(self)
         self.mock_data_queue = mock_data_queue
-        self.mock_data_producer = mock_data_producer
         self.num_images_to_push = num_images_to_push
         self.producer_finished = producer_finished
+        self.conn = connection.connection
 
     def run(self):
         print('Starting DatabasePusher')
@@ -109,27 +113,26 @@ class Command(BaseCommand):
             exit(1)
 
         if not options['noninteractive']:
-            print('Running this script will result in the following database receiving junk test data:')
+            print(TColors.WARNING + 'Running this script will result in the following database receiving junk test'
+                                    ' data:')
             print('Database', connection.settings_dict['NAME'], 'on host', connection.settings_dict['HOST'])
-            print('Are you sure you want to continue?')
+            print('Are you sure you want to continue?' + TColors.RESET)
             _continue = input('y/n\n').lower() == 'y'
             if not _continue:
                 exit(0)
 
         print('Inserting random data\n')
-
         with Manager() as manager:
-            producer_finished = manager.Value('i', 0)
+            producer_finished_signal = manager.Value('i', 0)
             mock_data_queue = manager.Queue()
             mock_data_producer = MockDataProducer(num_results=count,
                                                   result_queue=mock_data_queue,
-                                                  num_workers=4,
+                                                  num_workers=2,
                                                   num_worker_images=5000,
-                                                  producer_finished=producer_finished)
+                                                  producer_finished=producer_finished_signal)
             db_pusher = DatabasePusher(mock_data_queue=mock_data_queue,
-                                       mock_data_producer=mock_data_producer,
                                        num_images_to_push=count,
-                                       producer_finished=producer_finished)
+                                       producer_finished=producer_finished_signal)
             mock_data_producer.start()
             db_pusher.start()
             db_pusher.join()
