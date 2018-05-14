@@ -1,15 +1,11 @@
 import uuid
 import random
-import sys
 import os
 import io
 import time
 import itertools
-import pdb
-import traceback
 
-sys.path.append("..")
-from imageledger import models
+from collections import OrderedDict
 from django.core.management.base import BaseCommand
 from django.db import connection
 from multiprocessing import Manager, Pool, Process
@@ -56,13 +52,15 @@ class MockDataProducer(Process):
                 generate_n_mock_images,
                 [[self.num_worker_images, self.com_words, self.fake_creators] for _ in range(self.num_workers)]
             )
-            # Flatten pool results into a single list and enqueue
+            # Flatten pool results into a single list
             result_imgs = list(itertools.chain.from_iterable(results))
-            csv_imgs = image_models_to_binary(result_imgs)
+            header = list(result_imgs[0].keys())
+            # Turn results into an in-memory CSV chunk.
+            csv_imgs = image_models_to_csv(result_imgs)
             while self.result_queue.qsize() >= self.queue_limit:
                 # The queue is getting big, wait for the DB pusher to catch up
                 time.sleep(1)
-            self.result_queue.put((csv_imgs, len(result_imgs)))
+            self.result_queue.put((csv_imgs, len(result_imgs), header))
         print('Done producing data after mocking', mock_count)
         self.producer_finished.value = 1
 
@@ -84,39 +82,21 @@ class DatabasePusher(Process):
             num_to_commit = 0
             while not self.mock_data_queue.empty() and count < 3:
                 count += 1
-                image_csv, num_images = self.mock_data_queue.get()
+                image_csv, num_images, header = self.mock_data_queue.get()
                 to_commit = io.StringIO(to_commit.getvalue() + image_csv.getvalue())
                 num_to_commit += num_images
-            if to_commit.getvalue() != '':
-                print('Pushing', num_to_commit, 'records to database')
-                start_time = time.time()
-                with connection.cursor() as cur:
-                    cur.copy_from(to_commit,
-                                   'image',
-                                   columns=['title',
-                                            'tags_list',
-                                            'creator',
-                                            'url',
-                                            'thumbnail',
-                                            'foreign_landing_url',
-                                            'license',
-                                            'provider',
-                                            'source',
-                                            'license_version',
-                                            'creator_url',
-                                            'filesize',
-                                            'created_on',
-                                            'updated_on',
-                                            'removed_from_source'
-                                            ]
-                                  )
-                connection.commit()
-                commit_time = time.time() - start_time
-                total_commits += num_to_commit
-                print('Committed', num_to_commit, 'in', commit_time,
-                      'seconds', '(' + str(num_to_commit / commit_time), 'per second)')
-                print('Progress: ', total_commits / self.num_images_to_push * 100, '%', sep='')
-                to_commit = io.StringIO('')
+                if to_commit.getvalue() != '':
+                    print('Pushing', num_to_commit, 'records to database')
+                    start_time = time.time()
+                    with connection.cursor() as cur:
+                        cur.copy_from(to_commit, 'image', columns=header)
+                    connection.commit()
+                    commit_time = time.time() - start_time
+                    total_commits += num_to_commit
+                    print('Committed', num_to_commit, 'in', commit_time,
+                          'seconds', '(' + str(num_to_commit / commit_time), 'per second)')
+                    print('Progress: ', total_commits / self.num_images_to_push * 100, '%', sep='')
+                    to_commit = io.StringIO('')
             time.sleep(1)
         print('Done pushing after committing', total_commits)
 
@@ -165,8 +145,10 @@ class Command(BaseCommand):
 
 
 def make_mock_image(common_words, creators):
-    """ Create a mock image generated from random data. Don't bother with any unsearchable fields. """
-    image = {}
+    """ Create a mock image generated from random data."""
+
+    # Order matters! Make sure that the order of elements matches the layout of the database schema.
+    image = OrderedDict()
 
     num_words_in_title = random.randrange(1, 4)
     title = ""
@@ -198,28 +180,14 @@ def make_mock_image(common_words, creators):
     return image
 
 
-def image_models_to_binary(images: list):
+def image_models_to_csv(images: list):
     """
     Given a list of Image models, convert the result to an in-memory CSV. This allows faster transfers to the database
     via COPY FROM.
     """
     csv_images = io.StringIO()
     for image in images:
-        row = '\t'.join([image['title'],
-                         image['tags_list'],
-                         image['creator'],
-                         image['url'],
-                         image['thumbnail'],
-                         image['foreign_landing_url'],
-                         image['license'],
-                         image['provider'],
-                         image['source'],
-                         image['license_version'],
-                         image['creator_url'],
-                         image['filesize'],
-                         image['created_on'],
-                         image['updated_on'],
-                         image['removed_from_source']]) + '\n'
+        row = '\t'.join(list(image.values())) + '\n'
 
         csv_images.write(row)
     csv_images.seek(0)
