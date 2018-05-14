@@ -2,9 +2,11 @@ import uuid
 import random
 import sys
 import os
+import io
 import time
 import itertools
 import pdb
+import traceback
 
 sys.path.append("..")
 from imageledger import models
@@ -15,6 +17,8 @@ from multiprocessing import Manager, Pool, Process
 """
 A utility for inserting large amounts of random data into the database. This is tailored for stress testing full text
 search in PostgreSQL.
+
+Tip: drop indexes if you're inserting > 10M records. Recreate them after the job finishes.
 """
 
 
@@ -40,7 +44,7 @@ class MockDataProducer(Process):
 
         self.com_words = random.sample(list(english_words), 50000)
         self.fake_creators = random.sample(list(english_words), 5000)
-        self.queue_limit = 200000
+        self.queue_limit = 10
 
     def run(self):
         mock_count = 0
@@ -54,11 +58,11 @@ class MockDataProducer(Process):
             )
             # Flatten pool results into a single list and enqueue
             result_imgs = list(itertools.chain.from_iterable(results))
-            mock_count += len(result_imgs)
+            csv_imgs = image_models_to_binary(result_imgs)
             while self.result_queue.qsize() >= self.queue_limit:
                 # The queue is getting big, wait for the DB pusher to catch up
                 time.sleep(1)
-            list(map(self.result_queue.put, result_imgs))
+            self.result_queue.put((csv_imgs, len(result_imgs)))
         print('Done producing data after mocking', mock_count)
         self.producer_finished.value = 1
 
@@ -70,28 +74,49 @@ class DatabasePusher(Process):
         self.mock_data_queue = mock_data_queue
         self.num_images_to_push = num_images_to_push
         self.producer_finished = producer_finished
-        self.conn = connection.connection
 
     def run(self):
         print('Starting DatabasePusher')
-        to_commit = []
+        to_commit = io.StringIO('')
         total_commits = 0
         while self.producer_finished.value == 0 or self.mock_data_queue.qsize() > 0:
             count = 0
-            while not self.mock_data_queue.empty() and count < 50000:
+            num_to_commit = 0
+            while not self.mock_data_queue.empty() and count < 3:
                 count += 1
-                to_commit.append(self.mock_data_queue.get())
-
-            while len(to_commit) > 0:
+                image_csv, num_images = self.mock_data_queue.get()
+                to_commit = io.StringIO(to_commit.getvalue() + image_csv.getvalue())
+                num_to_commit += num_images
+            if to_commit.getvalue() != '':
+                print('Pushing', num_to_commit, 'records to database')
                 start_time = time.time()
-                print('Pushing', len(to_commit), 'records to database')
-                models.Image.objects.bulk_create(to_commit)
+                with connection.cursor() as cur:
+                    cur.copy_from(to_commit,
+                                   'image',
+                                   columns=['title',
+                                            'tags_list',
+                                            'creator',
+                                            'url',
+                                            'thumbnail',
+                                            'foreign_landing_url',
+                                            'license',
+                                            'provider',
+                                            'source',
+                                            'license_version',
+                                            'creator_url',
+                                            'filesize',
+                                            'created_on',
+                                            'updated_on',
+                                            'removed_from_source'
+                                            ]
+                                  )
+                connection.commit()
                 commit_time = time.time() - start_time
-                total_commits += len(to_commit)
-                print('Committed', len(to_commit), 'in', commit_time,
-                      'seconds', '(' + str(len(to_commit) / commit_time), 'per second)')
+                total_commits += num_to_commit
+                print('Committed', num_to_commit, 'in', commit_time,
+                      'seconds', '(' + str(num_to_commit / commit_time), 'per second)')
                 print('Progress: ', total_commits / self.num_images_to_push * 100, '%', sep='')
-                to_commit = []
+                to_commit = io.StringIO('')
             time.sleep(1)
         print('Done pushing after committing', total_commits)
 
@@ -127,7 +152,7 @@ class Command(BaseCommand):
             mock_data_queue = manager.Queue()
             mock_data_producer = MockDataProducer(num_results=count,
                                                   result_queue=mock_data_queue,
-                                                  num_workers=2,
+                                                  num_workers=4,
                                                   num_worker_images=5000,
                                                   producer_finished=producer_finished_signal)
             db_pusher = DatabasePusher(mock_data_queue=mock_data_queue,
@@ -140,34 +165,65 @@ class Command(BaseCommand):
 
 
 def make_mock_image(common_words, creators):
-    """ Create a mock model.Image generated from random data. Don't bother with any unsearchable fields. """
-    image = models.Image()
+    """ Create a mock image generated from random data. Don't bother with any unsearchable fields. """
+    image = {}
 
     num_words_in_title = random.randrange(1, 4)
     title = ""
     for idx, _ in enumerate(range(num_words_in_title)):
         title += random.sample(common_words, 1)[0] + ' '
-    image.title = title
+    image['title'] = title
 
     num_tags = random.randrange(1, 4)
     tags_list = []
     for _ in range(num_tags):
         tags_list.append(random.choice(common_words))
-    image.tags_list = tags_list
+    image['tags_list'] = str(tags_list).replace('[', '{').replace(']', '}')
 
     fake_url = 'www.example.com/'
-    image.creator = random.choice(creators)
-    image.url = fake_url + str(uuid.uuid4())
-    image.thumbnail = fake_url + str(uuid.uuid4())
-    image.foreign_landing_url = fake_url + str(uuid.uuid4())
-    image.license = 'by'
-    image.provider = 'flickr'
-    image.source = 'openimages'
-    image.license_version = '2.0'
-    image.creator_url = fake_url + str(uuid.uuid4())
-    image.filesize = 42
+    image['creator'] = random.choice(creators)
+    image['url'] = fake_url + str(uuid.uuid4())
+    image['thumbnail'] = fake_url + str(uuid.uuid4())
+    image['foreign_landing_url'] = fake_url + str(uuid.uuid4())
+    image['license'] = 'by'
+    image['provider'] = 'flickr'
+    image['source'] = 'openimages'
+    image['license_version'] = '2.0'
+    image['creator_url'] = str(fake_url + str(uuid.uuid4()))
+    image['filesize'] = str(42)
+    image['created_on'] = '1901-01-01 00:00:00.000000+00'
+    image['updated_on'] = '1901-01-01 00:00:00.000000+00'
+    image['removed_from_source'] = 'f'
 
     return image
+
+
+def image_models_to_binary(images: list):
+    """
+    Given a list of Image models, convert the result to an in-memory CSV. This allows faster transfers to the database
+    via COPY FROM.
+    """
+    csv_images = io.StringIO()
+    for image in images:
+        row = '\t'.join([image['title'],
+                         image['tags_list'],
+                         image['creator'],
+                         image['url'],
+                         image['thumbnail'],
+                         image['foreign_landing_url'],
+                         image['license'],
+                         image['provider'],
+                         image['source'],
+                         image['license_version'],
+                         image['creator_url'],
+                         image['filesize'],
+                         image['created_on'],
+                         image['updated_on'],
+                         image['removed_from_source']]) + '\n'
+
+        csv_images.write(row)
+    csv_images.seek(0)
+    return csv_images
 
 
 def generate_n_mock_images(n, common_words, creators):
