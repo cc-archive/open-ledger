@@ -85,6 +85,7 @@ class DatabasePusher(Process):
                 image_csv, num_images, header = self.mock_data_queue.get()
                 to_commit = io.StringIO(to_commit.getvalue() + image_csv.getvalue())
                 num_to_commit += num_images
+                total_commits += num_images
                 if to_commit.getvalue() != '':
                     print('Pushing', num_to_commit, 'records to database')
                     start_time = time.time()
@@ -92,12 +93,10 @@ class DatabasePusher(Process):
                         cur.copy_from(to_commit, 'image', columns=header)
                     connection.commit()
                     commit_time = time.time() - start_time
-                    total_commits += num_to_commit
                     print('Committed', num_to_commit, 'in', commit_time,
                           'seconds', '(' + str(num_to_commit / commit_time), 'per second)')
                     print('Progress: ', total_commits / self.num_images_to_push * 100, '%', sep='')
                     to_commit = io.StringIO('')
-            time.sleep(1)
         print('Done pushing after committing', total_commits)
 
 
