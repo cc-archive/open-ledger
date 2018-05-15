@@ -10,7 +10,6 @@ from django.utils.safestring import mark_safe
 import requests
 
 from django.contrib.postgres.fields import ArrayField
-from django.contrib.postgres.indexes import GinIndex
 from django.contrib.postgres.search import SearchVectorField
 
 
