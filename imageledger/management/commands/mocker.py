@@ -80,13 +80,13 @@ class DatabasePusher(Process):
         while self.producer_finished.value == 0 or self.mock_data_queue.qsize() > 0:
             count = 0
             num_to_commit = 0
-            while not self.mock_data_queue.empty() and count < 3:
+            while not self.mock_data_queue.empty() and count < 5:
                 count += 1
                 image_csv, num_images, header = self.mock_data_queue.get()
                 to_commit = io.StringIO(to_commit.getvalue() + image_csv.getvalue())
                 num_to_commit += num_images
                 total_commits += num_images
-                if to_commit.getvalue() != '':
+                if num_to_commit >= 100000 or self.producer_finished.value == 1:
                     print('Pushing', num_to_commit, 'records to database')
                     start_time = time.time()
                     with connection.cursor() as cur:
